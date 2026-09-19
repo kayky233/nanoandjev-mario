@@ -26,6 +26,7 @@ import warnings
 
 import httpx
 import imageio.v2 as imageio
+from mario_env import make_mario_env
 
 warnings.filterwarnings("ignore")
 with contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(io.StringIO()):
@@ -389,7 +390,7 @@ class Replay:
 
 def run(bot: str, level: str = "1-1", dump: bool = False) -> dict:
     warnings.simplefilter("ignore")  # gym's env checker re-enables a numpy deprecation warning
-    env = JoypadSpace(gym_super_mario_bros.make(f"SuperMarioBros-{level}-v0", apply_api_compatibility=True), SIMPLE_MOVEMENT)
+    env = JoypadSpace(make_mario_env(gym_super_mario_bros, level), SIMPLE_MOVEMENT)
     ram = nes(env).ram
     obs, _ = env.reset()
     # nes_py reuses one screen buffer, so every stored frame must be a copy.

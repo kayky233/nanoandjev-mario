@@ -1,0 +1,22 @@
+[
+  {
+    "level": "1-1",
+    "bot": "local",
+    "stamp": "20260919-135409",
+    "best_x": 3161,
+    "flag": true,
+    "frames": 2028,
+    "api_calls": 58,
+    "gif": "1-1-local-20260919-135409.gif"
+  },
+  {
+    "level": "1-1",
+    "bot": "branch-jev",
+    "stamp": "20260918-170421",
+    "best_x": 3161,
+    "flag": true,
+    "frames": 2363,
+    "api_calls": 23,
+    "gif": "1-1-branch-jev-20260918-170421.gif"
+  }
+]

@@ -47,7 +47,7 @@ class Sim:
 
     def __init__(self, level: str):
         self.env = play.JoypadSpace(
-            play.gym_super_mario_bros.make(f"SuperMarioBros-{level}-v0", apply_api_compatibility=True), play.SIMPLE_MOVEMENT)
+            play.make_mario_env(play.gym_super_mario_bros, level), play.SIMPLE_MOVEMENT)
         self.core = nes(self.env)
         self.ram = self.core.ram
         self.obs, _ = self.env.reset()

@@ -116,7 +116,7 @@ def combine(answers: dict, speed_byte: int) -> tuple[str, str | None]:
 
 def run(bot: str, level: str) -> dict:
     play.warnings.simplefilter("ignore")
-    env = play.JoypadSpace(play.gym_super_mario_bros.make(f"SuperMarioBros-{level}-v0", apply_api_compatibility=True), play.SIMPLE_MOVEMENT)
+    env = play.JoypadSpace(play.make_mario_env(play.gym_super_mario_bros, level), play.SIMPLE_MOVEMENT)
     ram = nes(env).ram
     obs, _ = env.reset()
     frames, log, lats, tokens = [obs.copy()], [], [], 0

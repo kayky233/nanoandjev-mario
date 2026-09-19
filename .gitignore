@@ -1,5 +1,18 @@
 .env
-.venv/
+.venv*/
 __pycache__/
 *.pyc
 runs/*.log.jsonl
+runs/*.gif
+
+# Local viewers, probes, and generated inspection output.
+.playwright-cli/
+output/
+public-url.txt
+supervise.lock
+/*.log
+/_*
+/*.png
+/analyze_run.py
+/make_play_local.py
+/make_strip.py
