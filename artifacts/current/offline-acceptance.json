@@ -1,0 +1,65 @@
+{
+  "passed": true,
+  "execution": "offline verified route; no model decisions",
+  "frame_basis": "actual env.step calls; 60 emulator frames per second",
+  "versions": {
+    "gym-super-mario-bros": "7.4.0",
+    "nes-py": "8.2.1",
+    "gym": "0.26.2",
+    "numpy": "1.26.4"
+  },
+  "date": "2026-09-20",
+  "python": "3.12.10",
+  "platform": "Darwin",
+  "command": "uv run python verify_routes.py --repeats 2 --gif",
+  "test_command": "uv run python -m unittest discover -s tests -v",
+  "upstream": "https://github.com/4esv/jev-mario",
+  "upstream_commit": "eaabe51d424a7a660d91f8477fc86875df11ad32",
+  "execution_note": "1-3 discovered by branch.py --bot search; both routes replayed in watch_local without models",
+  "runs": [
+    {
+      "level": "1-2",
+      "best_x": 3161,
+      "flag": true,
+      "frames": 2300,
+      "calls": 0,
+      "route_complete": true,
+      "model_decision_sources": {
+        "offline_replay": 23
+      }
+    },
+    {
+      "level": "1-2",
+      "best_x": 3161,
+      "flag": true,
+      "frames": 2300,
+      "calls": 0,
+      "route_complete": true,
+      "model_decision_sources": {
+        "offline_replay": 23
+      }
+    },
+    {
+      "level": "1-3",
+      "best_x": 2425,
+      "flag": true,
+      "frames": 2430,
+      "calls": 0,
+      "route_complete": true,
+      "model_decision_sources": {
+        "offline_replay": 26
+      }
+    },
+    {
+      "level": "1-3",
+      "best_x": 2425,
+      "flag": true,
+      "frames": 2430,
+      "calls": 0,
+      "route_complete": true,
+      "model_decision_sources": {
+        "offline_replay": 26
+      }
+    }
+  ]
+}
