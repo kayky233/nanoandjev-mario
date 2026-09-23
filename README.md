@@ -2,7 +2,15 @@
 
 验证 **Jev 与本地模型能否根据当前状态自主选择动作、完成 Mario 关卡**。模型读取 NES RAM 生成的结构化状态；每次选择都保留原始回答与实际执行记录。源自 [4esv/jev-mario](https://github.com/4esv/jev-mario)。
 
-## 模型实测：2026-09-23
+## 最新模型优化：2026-09-23
+
+本轮新增 **33 局、475 次真实模型决策**，仍然全部由模型选动作。相同输入下，本地推理热请求 p50 从 **1.344 秒降到 0.953 秒**（约 29%），p95 从 1.853 秒降到 1.142 秒；采用 MLX FP16、精确前缀缓存和进程内存管理，未更换权重。缓存开关的 23 个新输入输出一致。
+
+当前候选的 Qwen 三轮均为 **1-1 x=1411、1-2 x=658、1-3 x=410**；Jev 三轮为 **1-1 x=1794、1-2 x=902/906/903、1-3 x=303**。Qwen 不再只选低跳，1-1 比原来的 x=722 更远，但 1-3 比原来的 x=618 更差。**两种模型仍未通关，不能称为整体能力提升。**
+
+观测修复、全部候选的正负结果、复现命令与原始证据见[模型优化报告](MODEL_OPTIMIZATION.md)。当前代码使用该报告的 guided 候选；下面保留未优化版本的原始基线，避免混合不同配置成绩。
+
+## 原始模型基线：2026-09-23
 
 **Jev 已完成 9 局真实 API 实测，本地 Qwen2.5-1.5B 已完成 3 局真实推理实测，目前均未通关。** 所有有效模型选择原样执行，关闭 guard、自动脱困、规则兜底、教练和路线接管。此前首页展示的离线路线成功已移至[执行器回归材料](artifacts/current/README.md#离线路线回放仅用于执行器回归)，不计入模型成绩。
 
@@ -41,7 +49,7 @@ GIF 展示模拟器游戏时间，不包含等待模型的时间；模拟器在�
 
 证据：[本地评测清单](artifacts/model-eval-20260923/qwen-local/evaluation.json) · [动作、token 与录像时长审计](artifacts/model-eval-20260923/qwen-local/audit.json) · [实测脚本](artifacts/model-eval-20260923/qwen-local/run_qwen_local_eval.py)。脚本的 localhost HTTP adapter 将未改动的项目提示交给真实权重生成，未预设模型回答；不下载模型权重，依赖用独立临时环境加载。
 
-若本机已有上述 revision 的 Hugging Face 缓存，可按执行快照重跑本地三关；这条路径独立于 Ollama：
+若本机已有上述 revision 的 Hugging Face 缓存，可运行原评测脚本；它导入当前控制器，严格旧版对照应使用[优化报告](MODEL_OPTIMIZATION.md)中保留的 baseline 控制器快照。这条路径独立于 Ollama：
 
 ```bash
 mkdir -p output
@@ -109,18 +117,18 @@ uv run python -m unittest discover -s tests -p 'test_model_only.py' -v
 
 左栏运行本地 Qwen，右栏运行官方 Jev。两边使用独立模拟器，各自等待模型回答，展示真实画面、模型选择、实际动作、延迟、请求次数和最远距离。失败后自动重试；`--stay-on-level` 让通关的一栏停留在成功画面。观战重试不计入上方固定样本的基准结果。
 
-先启动本地推理服务。以下命令复用已缓存的 Qwen2.5-1.5B-Instruct 权重（revision 见上文），不会下载权重；PyTorch 和 Transformers 为可选依赖：
+先启动本地推理服务。以下命令复用已缓存的 Qwen2.5-1.5B-Instruct 权重（revision 见上文），不会下载权重；MLX 依赖在独立环境中加载：
 
 ```bash
-uv run --script serve_qwen.py --port 11503
+uv run --script serve_qwen_mlx.py --port 11504
 ```
 
-可用 `--model-path /path/to/model` 指定相同模型的完整本地权重目录。该实验适配器绑定 localhost，在 Apple Silicon 上使用 MPS FP16，其他环境回退 CPU；行内部署方案见[分析报告](JEV_REPORT.md)。
+可用 `--model-path /path/to/model` 指定相同模型的完整本地权重目录。该实验适配器绑定 localhost，在 Apple Silicon 上使用 MLX FP16 与前缀缓存。原 PyTorch 适配器 `serve_qwen.py --port 11503` 仍可用于对照；行内部署方案见[分析报告](JEV_REPORT.md)。
 
 在另一个终端配置本地接口，并通过环境变量提供自己的 Jev 凭据，然后启动两栏：
 
 ```bash
-export LOCAL_POLICY_BASE_URL=http://127.0.0.1:11503/v1
+export LOCAL_POLICY_BASE_URL=http://127.0.0.1:11504/v1
 export LOCAL_POLICY_MODEL=Qwen2.5-1.5B-Instruct
 export LOCAL_POLICY_MODE=chat
 export NO_PROXY=127.0.0.1,localhost
@@ -152,6 +160,8 @@ ngrok 报 `ERR_NGROK_725` 表示账号带宽额度耗尽，重启同一账号隧
 | [live.py](live.py) | 模拟器持续运行时给出动作与风险判断 | 请求延迟进入控制闭环 |
 | [watch_local.py](watch_local.py) `--model-only` | 双通道真实模型观战 | 无规则改写、教练或路线接管；默认模式保留混合策略 |
 | [serve_qwen.py](serve_qwen.py) | 加载本地缓存 Qwen 权重并真实生成 | localhost OpenAI 兼容接口，独立启动 |
+| [serve_qwen_mlx.py](serve_qwen_mlx.py) | 同一权重的 MLX FP16 推理 | Apple Silicon、精确前缀缓存；不缓存模型答案 |
+| [evaluate_models.py](evaluate_models.py) | 连续运行纯模型实验 | 保存每局来源、HTTP 请求响应与控制器源码哈希 |
 | [supervise.py](supervise.py) | 看护观战进程与可选隧道 | 透传纯模型模式；退出时回收子进程与锁 |
 
 在线分支实验命令：

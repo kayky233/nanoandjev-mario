@@ -1,0 +1,3749 @@
+{
+  "method": {
+    "model": "Qwen2.5-1.5B-Instruct",
+    "revision": "989aa7980e4cf806f80c7fef2b1adb7bc71aa306",
+    "dtype": "float16",
+    "hardware": "Apple M5 / 16 GiB",
+    "method": "18 historical requests, 6 evenly spaced per level; serial; viewer paused; first request excluded from warm percentiles",
+    "model_weights_downloaded": false,
+    "baseline_script": "output/serve_qwen_live.py",
+    "mlx_script": "serve_qwen_mlx.py",
+    "mlx_script_sha256": "8c3409637dd08c3883a0f9fb246d2f3552c7f4296f382240ac61869de1f044c7",
+    "baseline_script_sha256": "310f3801fdeb06ba094874f410f0ae095dcd1c872c18dc10f451d5a6e8edea62",
+    "mlx_versions": {
+      "mlx-lm": "0.31.3",
+      "mlx": "0.32.2",
+      "transformers": "5.17.0",
+      "numpy": "1.26.4"
+    },
+    "note": "Historical response agreement is backend consistency, not ground-truth game action accuracy.",
+    "cache_policy": "Last input prefix only; generated tokens discarded; exact longest common prefix, leaving one token to compute logits.",
+    "runtime": {
+      "url": "http://127.0.0.1:11504",
+      "pid": 42775,
+      "log": "output/model-opt-20260923/mlx-live.log",
+      "health": {
+        "status": "ready",
+        "model": "Qwen2.5-1.5B-Instruct",
+        "backend": "mlx",
+        "device": "gpu",
+        "dtype": "float16",
+        "prefix_cache": true,
+        "revision": "989aa7980e4cf806f80c7fef2b1adb7bc71aa306"
+      }
+    },
+    "cache_consistency": {
+      "sources": [
+        "local-v1",
+        "local-guided",
+        "local-prose"
+      ],
+      "cases": 23,
+      "exact_matches": 23,
+      "different_outputs": [
+        "C",
+        "D"
+      ],
+      "latency_not_benchmark": "Concurrent CPU unit tests; used for semantic consistency only."
+    }
+  },
+  "torch-mps-fp16": [
+    {
+      "ordinal": 0,
+      "level": "1-1",
+      "historical_index": 0,
+      "seconds": 5.933920917101204,
+      "output": "H",
+      "historical_output": "H",
+      "usage": {
+        "prompt_tokens": 839,
+        "completion_tokens": 2,
+        "total_tokens": 841
+      },
+      "timings": null
+    },
+    {
+      "ordinal": 1,
+      "level": "1-1",
+      "historical_index": 5,
+      "seconds": 1.6267998339608312,
+      "output": "H",
+      "historical_output": "H",
+      "usage": {
+        "prompt_tokens": 949,
+        "completion_tokens": 2,
+        "total_tokens": 951
+      },
+      "timings": null
+    },
+    {
+      "ordinal": 2,
+      "level": "1-1",
+      "historical_index": 10,
+      "seconds": 1.5446470831520855,
+      "output": "H",
+      "historical_output": "H",
+      "usage": {
+        "prompt_tokens": 906,
+        "completion_tokens": 2,
+        "total_tokens": 908
+      },
+      "timings": null
+    },
+    {
+      "ordinal": 3,
+      "level": "1-1",
+      "historical_index": 15,
+      "seconds": 1.1292498749680817,
+      "output": "H",
+      "historical_output": "H",
+      "usage": {
+        "prompt_tokens": 1024,
+        "completion_tokens": 2,
+        "total_tokens": 1026
+      },
+      "timings": null
+    },
+    {
+      "ordinal": 4,
+      "level": "1-1",
+      "historical_index": 20,
+      "seconds": 1.484410250093788,
+      "output": "H",
+      "historical_output": "H",
+      "usage": {
+        "prompt_tokens": 1026,
+        "completion_tokens": 2,
+        "total_tokens": 1028
+      },
+      "timings": null
+    },
+    {
+      "ordinal": 5,
+      "level": "1-1",
+      "historical_index": 25,
+      "seconds": 1.3169510830193758,
+      "output": "H",
+      "historical_output": "H",
+      "usage": {
+        "prompt_tokens": 1018,
+        "completion_tokens": 2,
+        "total_tokens": 1020
+      },
+      "timings": null
+    },
+    {
+      "ordinal": 6,
+      "level": "1-2",
+      "historical_index": 0,
+      "seconds": 1.2948320000432432,
+      "output": "H",
+      "historical_output": "H",
+      "usage": {
+        "prompt_tokens": 875,
+        "completion_tokens": 2,
+        "total_tokens": 877
+      },
+      "timings": null
+    },
+    {
+      "ordinal": 7,
+      "level": "1-2",
+      "historical_index": 3,
+      "seconds": 1.3218964589759707,
+      "output": "H",
+      "historical_output": "H",
+      "usage": {
+        "prompt_tokens": 966,
+        "completion_tokens": 2,
+        "total_tokens": 968
+      },
+      "timings": null
+    },
+    {
+      "ordinal": 8,
+      "level": "1-2",
+      "historical_index": 6,
+      "seconds": 1.3441571248695254,
+      "output": "H",
+      "historical_output": "H",
+      "usage": {
+        "prompt_tokens": 978,
+        "completion_tokens": 2,
+        "total_tokens": 980
+      },
+      "timings": null
+    },
+    {
+      "ordinal": 9,
+      "level": "1-2",
+      "historical_index": 9,
+      "seconds": 1.3967514159157872,
+      "output": "H",
+      "historical_output": "H",
+      "usage": {
+        "prompt_tokens": 991,
+        "completion_tokens": 2,
+        "total_tokens": 993
+      },
+      "timings": null
+    },
+    {
+      "ordinal": 10,
+      "level": "1-2",
+      "historical_index": 12,
+      "seconds": 1.290717083029449,
+      "output": "H",
+      "historical_output": "H",
+      "usage": {
+        "prompt_tokens": 919,
+        "completion_tokens": 2,
+        "total_tokens": 921
+      },
+      "timings": null
+    },
+    {
+      "ordinal": 11,
+      "level": "1-2",
+      "historical_index": 15,
+      "seconds": 1.3581882077269256,
+      "output": "H",
+      "historical_output": "H",
+      "usage": {
+        "prompt_tokens": 1030,
+        "completion_tokens": 2,
+        "total_tokens": 1032
+      },
+      "timings": null
+    },
+    {
+      "ordinal": 12,
+      "level": "1-3",
+      "historical_index": 0,
+      "seconds": 1.192149667069316,
+      "output": "H",
+      "historical_output": "H",
+      "usage": {
+        "prompt_tokens": 837,
+        "completion_tokens": 2,
+        "total_tokens": 839
+      },
+      "timings": null
+    },
+    {
+      "ordinal": 13,
+      "level": "1-3",
+      "historical_index": 2,
+      "seconds": 1.2511695004068315,
+      "output": "H",
+      "historical_output": "H",
+      "usage": {
+        "prompt_tokens": 848,
+        "completion_tokens": 2,
+        "total_tokens": 850
+      },
+      "timings": null
+    },
+    {
+      "ordinal": 14,
+      "level": "1-3",
+      "historical_index": 4,
+      "seconds": 1.465176250319928,
+      "output": "H",
+      "historical_output": "H",
+      "usage": {
+        "prompt_tokens": 911,
+        "completion_tokens": 2,
+        "total_tokens": 913
+      },
+      "timings": null
+    },
+    {
+      "ordinal": 15,
+      "level": "1-3",
+      "historical_index": 7,
+      "seconds": 1.3420645827427506,
+      "output": "H",
+      "historical_output": "H",
+      "usage": {
+        "prompt_tokens": 951,
+        "completion_tokens": 2,
+        "total_tokens": 953
+      },
+      "timings": null
+    },
+    {
+      "ordinal": 16,
+      "level": "1-3",
+      "historical_index": 9,
+      "seconds": 1.8155088340863585,
+      "output": "H",
+      "historical_output": "H",
+      "usage": {
+        "prompt_tokens": 969,
+        "completion_tokens": 2,
+        "total_tokens": 971
+      },
+      "timings": null
+    },
+    {
+      "ordinal": 17,
+      "level": "1-3",
+      "historical_index": 11,
+      "seconds": 1.8533703330904245,
+      "output": "H",
+      "historical_output": "H",
+      "usage": {
+        "prompt_tokens": 941,
+        "completion_tokens": 2,
+        "total_tokens": 943
+      },
+      "timings": null
+    }
+  ],
+  "torch-mps-fp16-summary": {
+    "name": "torch-mps-fp16",
+    "requests": 18,
+    "first_request_seconds": 5.933920917101204,
+    "warm_p50_seconds": 1.3441571248695254,
+    "warm_p95_seconds": 1.8533703330904245,
+    "historical_answer_matches": 18
+  },
+  "mlx-fp16-nocache": [
+    {
+      "ordinal": 0,
+      "level": "1-1",
+      "historical_index": 0,
+      "seconds": 8.65958029218018,
+      "output": "H",
+      "historical_output": "H",
+      "usage": {
+        "prompt_tokens": 839,
+        "completion_tokens": 2,
+        "total_tokens": 841,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        }
+      },
+      "timings": {
+        "backend": "mlx",
+        "dtype": "float16",
+        "seconds": 8.542203,
+        "tokenize_seconds": 0.174636,
+        "inference_seconds": 8.364624,
+        "prefill_to_first_token_seconds": 6.291982,
+        "decode_seconds": 0.030699,
+        "prompt_tokens": 839,
+        "cached_tokens": 0,
+        "prefill_tokens": 839,
+        "completion_tokens": 2,
+        "peak_memory_gb": 3.4731
+      }
+    },
+    {
+      "ordinal": 1,
+      "level": "1-1",
+      "historical_index": 5,
+      "seconds": 2.997534125111997,
+      "output": "H",
+      "historical_output": "H",
+      "usage": {
+        "prompt_tokens": 949,
+        "completion_tokens": 2,
+        "total_tokens": 951,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        }
+      },
+      "timings": {
+        "backend": "mlx",
+        "dtype": "float16",
+        "seconds": 2.937471,
+        "tokenize_seconds": 0.181367,
+        "inference_seconds": 2.755305,
+        "prefill_to_first_token_seconds": 1.726698,
+        "decode_seconds": 0.139993,
+        "prompt_tokens": 949,
+        "cached_tokens": 0,
+        "prefill_tokens": 949,
+        "completion_tokens": 2,
+        "peak_memory_gb": 3.5456
+      }
+    },
+    {
+      "ordinal": 2,
+      "level": "1-1",
+      "historical_index": 10,
+      "seconds": 4.893686333671212,
+      "output": "H",
+      "historical_output": "H",
+      "usage": {
+        "prompt_tokens": 906,
+        "completion_tokens": 2,
+        "total_tokens": 908,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        }
+      },
+      "timings": {
+        "backend": "mlx",
+        "dtype": "float16",
+        "seconds": 4.856719,
+        "tokenize_seconds": 0.160849,
+        "inference_seconds": 4.693618,
+        "prefill_to_first_token_seconds": 2.559207,
+        "decode_seconds": 0.038405,
+        "prompt_tokens": 906,
+        "cached_tokens": 0,
+        "prefill_tokens": 906,
+        "completion_tokens": 2,
+        "peak_memory_gb": 3.5456
+      }
+    },
+    {
+      "ordinal": 3,
+      "level": "1-1",
+      "historical_index": 15,
+      "seconds": 1.5377803747542202,
+      "output": "H",
+      "historical_output": "H",
+      "usage": {
+        "prompt_tokens": 1024,
+        "completion_tokens": 2,
+        "total_tokens": 1026,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        }
+      },
+      "timings": {
+        "backend": "mlx",
+        "dtype": "float16",
+        "seconds": 1.52153,
+        "tokenize_seconds": 0.046767,
+        "inference_seconds": 1.474318,
+        "prefill_to_first_token_seconds": 0.766709,
+        "decode_seconds": 0.102066,
+        "prompt_tokens": 1024,
+        "cached_tokens": 0,
+        "prefill_tokens": 1024,
+        "completion_tokens": 2,
+        "peak_memory_gb": 3.5794
+      }
+    },
+    {
+      "ordinal": 4,
+      "level": "1-1",
+      "historical_index": 20,
+      "seconds": 1.5407412499189377,
+      "output": "H",
+      "historical_output": "H",
+      "usage": {
+        "prompt_tokens": 1026,
+        "completion_tokens": 2,
+        "total_tokens": 1028,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        }
+      },
+      "timings": {
+        "backend": "mlx",
+        "dtype": "float16",
+        "seconds": 1.534403,
+        "tokenize_seconds": 0.011392,
+        "inference_seconds": 1.522561,
+        "prefill_to_first_token_seconds": 1.122237,
+        "decode_seconds": 0.044348,
+        "prompt_tokens": 1026,
+        "cached_tokens": 0,
+        "prefill_tokens": 1026,
+        "completion_tokens": 2,
+        "peak_memory_gb": 3.5881
+      }
+    },
+    {
+      "ordinal": 5,
+      "level": "1-1",
+      "historical_index": 25,
+      "seconds": 1.4439109158702195,
+      "output": "H",
+      "historical_output": "H",
+      "usage": {
+        "prompt_tokens": 1018,
+        "completion_tokens": 2,
+        "total_tokens": 1020,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        }
+      },
+      "timings": {
+        "backend": "mlx",
+        "dtype": "float16",
+        "seconds": 1.435486,
+        "tokenize_seconds": 0.0122,
+        "inference_seconds": 1.422919,
+        "prefill_to_first_token_seconds": 0.989549,
+        "decode_seconds": 0.057352,
+        "prompt_tokens": 1018,
+        "cached_tokens": 0,
+        "prefill_tokens": 1018,
+        "completion_tokens": 2,
+        "peak_memory_gb": 3.5881
+      }
+    },
+    {
+      "ordinal": 6,
+      "level": "1-2",
+      "historical_index": 0,
+      "seconds": 1.2837407081387937,
+      "output": "H",
+      "historical_output": "H",
+      "usage": {
+        "prompt_tokens": 875,
+        "completion_tokens": 2,
+        "total_tokens": 877,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        }
+      },
+      "timings": {
+        "backend": "mlx",
+        "dtype": "float16",
+        "seconds": 1.274431,
+        "tokenize_seconds": 0.03023,
+        "inference_seconds": 1.243612,
+        "prefill_to_first_token_seconds": 0.708118,
+        "decode_seconds": 0.042092,
+        "prompt_tokens": 875,
+        "cached_tokens": 0,
+        "prefill_tokens": 875,
+        "completion_tokens": 2,
+        "peak_memory_gb": 3.5881
+      }
+    },
+    {
+      "ordinal": 7,
+      "level": "1-2",
+      "historical_index": 3,
+      "seconds": 1.458095292095095,
+      "output": "H",
+      "historical_output": "H",
+      "usage": {
+        "prompt_tokens": 966,
+        "completion_tokens": 2,
+        "total_tokens": 968,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        }
+      },
+      "timings": {
+        "backend": "mlx",
+        "dtype": "float16",
+        "seconds": 1.449826,
+        "tokenize_seconds": 0.004856,
+        "inference_seconds": 1.444444,
+        "prefill_to_first_token_seconds": 0.860059,
+        "decode_seconds": 0.038078,
+        "prompt_tokens": 966,
+        "cached_tokens": 0,
+        "prefill_tokens": 966,
+        "completion_tokens": 2,
+        "peak_memory_gb": 3.5881
+      }
+    },
+    {
+      "ordinal": 8,
+      "level": "1-2",
+      "historical_index": 6,
+      "seconds": 2.3979514581151307,
+      "output": "H",
+      "historical_output": "H",
+      "usage": {
+        "prompt_tokens": 978,
+        "completion_tokens": 2,
+        "total_tokens": 980,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        }
+      },
+      "timings": {
+        "backend": "mlx",
+        "dtype": "float16",
+        "seconds": 2.358278,
+        "tokenize_seconds": 0.009915,
+        "inference_seconds": 2.346692,
+        "prefill_to_first_token_seconds": 1.269376,
+        "decode_seconds": 0.034835,
+        "prompt_tokens": 978,
+        "cached_tokens": 0,
+        "prefill_tokens": 978,
+        "completion_tokens": 2,
+        "peak_memory_gb": 3.5881
+      }
+    },
+    {
+      "ordinal": 9,
+      "level": "1-2",
+      "historical_index": 9,
+      "seconds": 1.504841832909733,
+      "output": "H",
+      "historical_output": "H",
+      "usage": {
+        "prompt_tokens": 991,
+        "completion_tokens": 2,
+        "total_tokens": 993,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        }
+      },
+      "timings": {
+        "backend": "mlx",
+        "dtype": "float16",
+        "seconds": 1.439179,
+        "tokenize_seconds": 0.095108,
+        "inference_seconds": 1.34354,
+        "prefill_to_first_token_seconds": 0.595443,
+        "decode_seconds": 0.040432,
+        "prompt_tokens": 991,
+        "cached_tokens": 0,
+        "prefill_tokens": 991,
+        "completion_tokens": 2,
+        "peak_memory_gb": 3.5881
+      }
+    },
+    {
+      "ordinal": 10,
+      "level": "1-2",
+      "historical_index": 12,
+      "seconds": 1.2650342909619212,
+      "output": "H",
+      "historical_output": "H",
+      "usage": {
+        "prompt_tokens": 919,
+        "completion_tokens": 2,
+        "total_tokens": 921,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        }
+      },
+      "timings": {
+        "backend": "mlx",
+        "dtype": "float16",
+        "seconds": 1.259711,
+        "tokenize_seconds": 0.011314,
+        "inference_seconds": 1.248,
+        "prefill_to_first_token_seconds": 0.80389,
+        "decode_seconds": 0.071363,
+        "prompt_tokens": 919,
+        "cached_tokens": 0,
+        "prefill_tokens": 919,
+        "completion_tokens": 2,
+        "peak_memory_gb": 3.5881
+      }
+    },
+    {
+      "ordinal": 11,
+      "level": "1-2",
+      "historical_index": 15,
+      "seconds": 1.5335760829038918,
+      "output": "H",
+      "historical_output": "H",
+      "usage": {
+        "prompt_tokens": 1030,
+        "completion_tokens": 2,
+        "total_tokens": 1032,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        }
+      },
+      "timings": {
+        "backend": "mlx",
+        "dtype": "float16",
+        "seconds": 1.527425,
+        "tokenize_seconds": 0.011614,
+        "inference_seconds": 1.515366,
+        "prefill_to_first_token_seconds": 1.133062,
+        "decode_seconds": 0.052504,
+        "prompt_tokens": 1030,
+        "cached_tokens": 0,
+        "prefill_tokens": 1030,
+        "completion_tokens": 2,
+        "peak_memory_gb": 3.5881
+      }
+    },
+    {
+      "ordinal": 12,
+      "level": "1-3",
+      "historical_index": 0,
+      "seconds": 1.5301492079161108,
+      "output": "H",
+      "historical_output": "H",
+      "usage": {
+        "prompt_tokens": 837,
+        "completion_tokens": 2,
+        "total_tokens": 839,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        }
+      },
+      "timings": {
+        "backend": "mlx",
+        "dtype": "float16",
+        "seconds": 1.521401,
+        "tokenize_seconds": 0.013644,
+        "inference_seconds": 1.507164,
+        "prefill_to_first_token_seconds": 0.698565,
+        "decode_seconds": 0.043132,
+        "prompt_tokens": 837,
+        "cached_tokens": 0,
+        "prefill_tokens": 837,
+        "completion_tokens": 2,
+        "peak_memory_gb": 3.5881
+      }
+    },
+    {
+      "ordinal": 13,
+      "level": "1-3",
+      "historical_index": 2,
+      "seconds": 1.4946334576234221,
+      "output": "H",
+      "historical_output": "H",
+      "usage": {
+        "prompt_tokens": 848,
+        "completion_tokens": 2,
+        "total_tokens": 850,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        }
+      },
+      "timings": {
+        "backend": "mlx",
+        "dtype": "float16",
+        "seconds": 1.487494,
+        "tokenize_seconds": 0.011046,
+        "inference_seconds": 1.475842,
+        "prefill_to_first_token_seconds": 0.78392,
+        "decode_seconds": 0.042069,
+        "prompt_tokens": 848,
+        "cached_tokens": 0,
+        "prefill_tokens": 848,
+        "completion_tokens": 2,
+        "peak_memory_gb": 3.5881
+      }
+    },
+    {
+      "ordinal": 14,
+      "level": "1-3",
+      "historical_index": 4,
+      "seconds": 1.4583849171176553,
+      "output": "H",
+      "historical_output": "H",
+      "usage": {
+        "prompt_tokens": 911,
+        "completion_tokens": 2,
+        "total_tokens": 913,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        }
+      },
+      "timings": {
+        "backend": "mlx",
+        "dtype": "float16",
+        "seconds": 1.449781,
+        "tokenize_seconds": 0.029951,
+        "inference_seconds": 1.419189,
+        "prefill_to_first_token_seconds": 0.774579,
+        "decode_seconds": 0.040349,
+        "prompt_tokens": 911,
+        "cached_tokens": 0,
+        "prefill_tokens": 911,
+        "completion_tokens": 2,
+        "peak_memory_gb": 3.5881
+      }
+    },
+    {
+      "ordinal": 15,
+      "level": "1-3",
+      "historical_index": 7,
+      "seconds": 2.8006677092052996,
+      "output": "H",
+      "historical_output": "H",
+      "usage": {
+        "prompt_tokens": 951,
+        "completion_tokens": 2,
+        "total_tokens": 953,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        }
+      },
+      "timings": {
+        "backend": "mlx",
+        "dtype": "float16",
+        "seconds": 2.793418,
+        "tokenize_seconds": 0.006889,
+        "inference_seconds": 2.786027,
+        "prefill_to_first_token_seconds": 1.517024,
+        "decode_seconds": 0.040867,
+        "prompt_tokens": 951,
+        "cached_tokens": 0,
+        "prefill_tokens": 951,
+        "completion_tokens": 2,
+        "peak_memory_gb": 3.5881
+      }
+    },
+    {
+      "ordinal": 16,
+      "level": "1-3",
+      "historical_index": 9,
+      "seconds": 1.3853698340244591,
+      "output": "H",
+      "historical_output": "H",
+      "usage": {
+        "prompt_tokens": 969,
+        "completion_tokens": 2,
+        "total_tokens": 971,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        }
+      },
+      "timings": {
+        "backend": "mlx",
+        "dtype": "float16",
+        "seconds": 1.37958,
+        "tokenize_seconds": 0.012087,
+        "inference_seconds": 1.367006,
+        "prefill_to_first_token_seconds": 0.840356,
+        "decode_seconds": 0.047462,
+        "prompt_tokens": 969,
+        "cached_tokens": 0,
+        "prefill_tokens": 969,
+        "completion_tokens": 2,
+        "peak_memory_gb": 3.5881
+      }
+    },
+    {
+      "ordinal": 17,
+      "level": "1-3",
+      "historical_index": 11,
+      "seconds": 1.4039793331176043,
+      "output": "H",
+      "historical_output": "H",
+      "usage": {
+        "prompt_tokens": 941,
+        "completion_tokens": 2,
+        "total_tokens": 943,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        }
+      },
+      "timings": {
+        "backend": "mlx",
+        "dtype": "float16",
+        "seconds": 1.400221,
+        "tokenize_seconds": 0.010981,
+        "inference_seconds": 1.388896,
+        "prefill_to_first_token_seconds": 0.946344,
+        "decode_seconds": 0.042856,
+        "prompt_tokens": 941,
+        "cached_tokens": 0,
+        "prefill_tokens": 941,
+        "completion_tokens": 2,
+        "peak_memory_gb": 3.5881
+      }
+    }
+  ],
+  "mlx-fp16-nocache-summary": {
+    "name": "mlx-fp16-nocache",
+    "requests": 18,
+    "first_request_seconds": 8.65958029218018,
+    "warm_p50_seconds": 1.504841832909733,
+    "warm_p95_seconds": 4.893686333671212,
+    "historical_answer_matches": 18
+  },
+  "mlx-fp16-cache": [
+    {
+      "ordinal": 0,
+      "level": "1-1",
+      "historical_index": 0,
+      "seconds": 2.233125583268702,
+      "output": "H",
+      "historical_output": "H",
+      "usage": {
+        "prompt_tokens": 839,
+        "completion_tokens": 2,
+        "total_tokens": 841,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        }
+      },
+      "timings": {
+        "backend": "mlx",
+        "dtype": "float16",
+        "seconds": 2.199914,
+        "tokenize_seconds": 0.03727,
+        "inference_seconds": 2.162252,
+        "prefill_to_first_token_seconds": 0.828128,
+        "decode_seconds": 0.032711,
+        "prompt_tokens": 839,
+        "cached_tokens": 0,
+        "prefill_tokens": 839,
+        "completion_tokens": 2,
+        "peak_memory_gb": 3.5002
+      }
+    },
+    {
+      "ordinal": 1,
+      "level": "1-1",
+      "historical_index": 5,
+      "seconds": 2.3907884578220546,
+      "output": "H",
+      "historical_output": "H",
+      "usage": {
+        "prompt_tokens": 949,
+        "completion_tokens": 2,
+        "total_tokens": 951,
+        "prompt_tokens_details": {
+          "cached_tokens": 372
+        }
+      },
+      "timings": {
+        "backend": "mlx",
+        "dtype": "float16",
+        "seconds": 2.38437,
+        "tokenize_seconds": 0.006761,
+        "inference_seconds": 2.377421,
+        "prefill_to_first_token_seconds": 2.020668,
+        "decode_seconds": 0.029869,
+        "prompt_tokens": 949,
+        "cached_tokens": 372,
+        "prefill_tokens": 577,
+        "completion_tokens": 2,
+        "peak_memory_gb": 3.5002
+      }
+    },
+    {
+      "ordinal": 2,
+      "level": "1-1",
+      "historical_index": 10,
+      "seconds": 1.9558728751726449,
+      "output": "H",
+      "historical_output": "H",
+      "usage": {
+        "prompt_tokens": 906,
+        "completion_tokens": 2,
+        "total_tokens": 908,
+        "prompt_tokens_details": {
+          "cached_tokens": 377
+        }
+      },
+      "timings": {
+        "backend": "mlx",
+        "dtype": "float16",
+        "seconds": 1.948947,
+        "tokenize_seconds": 0.004373,
+        "inference_seconds": 1.944391,
+        "prefill_to_first_token_seconds": 1.569142,
+        "decode_seconds": 0.030432,
+        "prompt_tokens": 906,
+        "cached_tokens": 377,
+        "prefill_tokens": 529,
+        "completion_tokens": 2,
+        "peak_memory_gb": 3.5002
+      }
+    },
+    {
+      "ordinal": 3,
+      "level": "1-1",
+      "historical_index": 15,
+      "seconds": 1.037366250064224,
+      "output": "H",
+      "historical_output": "H",
+      "usage": {
+        "prompt_tokens": 1024,
+        "completion_tokens": 2,
+        "total_tokens": 1026,
+        "prompt_tokens_details": {
+          "cached_tokens": 377
+        }
+      },
+      "timings": {
+        "backend": "mlx",
+        "dtype": "float16",
+        "seconds": 1.030814,
+        "tokenize_seconds": 0.014941,
+        "inference_seconds": 1.015496,
+        "prefill_to_first_token_seconds": 0.465688,
+        "decode_seconds": 0.039161,
+        "prompt_tokens": 1024,
+        "cached_tokens": 377,
+        "prefill_tokens": 647,
+        "completion_tokens": 2,
+        "peak_memory_gb": 3.5002
+      }
+    },
+    {
+      "ordinal": 4,
+      "level": "1-1",
+      "historical_index": 20,
+      "seconds": 1.2016749163158238,
+      "output": "H",
+      "historical_output": "H",
+      "usage": {
+        "prompt_tokens": 1026,
+        "completion_tokens": 2,
+        "total_tokens": 1028,
+        "prompt_tokens_details": {
+          "cached_tokens": 377
+        }
+      },
+      "timings": {
+        "backend": "mlx",
+        "dtype": "float16",
+        "seconds": 1.197883,
+        "tokenize_seconds": 0.005252,
+        "inference_seconds": 1.192422,
+        "prefill_to_first_token_seconds": 0.558988,
+        "decode_seconds": 0.071724,
+        "prompt_tokens": 1026,
+        "cached_tokens": 377,
+        "prefill_tokens": 649,
+        "completion_tokens": 2,
+        "peak_memory_gb": 3.5015
+      }
+    },
+    {
+      "ordinal": 5,
+      "level": "1-1",
+      "historical_index": 25,
+      "seconds": 3.2404491249471903,
+      "output": "H",
+      "historical_output": "H",
+      "usage": {
+        "prompt_tokens": 1018,
+        "completion_tokens": 2,
+        "total_tokens": 1020,
+        "prompt_tokens_details": {
+          "cached_tokens": 377
+        }
+      },
+      "timings": {
+        "backend": "mlx",
+        "dtype": "float16",
+        "seconds": 3.175855,
+        "tokenize_seconds": 0.010489,
+        "inference_seconds": 3.165122,
+        "prefill_to_first_token_seconds": 2.424873,
+        "decode_seconds": 0.027881,
+        "prompt_tokens": 1018,
+        "cached_tokens": 377,
+        "prefill_tokens": 641,
+        "completion_tokens": 2,
+        "peak_memory_gb": 3.5275
+      }
+    },
+    {
+      "ordinal": 6,
+      "level": "1-2",
+      "historical_index": 0,
+      "seconds": 1.5660524577833712,
+      "output": "H",
+      "historical_output": "H",
+      "usage": {
+        "prompt_tokens": 875,
+        "completion_tokens": 2,
+        "total_tokens": 877,
+        "prompt_tokens_details": {
+          "cached_tokens": 372
+        }
+      },
+      "timings": {
+        "backend": "mlx",
+        "dtype": "float16",
+        "seconds": 1.554698,
+        "tokenize_seconds": 0.035997,
+        "inference_seconds": 1.518504,
+        "prefill_to_first_token_seconds": 0.713722,
+        "decode_seconds": 0.058546,
+        "prompt_tokens": 875,
+        "cached_tokens": 372,
+        "prefill_tokens": 503,
+        "completion_tokens": 2,
+        "peak_memory_gb": 3.5275
+      }
+    },
+    {
+      "ordinal": 7,
+      "level": "1-2",
+      "historical_index": 3,
+      "seconds": 4.475004957988858,
+      "output": "H",
+      "historical_output": "H",
+      "usage": {
+        "prompt_tokens": 966,
+        "completion_tokens": 2,
+        "total_tokens": 968,
+        "prompt_tokens_details": {
+          "cached_tokens": 372
+        }
+      },
+      "timings": {
+        "backend": "mlx",
+        "dtype": "float16",
+        "seconds": 4.452386,
+        "tokenize_seconds": 0.049827,
+        "inference_seconds": 4.402184,
+        "prefill_to_first_token_seconds": 2.493054,
+        "decode_seconds": 0.033467,
+        "prompt_tokens": 966,
+        "cached_tokens": 372,
+        "prefill_tokens": 594,
+        "completion_tokens": 2,
+        "peak_memory_gb": 3.5275
+      }
+    },
+    {
+      "ordinal": 8,
+      "level": "1-2",
+      "historical_index": 6,
+      "seconds": 1.4962398749776185,
+      "output": "H",
+      "historical_output": "H",
+      "usage": {
+        "prompt_tokens": 978,
+        "completion_tokens": 2,
+        "total_tokens": 980,
+        "prompt_tokens_details": {
+          "cached_tokens": 404
+        }
+      },
+      "timings": {
+        "backend": "mlx",
+        "dtype": "float16",
+        "seconds": 1.485736,
+        "tokenize_seconds": 0.024263,
+        "inference_seconds": 1.46125,
+        "prefill_to_first_token_seconds": 0.39565,
+        "decode_seconds": 0.030888,
+        "prompt_tokens": 978,
+        "cached_tokens": 404,
+        "prefill_tokens": 574,
+        "completion_tokens": 2,
+        "peak_memory_gb": 3.5275
+      }
+    },
+    {
+      "ordinal": 9,
+      "level": "1-2",
+      "historical_index": 9,
+      "seconds": 1.4142459998838603,
+      "output": "H",
+      "historical_output": "H",
+      "usage": {
+        "prompt_tokens": 991,
+        "completion_tokens": 2,
+        "total_tokens": 993,
+        "prompt_tokens_details": {
+          "cached_tokens": 377
+        }
+      },
+      "timings": {
+        "backend": "mlx",
+        "dtype": "float16",
+        "seconds": 1.40579,
+        "tokenize_seconds": 0.021898,
+        "inference_seconds": 1.383685,
+        "prefill_to_first_token_seconds": 0.436971,
+        "decode_seconds": 0.034994,
+        "prompt_tokens": 991,
+        "cached_tokens": 377,
+        "prefill_tokens": 614,
+        "completion_tokens": 2,
+        "peak_memory_gb": 3.5275
+      }
+    },
+    {
+      "ordinal": 10,
+      "level": "1-2",
+      "historical_index": 12,
+      "seconds": 1.1032638340257108,
+      "output": "H",
+      "historical_output": "H",
+      "usage": {
+        "prompt_tokens": 919,
+        "completion_tokens": 2,
+        "total_tokens": 921,
+        "prompt_tokens_details": {
+          "cached_tokens": 377
+        }
+      },
+      "timings": {
+        "backend": "mlx",
+        "dtype": "float16",
+        "seconds": 1.09789,
+        "tokenize_seconds": 0.006048,
+        "inference_seconds": 1.091695,
+        "prefill_to_first_token_seconds": 0.459116,
+        "decode_seconds": 0.03984,
+        "prompt_tokens": 919,
+        "cached_tokens": 377,
+        "prefill_tokens": 542,
+        "completion_tokens": 2,
+        "peak_memory_gb": 3.5275
+      }
+    },
+    {
+      "ordinal": 11,
+      "level": "1-2",
+      "historical_index": 15,
+      "seconds": 1.0915619591251016,
+      "output": "H",
+      "historical_output": "H",
+      "usage": {
+        "prompt_tokens": 1030,
+        "completion_tokens": 2,
+        "total_tokens": 1032,
+        "prompt_tokens_details": {
+          "cached_tokens": 377
+        }
+      },
+      "timings": {
+        "backend": "mlx",
+        "dtype": "float16",
+        "seconds": 1.079576,
+        "tokenize_seconds": 0.005413,
+        "inference_seconds": 1.073753,
+        "prefill_to_first_token_seconds": 0.482507,
+        "decode_seconds": 0.03797,
+        "prompt_tokens": 1030,
+        "cached_tokens": 377,
+        "prefill_tokens": 653,
+        "completion_tokens": 2,
+        "peak_memory_gb": 3.5363
+      }
+    },
+    {
+      "ordinal": 12,
+      "level": "1-3",
+      "historical_index": 0,
+      "seconds": 0.8655180418863893,
+      "output": "H",
+      "historical_output": "H",
+      "usage": {
+        "prompt_tokens": 837,
+        "completion_tokens": 2,
+        "total_tokens": 839,
+        "prompt_tokens_details": {
+          "cached_tokens": 372
+        }
+      },
+      "timings": {
+        "backend": "mlx",
+        "dtype": "float16",
+        "seconds": 0.856563,
+        "tokenize_seconds": 0.004776,
+        "inference_seconds": 0.85161,
+        "prefill_to_first_token_seconds": 0.379525,
+        "decode_seconds": 0.038696,
+        "prompt_tokens": 837,
+        "cached_tokens": 372,
+        "prefill_tokens": 465,
+        "completion_tokens": 2,
+        "peak_memory_gb": 3.5363
+      }
+    },
+    {
+      "ordinal": 13,
+      "level": "1-3",
+      "historical_index": 2,
+      "seconds": 0.9131549159064889,
+      "output": "H",
+      "historical_output": "H",
+      "usage": {
+        "prompt_tokens": 848,
+        "completion_tokens": 2,
+        "total_tokens": 850,
+        "prompt_tokens_details": {
+          "cached_tokens": 372
+        }
+      },
+      "timings": {
+        "backend": "mlx",
+        "dtype": "float16",
+        "seconds": 0.906816,
+        "tokenize_seconds": 0.00418,
+        "inference_seconds": 0.902512,
+        "prefill_to_first_token_seconds": 0.391125,
+        "decode_seconds": 0.036906,
+        "prompt_tokens": 848,
+        "cached_tokens": 372,
+        "prefill_tokens": 476,
+        "completion_tokens": 2,
+        "peak_memory_gb": 3.5363
+      }
+    },
+    {
+      "ordinal": 14,
+      "level": "1-3",
+      "historical_index": 4,
+      "seconds": 0.7917017089203,
+      "output": "H",
+      "historical_output": "H",
+      "usage": {
+        "prompt_tokens": 911,
+        "completion_tokens": 2,
+        "total_tokens": 913,
+        "prompt_tokens_details": {
+          "cached_tokens": 390
+        }
+      },
+      "timings": {
+        "backend": "mlx",
+        "dtype": "float16",
+        "seconds": 0.787501,
+        "tokenize_seconds": 0.004323,
+        "inference_seconds": 0.783037,
+        "prefill_to_first_token_seconds": 0.391933,
+        "decode_seconds": 0.040117,
+        "prompt_tokens": 911,
+        "cached_tokens": 390,
+        "prefill_tokens": 521,
+        "completion_tokens": 2,
+        "peak_memory_gb": 3.5363
+      }
+    },
+    {
+      "ordinal": 15,
+      "level": "1-3",
+      "historical_index": 7,
+      "seconds": 0.9440337498672307,
+      "output": "H",
+      "historical_output": "H",
+      "usage": {
+        "prompt_tokens": 951,
+        "completion_tokens": 2,
+        "total_tokens": 953,
+        "prompt_tokens_details": {
+          "cached_tokens": 377
+        }
+      },
+      "timings": {
+        "backend": "mlx",
+        "dtype": "float16",
+        "seconds": 0.938526,
+        "tokenize_seconds": 0.00424,
+        "inference_seconds": 0.934066,
+        "prefill_to_first_token_seconds": 0.581192,
+        "decode_seconds": 0.053094,
+        "prompt_tokens": 951,
+        "cached_tokens": 377,
+        "prefill_tokens": 574,
+        "completion_tokens": 2,
+        "peak_memory_gb": 3.5363
+      }
+    },
+    {
+      "ordinal": 16,
+      "level": "1-3",
+      "historical_index": 9,
+      "seconds": 0.8784416667185724,
+      "output": "H",
+      "historical_output": "H",
+      "usage": {
+        "prompt_tokens": 969,
+        "completion_tokens": 2,
+        "total_tokens": 971,
+        "prompt_tokens_details": {
+          "cached_tokens": 377
+        }
+      },
+      "timings": {
+        "backend": "mlx",
+        "dtype": "float16",
+        "seconds": 0.872144,
+        "tokenize_seconds": 0.008584,
+        "inference_seconds": 0.86332,
+        "prefill_to_first_token_seconds": 0.504253,
+        "decode_seconds": 0.040419,
+        "prompt_tokens": 969,
+        "cached_tokens": 377,
+        "prefill_tokens": 592,
+        "completion_tokens": 2,
+        "peak_memory_gb": 3.5363
+      }
+    },
+    {
+      "ordinal": 17,
+      "level": "1-3",
+      "historical_index": 11,
+      "seconds": 0.8376049590297043,
+      "output": "H",
+      "historical_output": "H",
+      "usage": {
+        "prompt_tokens": 941,
+        "completion_tokens": 2,
+        "total_tokens": 943,
+        "prompt_tokens_details": {
+          "cached_tokens": 377
+        }
+      },
+      "timings": {
+        "backend": "mlx",
+        "dtype": "float16",
+        "seconds": 0.834998,
+        "tokenize_seconds": 0.004977,
+        "inference_seconds": 0.829709,
+        "prefill_to_first_token_seconds": 0.476213,
+        "decode_seconds": 0.041568,
+        "prompt_tokens": 941,
+        "cached_tokens": 377,
+        "prefill_tokens": 564,
+        "completion_tokens": 2,
+        "peak_memory_gb": 3.5363
+      }
+    }
+  ],
+  "mlx-fp16-cache-summary": {
+    "name": "mlx-fp16-cache",
+    "requests": 18,
+    "first_request_seconds": 2.233125583268702,
+    "warm_p50_seconds": 1.1032638340257108,
+    "warm_p95_seconds": 4.475004957988858,
+    "historical_answer_matches": 18
+  },
+  "mlx-fp16-cache-wired": [
+    {
+      "ordinal": 0,
+      "level": "1-1",
+      "historical_index": 0,
+      "seconds": 3.400807375088334,
+      "output": "H",
+      "historical_output": "H",
+      "usage": {
+        "prompt_tokens": 839,
+        "completion_tokens": 2,
+        "total_tokens": 841,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        }
+      },
+      "timings": {
+        "backend": "mlx",
+        "dtype": "float16",
+        "seconds": 3.207464,
+        "tokenize_seconds": 0.674047,
+        "inference_seconds": 2.533041,
+        "prefill_to_first_token_seconds": 2.063471,
+        "decode_seconds": 0.032155,
+        "prompt_tokens": 839,
+        "cached_tokens": 0,
+        "prefill_tokens": 839,
+        "completion_tokens": 2,
+        "peak_memory_gb": 3.5002
+      }
+    },
+    {
+      "ordinal": 1,
+      "level": "1-1",
+      "historical_index": 5,
+      "seconds": 1.1048917919397354,
+      "output": "H",
+      "historical_output": "H",
+      "usage": {
+        "prompt_tokens": 949,
+        "completion_tokens": 2,
+        "total_tokens": 951,
+        "prompt_tokens_details": {
+          "cached_tokens": 372
+        }
+      },
+      "timings": {
+        "backend": "mlx",
+        "dtype": "float16",
+        "seconds": 1.096802,
+        "tokenize_seconds": 0.014348,
+        "inference_seconds": 1.082213,
+        "prefill_to_first_token_seconds": 0.455914,
+        "decode_seconds": 0.040137,
+        "prompt_tokens": 949,
+        "cached_tokens": 372,
+        "prefill_tokens": 577,
+        "completion_tokens": 2,
+        "peak_memory_gb": 3.5002
+      }
+    },
+    {
+      "ordinal": 2,
+      "level": "1-1",
+      "historical_index": 10,
+      "seconds": 0.8766915830783546,
+      "output": "H",
+      "historical_output": "H",
+      "usage": {
+        "prompt_tokens": 906,
+        "completion_tokens": 2,
+        "total_tokens": 908,
+        "prompt_tokens_details": {
+          "cached_tokens": 377
+        }
+      },
+      "timings": {
+        "backend": "mlx",
+        "dtype": "float16",
+        "seconds": 0.872829,
+        "tokenize_seconds": 0.00574,
+        "inference_seconds": 0.866878,
+        "prefill_to_first_token_seconds": 0.442173,
+        "decode_seconds": 0.040079,
+        "prompt_tokens": 906,
+        "cached_tokens": 377,
+        "prefill_tokens": 529,
+        "completion_tokens": 2,
+        "peak_memory_gb": 3.5002
+      }
+    },
+    {
+      "ordinal": 3,
+      "level": "1-1",
+      "historical_index": 15,
+      "seconds": 0.9533989997580647,
+      "output": "H",
+      "historical_output": "H",
+      "usage": {
+        "prompt_tokens": 1024,
+        "completion_tokens": 2,
+        "total_tokens": 1026,
+        "prompt_tokens_details": {
+          "cached_tokens": 377
+        }
+      },
+      "timings": {
+        "backend": "mlx",
+        "dtype": "float16",
+        "seconds": 0.949119,
+        "tokenize_seconds": 0.007755,
+        "inference_seconds": 0.941131,
+        "prefill_to_first_token_seconds": 0.598099,
+        "decode_seconds": 0.04193,
+        "prompt_tokens": 1024,
+        "cached_tokens": 377,
+        "prefill_tokens": 647,
+        "completion_tokens": 2,
+        "peak_memory_gb": 3.5252
+      }
+    },
+    {
+      "ordinal": 4,
+      "level": "1-1",
+      "historical_index": 20,
+      "seconds": 0.976260167080909,
+      "output": "H",
+      "historical_output": "H",
+      "usage": {
+        "prompt_tokens": 1026,
+        "completion_tokens": 2,
+        "total_tokens": 1028,
+        "prompt_tokens_details": {
+          "cached_tokens": 377
+        }
+      },
+      "timings": {
+        "backend": "mlx",
+        "dtype": "float16",
+        "seconds": 0.973131,
+        "tokenize_seconds": 0.006347,
+        "inference_seconds": 0.966588,
+        "prefill_to_first_token_seconds": 0.632437,
+        "decode_seconds": 0.057614,
+        "prompt_tokens": 1026,
+        "cached_tokens": 377,
+        "prefill_tokens": 649,
+        "completion_tokens": 2,
+        "peak_memory_gb": 3.5333
+      }
+    },
+    {
+      "ordinal": 5,
+      "level": "1-1",
+      "historical_index": 25,
+      "seconds": 0.9859617496840656,
+      "output": "H",
+      "historical_output": "H",
+      "usage": {
+        "prompt_tokens": 1018,
+        "completion_tokens": 2,
+        "total_tokens": 1020,
+        "prompt_tokens_details": {
+          "cached_tokens": 377
+        }
+      },
+      "timings": {
+        "backend": "mlx",
+        "dtype": "float16",
+        "seconds": 0.983479,
+        "tokenize_seconds": 0.004066,
+        "inference_seconds": 0.979264,
+        "prefill_to_first_token_seconds": 0.544352,
+        "decode_seconds": 0.062904,
+        "prompt_tokens": 1018,
+        "cached_tokens": 377,
+        "prefill_tokens": 641,
+        "completion_tokens": 2,
+        "peak_memory_gb": 3.5333
+      }
+    },
+    {
+      "ordinal": 6,
+      "level": "1-2",
+      "historical_index": 0,
+      "seconds": 0.778442915994674,
+      "output": "H",
+      "historical_output": "H",
+      "usage": {
+        "prompt_tokens": 875,
+        "completion_tokens": 2,
+        "total_tokens": 877,
+        "prompt_tokens_details": {
+          "cached_tokens": 372
+        }
+      },
+      "timings": {
+        "backend": "mlx",
+        "dtype": "float16",
+        "seconds": 0.775609,
+        "tokenize_seconds": 0.003404,
+        "inference_seconds": 0.772041,
+        "prefill_to_first_token_seconds": 0.442832,
+        "decode_seconds": 0.040429,
+        "prompt_tokens": 875,
+        "cached_tokens": 372,
+        "prefill_tokens": 503,
+        "completion_tokens": 2,
+        "peak_memory_gb": 3.5333
+      }
+    },
+    {
+      "ordinal": 7,
+      "level": "1-2",
+      "historical_index": 3,
+      "seconds": 1.0398048339411616,
+      "output": "H",
+      "historical_output": "H",
+      "usage": {
+        "prompt_tokens": 966,
+        "completion_tokens": 2,
+        "total_tokens": 968,
+        "prompt_tokens_details": {
+          "cached_tokens": 372
+        }
+      },
+      "timings": {
+        "backend": "mlx",
+        "dtype": "float16",
+        "seconds": 1.036102,
+        "tokenize_seconds": 0.006044,
+        "inference_seconds": 1.029317,
+        "prefill_to_first_token_seconds": 0.630035,
+        "decode_seconds": 0.043234,
+        "prompt_tokens": 966,
+        "cached_tokens": 372,
+        "prefill_tokens": 594,
+        "completion_tokens": 2,
+        "peak_memory_gb": 3.5333
+      }
+    },
+    {
+      "ordinal": 8,
+      "level": "1-2",
+      "historical_index": 6,
+      "seconds": 1.1424743328243494,
+      "output": "H",
+      "historical_output": "H",
+      "usage": {
+        "prompt_tokens": 978,
+        "completion_tokens": 2,
+        "total_tokens": 980,
+        "prompt_tokens_details": {
+          "cached_tokens": 404
+        }
+      },
+      "timings": {
+        "backend": "mlx",
+        "dtype": "float16",
+        "seconds": 1.138566,
+        "tokenize_seconds": 0.004284,
+        "inference_seconds": 1.134086,
+        "prefill_to_first_token_seconds": 0.3953,
+        "decode_seconds": 0.048581,
+        "prompt_tokens": 978,
+        "cached_tokens": 404,
+        "prefill_tokens": 574,
+        "completion_tokens": 2,
+        "peak_memory_gb": 3.5333
+      }
+    },
+    {
+      "ordinal": 9,
+      "level": "1-2",
+      "historical_index": 9,
+      "seconds": 0.9225362921133637,
+      "output": "H",
+      "historical_output": "H",
+      "usage": {
+        "prompt_tokens": 991,
+        "completion_tokens": 2,
+        "total_tokens": 993,
+        "prompt_tokens_details": {
+          "cached_tokens": 377
+        }
+      },
+      "timings": {
+        "backend": "mlx",
+        "dtype": "float16",
+        "seconds": 0.914154,
+        "tokenize_seconds": 0.006963,
+        "inference_seconds": 0.906919,
+        "prefill_to_first_token_seconds": 0.479786,
+        "decode_seconds": 0.040349,
+        "prompt_tokens": 991,
+        "cached_tokens": 377,
+        "prefill_tokens": 614,
+        "completion_tokens": 2,
+        "peak_memory_gb": 3.5333
+      }
+    },
+    {
+      "ordinal": 10,
+      "level": "1-2",
+      "historical_index": 12,
+      "seconds": 0.9216137500479817,
+      "output": "H",
+      "historical_output": "H",
+      "usage": {
+        "prompt_tokens": 919,
+        "completion_tokens": 2,
+        "total_tokens": 921,
+        "prompt_tokens_details": {
+          "cached_tokens": 377
+        }
+      },
+      "timings": {
+        "backend": "mlx",
+        "dtype": "float16",
+        "seconds": 0.915006,
+        "tokenize_seconds": 0.015345,
+        "inference_seconds": 0.899435,
+        "prefill_to_first_token_seconds": 0.47961,
+        "decode_seconds": 0.040557,
+        "prompt_tokens": 919,
+        "cached_tokens": 377,
+        "prefill_tokens": 542,
+        "completion_tokens": 2,
+        "peak_memory_gb": 3.5333
+      }
+    },
+    {
+      "ordinal": 11,
+      "level": "1-2",
+      "historical_index": 15,
+      "seconds": 0.9560943748801947,
+      "output": "H",
+      "historical_output": "H",
+      "usage": {
+        "prompt_tokens": 1030,
+        "completion_tokens": 2,
+        "total_tokens": 1032,
+        "prompt_tokens_details": {
+          "cached_tokens": 377
+        }
+      },
+      "timings": {
+        "backend": "mlx",
+        "dtype": "float16",
+        "seconds": 0.953408,
+        "tokenize_seconds": 0.005297,
+        "inference_seconds": 0.947926,
+        "prefill_to_first_token_seconds": 0.582794,
+        "decode_seconds": 0.040791,
+        "prompt_tokens": 1030,
+        "cached_tokens": 377,
+        "prefill_tokens": 653,
+        "completion_tokens": 2,
+        "peak_memory_gb": 3.5363
+      }
+    },
+    {
+      "ordinal": 12,
+      "level": "1-3",
+      "historical_index": 0,
+      "seconds": 0.8147765407338738,
+      "output": "H",
+      "historical_output": "H",
+      "usage": {
+        "prompt_tokens": 837,
+        "completion_tokens": 2,
+        "total_tokens": 839,
+        "prompt_tokens_details": {
+          "cached_tokens": 372
+        }
+      },
+      "timings": {
+        "backend": "mlx",
+        "dtype": "float16",
+        "seconds": 0.809301,
+        "tokenize_seconds": 0.004889,
+        "inference_seconds": 0.804104,
+        "prefill_to_first_token_seconds": 0.423813,
+        "decode_seconds": 0.038981,
+        "prompt_tokens": 837,
+        "cached_tokens": 372,
+        "prefill_tokens": 465,
+        "completion_tokens": 2,
+        "peak_memory_gb": 3.5363
+      }
+    },
+    {
+      "ordinal": 13,
+      "level": "1-3",
+      "historical_index": 2,
+      "seconds": 0.7685375828295946,
+      "output": "H",
+      "historical_output": "H",
+      "usage": {
+        "prompt_tokens": 848,
+        "completion_tokens": 2,
+        "total_tokens": 850,
+        "prompt_tokens_details": {
+          "cached_tokens": 372
+        }
+      },
+      "timings": {
+        "backend": "mlx",
+        "dtype": "float16",
+        "seconds": 0.761861,
+        "tokenize_seconds": 0.005558,
+        "inference_seconds": 0.756166,
+        "prefill_to_first_token_seconds": 0.417875,
+        "decode_seconds": 0.041814,
+        "prompt_tokens": 848,
+        "cached_tokens": 372,
+        "prefill_tokens": 476,
+        "completion_tokens": 2,
+        "peak_memory_gb": 3.5363
+      }
+    },
+    {
+      "ordinal": 14,
+      "level": "1-3",
+      "historical_index": 4,
+      "seconds": 0.9763564174063504,
+      "output": "H",
+      "historical_output": "H",
+      "usage": {
+        "prompt_tokens": 911,
+        "completion_tokens": 2,
+        "total_tokens": 913,
+        "prompt_tokens_details": {
+          "cached_tokens": 390
+        }
+      },
+      "timings": {
+        "backend": "mlx",
+        "dtype": "float16",
+        "seconds": 0.972522,
+        "tokenize_seconds": 0.003802,
+        "inference_seconds": 0.968361,
+        "prefill_to_first_token_seconds": 0.464654,
+        "decode_seconds": 0.041151,
+        "prompt_tokens": 911,
+        "cached_tokens": 390,
+        "prefill_tokens": 521,
+        "completion_tokens": 2,
+        "peak_memory_gb": 3.5363
+      }
+    },
+    {
+      "ordinal": 15,
+      "level": "1-3",
+      "historical_index": 7,
+      "seconds": 1.0350805837661028,
+      "output": "H",
+      "historical_output": "H",
+      "usage": {
+        "prompt_tokens": 951,
+        "completion_tokens": 2,
+        "total_tokens": 953,
+        "prompt_tokens_details": {
+          "cached_tokens": 377
+        }
+      },
+      "timings": {
+        "backend": "mlx",
+        "dtype": "float16",
+        "seconds": 1.028034,
+        "tokenize_seconds": 0.006556,
+        "inference_seconds": 1.020955,
+        "prefill_to_first_token_seconds": 0.464572,
+        "decode_seconds": 0.04026,
+        "prompt_tokens": 951,
+        "cached_tokens": 377,
+        "prefill_tokens": 574,
+        "completion_tokens": 2,
+        "peak_memory_gb": 3.5363
+      }
+    },
+    {
+      "ordinal": 16,
+      "level": "1-3",
+      "historical_index": 9,
+      "seconds": 0.9453037083148956,
+      "output": "H",
+      "historical_output": "H",
+      "usage": {
+        "prompt_tokens": 969,
+        "completion_tokens": 2,
+        "total_tokens": 971,
+        "prompt_tokens_details": {
+          "cached_tokens": 377
+        }
+      },
+      "timings": {
+        "backend": "mlx",
+        "dtype": "float16",
+        "seconds": 0.942305,
+        "tokenize_seconds": 0.004502,
+        "inference_seconds": 0.937604,
+        "prefill_to_first_token_seconds": 0.467094,
+        "decode_seconds": 0.040398,
+        "prompt_tokens": 969,
+        "cached_tokens": 377,
+        "prefill_tokens": 592,
+        "completion_tokens": 2,
+        "peak_memory_gb": 3.5363
+      }
+    },
+    {
+      "ordinal": 17,
+      "level": "1-3",
+      "historical_index": 11,
+      "seconds": 0.8192137503065169,
+      "output": "H",
+      "historical_output": "H",
+      "usage": {
+        "prompt_tokens": 941,
+        "completion_tokens": 2,
+        "total_tokens": 943,
+        "prompt_tokens_details": {
+          "cached_tokens": 377
+        }
+      },
+      "timings": {
+        "backend": "mlx",
+        "dtype": "float16",
+        "seconds": 0.81618,
+        "tokenize_seconds": 0.003361,
+        "inference_seconds": 0.812654,
+        "prefill_to_first_token_seconds": 0.494965,
+        "decode_seconds": 0.040717,
+        "prompt_tokens": 941,
+        "cached_tokens": 377,
+        "prefill_tokens": 564,
+        "completion_tokens": 2,
+        "peak_memory_gb": 3.5363
+      }
+    }
+  ],
+  "mlx-fp16-cache-wired-summary": {
+    "name": "mlx-fp16-cache-wired",
+    "requests": 18,
+    "first_request_seconds": 3.400807375088334,
+    "warm_p50_seconds": 0.9533989997580647,
+    "warm_p95_seconds": 1.1424743328243494,
+    "historical_answer_matches": 18
+  },
+  "cache-check-cases": [
+    {
+      "source": "output/model-opt-20260923/local-v1/attempt-1/1-1/http.jsonl",
+      "line": 1,
+      "request_sha256": "fd258d445d25678eef3c740fbb991595a74b7ee8378fc1fc3b0ed2d49bd2fd6c",
+      "request": {
+        "model": "Qwen2.5-1.5B-Instruct",
+        "messages": [
+          {
+            "role": "system",
+            "content": "Choose Mario's next action. Reply with exactly one option letter. Move right without dying. Prefer running on clear ground. Ground actions last 6 frames; jump actions continue until landing, with no new decision in the air; a hop releases jump after 8 frames. Avoid side contact with enemies and jump before a gap or wall, allowing for current momentum. A hop is low; tall walls and wide gaps need a full jump with enough speed. Check the landing surface and all nearby enemies, including the next enemy after a stomp. Landing distances and enemy collision risks are estimates, not prohibitions; terrain and enemy positions are observations. Beyond the visible range is unknown. If blocked, change the action marked STUCK; back off for speed only when the space behind is safe. State units are tiles: dx is rightward, up is height above Mario's feet. Terrain entries [from_dx,to_dx,solid_up_intervals] preserve solid geometry; all intervals include endpoints. Enemies are [dx,up,kind]. A gap's width_known=false means its width is only a lower bound. Speed is the signed game speed byte (full rightward speed is about 48). Coach plans, when present, are advice to check against current geometry and recent failures.\nOPTIONS (answer with the LETTER):\n  A) stand = wait in place; use when an enemy on a wall or pipe ahead has to move away first\n  B) walk right = move right slowly\n  C) jump right = full jump while moving right at walking speed; about 4 tiles high, 3 to 5 tiles far\n  D) run right = move right fast; does not jump; builds speed for a longer jump\n  E) run and jump right = full jump at running speed; up to 5 tiles high and 9 tiles far when already at full speed\n  F) jump in place = full jump straight up\n  G) walk left = back off to the left\n  H) hop right = short low jump to the right, about 2 tiles high; lands 1 to 4 tiles ahead depending on speed; use to land on top of an enemy 2 tiles ahead\n  I) back off for a run-up = walk left until the wall or gap ahead is 6 tiles away, so that 'run right' can build full speed before jumping; do not use with an enemy behind Mario"
+          },
+          {
+            "role": "user",
+            "content": "RECENT DECISIONS (oldest first; x before each action):\n  (this is the first decision of the episode)\n\nSTATE:\n{\"on_ground\":true,\"speed\":0,\"visible_ahead\":13,\"unknown_from\":14,\"wall\":null,\"gap\":null,\"terrain\":[[-4,-3,[]],[-2,13,[[-2,-1]]]],\"enemies\":[],\"enemies_behind\":[],\"clear_behind\":2,\"estimated_jump\":{\"height\":4,\"distance\":3,\"landing\":3,\"hop\":1},\"landing_enemy_risk\":[],\"previous_buttons\":0}\n\nAnswer with one letter."
+          }
+        ],
+        "max_tokens": 8,
+        "temperature": 0
+      },
+      "observed_output": "D"
+    },
+    {
+      "source": "output/model-opt-20260923/local-v1/attempt-1/1-1/http.jsonl",
+      "line": 11,
+      "request_sha256": "470f9ec327fa00e3ec06303a909ae6efc11a0b9a4c5375f71f252e0ed1eac8ef",
+      "request": {
+        "model": "Qwen2.5-1.5B-Instruct",
+        "messages": [
+          {
+            "role": "system",
+            "content": "Choose Mario's next action. Reply with exactly one option letter. Move right without dying. Prefer running on clear ground. Ground actions last 6 frames; jump actions continue until landing, with no new decision in the air; a hop releases jump after 8 frames. Avoid side contact with enemies and jump before a gap or wall, allowing for current momentum. A hop is low; tall walls and wide gaps need a full jump with enough speed. Check the landing surface and all nearby enemies, including the next enemy after a stomp. Landing distances and enemy collision risks are estimates, not prohibitions; terrain and enemy positions are observations. Beyond the visible range is unknown. If blocked, change the action marked STUCK; back off for speed only when the space behind is safe. State units are tiles: dx is rightward, up is height above Mario's feet. Terrain entries [from_dx,to_dx,solid_up_intervals] preserve solid geometry; all intervals include endpoints. Enemies are [dx,up,kind]. A gap's width_known=false means its width is only a lower bound. Speed is the signed game speed byte (full rightward speed is about 48). Coach plans, when present, are advice to check against current geometry and recent failures.\nOPTIONS (answer with the LETTER):\n  A) stand = wait in place; use when an enemy on a wall or pipe ahead has to move away first\n  B) walk right = move right slowly\n  C) jump right = full jump while moving right at walking speed; about 4 tiles high, 3 to 5 tiles far\n  D) run right = move right fast; does not jump; builds speed for a longer jump\n  E) run and jump right = full jump at running speed; up to 5 tiles high and 9 tiles far when already at full speed\n  F) jump in place = full jump straight up\n  G) walk left = back off to the left\n  H) hop right = short low jump to the right, about 2 tiles high; lands 1 to 4 tiles ahead depending on speed; use to land on top of an enemy 2 tiles ahead\n  I) back off for a run-up = walk left until the wall or gap ahead is 6 tiles away, so that 'run right' can build full speed before jumping; do not use with an enemy behind Mario"
+          },
+          {
+            "role": "user",
+            "content": "RECENT DECISIONS (oldest first; x before each action):\n  jump right -> x=256\n  jump right -> x=351 (+95)\n  jump right -> x=458 (+107)\n  jump right -> x=565 (+107)\n  run right -> x=663 (+98)\n  run right -> x=675 (+12)\n\nSTATE:\n{\"on_ground\":true,\"speed\":48,\"visible_ahead\":8,\"unknown_from\":9,\"wall\":{\"tiles\":3,\"height\":4},\"gap\":null,\"terrain\":[[-4,-4,[[-2,2]]],[-3,2,[[-2,-1]]],[3,4,[[-2,3]]],[5,8,[[-2,-1]]]],\"enemies\":[[2,0,\"goomba\"],[8,0,\"goomba\"]],\"enemies_behind\":[],\"clear_behind\":3,\"estimated_jump\":{\"height\":5,\"distance\":9,\"landing\":9,\"hop\":5},\"landing_enemy_risk\":[8],\"previous_buttons\":3}\n\nAnswer with one letter."
+          }
+        ],
+        "max_tokens": 8,
+        "temperature": 0
+      },
+      "observed_output": "D"
+    },
+    {
+      "source": "output/model-opt-20260923/local-v1/attempt-1/1-2/http.jsonl",
+      "line": 1,
+      "request_sha256": "f3aec6b180041c34078d6df5ed23651c4acefc09218776bd4e3607f9005a7759",
+      "request": {
+        "model": "Qwen2.5-1.5B-Instruct",
+        "messages": [
+          {
+            "role": "system",
+            "content": "Choose Mario's next action. Reply with exactly one option letter. Move right without dying. Prefer running on clear ground. Ground actions last 6 frames; jump actions continue until landing, with no new decision in the air; a hop releases jump after 8 frames. Avoid side contact with enemies and jump before a gap or wall, allowing for current momentum. A hop is low; tall walls and wide gaps need a full jump with enough speed. Check the landing surface and all nearby enemies, including the next enemy after a stomp. Landing distances and enemy collision risks are estimates, not prohibitions; terrain and enemy positions are observations. Beyond the visible range is unknown. If blocked, change the action marked STUCK; back off for speed only when the space behind is safe. State units are tiles: dx is rightward, up is height above Mario's feet. Terrain entries [from_dx,to_dx,solid_up_intervals] preserve solid geometry; all intervals include endpoints. Enemies are [dx,up,kind]. A gap's width_known=false means its width is only a lower bound. Speed is the signed game speed byte (full rightward speed is about 48). Coach plans, when present, are advice to check against current geometry and recent failures.\nOPTIONS (answer with the LETTER):\n  A) stand = wait in place; use when an enemy on a wall or pipe ahead has to move away first\n  B) walk right = move right slowly\n  C) jump right = full jump while moving right at walking speed; about 4 tiles high, 3 to 5 tiles far\n  D) run right = move right fast; does not jump; builds speed for a longer jump\n  E) run and jump right = full jump at running speed; up to 5 tiles high and 9 tiles far when already at full speed\n  F) jump in place = full jump straight up\n  G) walk left = back off to the left\n  H) hop right = short low jump to the right, about 2 tiles high; lands 1 to 4 tiles ahead depending on speed; use to land on top of an enemy 2 tiles ahead\n  I) back off for a run-up = walk left until the wall or gap ahead is 6 tiles away, so that 'run right' can build full speed before jumping; do not use with an enemy behind Mario"
+          },
+          {
+            "role": "user",
+            "content": "RECENT DECISIONS (oldest first; x before each action):\n  (this is the first decision of the episode)\n\nSTATE:\n{\"on_ground\":true,\"speed\":0,\"visible_ahead\":13,\"unknown_from\":14,\"wall\":null,\"gap\":null,\"terrain\":[[-4,-3,[]],[-2,-2,[[-2,6]]],[-1,7,[[-2,-1]]],[8,12,[[3,3],[-2,-1]]],[13,13,[[-2,-1]]]],\"enemies\":[[12,0,\"goomba\"],[13,0,\"goomba\"]],\"enemies_behind\":[],\"clear_behind\":1,\"estimated_jump\":{\"height\":4,\"distance\":3,\"landing\":3,\"hop\":1},\"landing_enemy_risk\":[],\"previous_buttons\":0}\n\nAnswer with one letter."
+          }
+        ],
+        "max_tokens": 8,
+        "temperature": 0
+      },
+      "observed_output": "C"
+    },
+    {
+      "source": "output/model-opt-20260923/local-v1/attempt-1/1-2/http.jsonl",
+      "line": 17,
+      "request_sha256": "d52588dcb94cd4b3876aaf0eaad49a4ef87e62f828cfe8ffa8811814decc2ca3",
+      "request": {
+        "model": "Qwen2.5-1.5B-Instruct",
+        "messages": [
+          {
+            "role": "system",
+            "content": "Choose Mario's next action. Reply with exactly one option letter. Move right without dying. Prefer running on clear ground. Ground actions last 6 frames; jump actions continue until landing, with no new decision in the air; a hop releases jump after 8 frames. Avoid side contact with enemies and jump before a gap or wall, allowing for current momentum. A hop is low; tall walls and wide gaps need a full jump with enough speed. Check the landing surface and all nearby enemies, including the next enemy after a stomp. Landing distances and enemy collision risks are estimates, not prohibitions; terrain and enemy positions are observations. Beyond the visible range is unknown. If blocked, change the action marked STUCK; back off for speed only when the space behind is safe. State units are tiles: dx is rightward, up is height above Mario's feet. Terrain entries [from_dx,to_dx,solid_up_intervals] preserve solid geometry; all intervals include endpoints. Enemies are [dx,up,kind]. A gap's width_known=false means its width is only a lower bound. Speed is the signed game speed byte (full rightward speed is about 48). Coach plans, when present, are advice to check against current geometry and recent failures.\nOPTIONS (answer with the LETTER):\n  A) stand = wait in place; use when an enemy on a wall or pipe ahead has to move away first\n  B) walk right = move right slowly\n  C) jump right = full jump while moving right at walking speed; about 4 tiles high, 3 to 5 tiles far\n  D) run right = move right fast; does not jump; builds speed for a longer jump\n  E) run and jump right = full jump at running speed; up to 5 tiles high and 9 tiles far when already at full speed\n  F) jump in place = full jump straight up\n  G) walk left = back off to the left\n  H) hop right = short low jump to the right, about 2 tiles high; lands 1 to 4 tiles ahead depending on speed; use to land on top of an enemy 2 tiles ahead\n  I) back off for a run-up = walk left until the wall or gap ahead is 6 tiles away, so that 'run right' can build full speed before jumping; do not use with an enemy behind Mario"
+          },
+          {
+            "role": "user",
+            "content": "RECENT DECISIONS (oldest first; x before each action):\n  jump right -> x=336\n  jump right -> x=432 (+96)\n  run right -> x=534 (+102)\n  run right -> x=574 (+40)\n  jump right -> x=592 (+18)\n  run right -> x=656 (+64)\n\nSTATE:\n{\"on_ground\":true,\"speed\":37,\"visible_ahead\":8,\"unknown_from\":9,\"wall\":null,\"gap\":null,\"terrain\":[[-4,-3,[[-2,-1]]],[-2,-2,[[3,5],[-2,-1]]],[-1,-1,[[3,4],[-2,-1]]],[0,0,[[3,5],[-2,-1]]],[1,2,[[5,5],[-2,-1]]],[3,3,[[3,5],[-2,-1]]],[4,4,[[3,4],[-2,-1]]],[5,5,[[3,5],[-2,-1]]],[6,8,[[-2,-1]]]],\"enemies\":[[1,0,\"koopa\"],[3,0,\"koopa\"]],\"enemies_behind\":[],\"clear_behind\":4,\"estimated_jump\":{\"height\":5,\"distance\":9,\"landing\":4,\"hop\":5},\"landing_enemy_risk\":[1,3],\"overhead_clearance\":2,\"previous_buttons\":3}\n\nAnswer with one letter."
+          }
+        ],
+        "max_tokens": 8,
+        "temperature": 0
+      },
+      "observed_output": "C"
+    },
+    {
+      "source": "output/model-opt-20260923/local-v1/attempt-1/1-3/http.jsonl",
+      "line": 6,
+      "request_sha256": "584e93c5296f2f24e4a663a6e0eece7232d12aabaf10758b935e1cf1bc357532",
+      "request": {
+        "model": "Qwen2.5-1.5B-Instruct",
+        "messages": [
+          {
+            "role": "system",
+            "content": "Choose Mario's next action. Reply with exactly one option letter. Move right without dying. Prefer running on clear ground. Ground actions last 6 frames; jump actions continue until landing, with no new decision in the air; a hop releases jump after 8 frames. Avoid side contact with enemies and jump before a gap or wall, allowing for current momentum. A hop is low; tall walls and wide gaps need a full jump with enough speed. Check the landing surface and all nearby enemies, including the next enemy after a stomp. Landing distances and enemy collision risks are estimates, not prohibitions; terrain and enemy positions are observations. Beyond the visible range is unknown. If blocked, change the action marked STUCK; back off for speed only when the space behind is safe. State units are tiles: dx is rightward, up is height above Mario's feet. Terrain entries [from_dx,to_dx,solid_up_intervals] preserve solid geometry; all intervals include endpoints. Enemies are [dx,up,kind]. A gap's width_known=false means its width is only a lower bound. Speed is the signed game speed byte (full rightward speed is about 48). Coach plans, when present, are advice to check against current geometry and recent failures.\nOPTIONS (answer with the LETTER):\n  A) stand = wait in place; use when an enemy on a wall or pipe ahead has to move away first\n  B) walk right = move right slowly\n  C) jump right = full jump while moving right at walking speed; about 4 tiles high, 3 to 5 tiles far\n  D) run right = move right fast; does not jump; builds speed for a longer jump\n  E) run and jump right = full jump at running speed; up to 5 tiles high and 9 tiles far when already at full speed\n  F) jump in place = full jump straight up\n  G) walk left = back off to the left\n  H) hop right = short low jump to the right, about 2 tiles high; lands 1 to 4 tiles ahead depending on speed; use to land on top of an enemy 2 tiles ahead\n  I) back off for a run-up = walk left until the wall or gap ahead is 6 tiles away, so that 'run right' can build full speed before jumping; do not use with an enemy behind Mario"
+          },
+          {
+            "role": "user",
+            "content": "RECENT DECISIONS (oldest first; x before each action):\n  run right -> x=0\n  jump right -> x=41 (+41)\n  jump right -> x=118 (+77)\n  jump right -> x=214 (+96)\n  jump right -> x=305 (+91)\n\nSTATE:\n{\"on_ground\":true,\"speed\":28,\"visible_ahead\":9,\"unknown_from\":10,\"wall\":null,\"gap\":null,\"terrain\":[[-4,-3,[[-4,-4]]],[-2,-1,[]],[0,1,[[-1,-1]]],[2,2,[[3,3],[-1,-1]]],[3,3,[[3,4],[-1,-1]]],[4,4,[[3,3],[-1,-1]]],[5,5,[[3,4],[-1,-1]]],[6,6,[[3,3],[-1,-1]]],[7,7,[[-1,-1]]],[8,8,[[-4,-4]]],[9,9,[[-4,-3]]]],\"enemies\":[[4,4,\"koopa\"]],\"enemies_behind\":[],\"clear_behind\":0,\"estimated_jump\":{\"height\":4,\"distance\":5,\"landing\":2,\"hop\":2},\"landing_enemy_risk\":[],\"overhead_clearance\":2,\"previous_buttons\":1}\n\nAnswer with one letter."
+          }
+        ],
+        "max_tokens": 8,
+        "temperature": 0
+      },
+      "observed_output": "C"
+    },
+    {
+      "source": "output/model-opt-20260923/local-guided/attempt-1/1-3/http.jsonl",
+      "line": 1,
+      "request_sha256": "9b623fe724878444c66683e75e40b6d44d26f96c8976cb8a7e8897934ef939ea",
+      "request": {
+        "model": "Qwen2.5-1.5B-Instruct",
+        "messages": [
+          {
+            "role": "system",
+            "content": "Choose Mario's next action. Reply with exactly one option letter. Move right without dying. Prefer running on clear ground. Ground actions last 6 frames; jump actions continue until landing, with no new decision in the air; a hop releases jump after 8 frames. Avoid side contact with enemies and jump before a gap or wall, allowing for current momentum. A hop is low; tall walls and wide gaps need a full jump with enough speed. Check the landing surface and all nearby enemies, including the next enemy after a stomp. An enemy near a predicted full-jump landing is a reason to prefer a later jump or a short hop whose landing is clear. Time a jump to pass above the enemy, not land directly in front of it; recheck the next enemy after a stomp. Landing distances and enemy collision risks are estimates, not prohibitions; terrain and enemy positions are observations. Beyond the visible range is unknown. If blocked, change the action marked STUCK; back off for speed only when the space behind is safe. State units are tiles: dx is rightward, up is height above Mario's feet. Terrain entries [from_dx,to_dx,solid_up_intervals] preserve solid geometry; all intervals include endpoints. Enemies are [dx,up,kind]. A gap's width_known=false means its width is only a lower bound. Speed is the signed game speed byte (full rightward speed is about 48). Coach plans, when present, are advice to check against current geometry and recent failures.\nOPTIONS (answer with the LETTER):\n  A) stand = wait in place; use when an enemy on a wall or pipe ahead has to move away first\n  B) walk right = move right slowly\n  C) jump right = full jump while moving right at walking speed; about 4 tiles high, 3 to 5 tiles far\n  D) run right = move right fast; does not jump; builds speed for a longer jump\n  E) run and jump right = full jump at running speed; up to 5 tiles high and 9 tiles far when already at full speed\n  F) jump in place = full jump straight up\n  G) walk left = back off to the left\n  H) hop right = short low jump to the right, about 2 tiles high; lands 1 to 4 tiles ahead depending on speed; use to land on top of an enemy 2 tiles ahead\n  I) back off for a run-up = walk left until the wall or gap ahead is 6 tiles away, so that 'run right' can build full speed before jumping; do not use with an enemy behind Mario"
+          },
+          {
+            "role": "user",
+            "content": "RECENT DECISIONS (oldest first; x before each action):\n  (this is the first decision of the episode)\n\nSTATE:\n{\"on_ground\":true,\"speed\":0,\"visible_ahead\":13,\"unknown_from\":14,\"wall\":null,\"gap\":null,\"terrain\":[[-4,-3,[]],[-2,13,[[-2,-1]]]],\"enemies\":[],\"enemies_behind\":[],\"clear_behind\":2,\"estimated_jump\":{\"height\":4,\"distance\":3,\"landing\":3,\"hop\":1},\"landing_enemy_risk\":[],\"previous_buttons\":0}\n\nAnswer with one letter."
+          }
+        ],
+        "max_tokens": 8,
+        "temperature": 0
+      },
+      "observed_output": "C"
+    },
+    {
+      "source": "output/model-opt-20260923/local-guided/attempt-1/1-1/http.jsonl",
+      "line": 15,
+      "request_sha256": "d319999d315b5c0210e60f5aa86f38d383830ffbecd4625073ba184b13c532f1",
+      "request": {
+        "model": "Qwen2.5-1.5B-Instruct",
+        "messages": [
+          {
+            "role": "system",
+            "content": "Choose Mario's next action. Reply with exactly one option letter. Move right without dying. Prefer running on clear ground. Ground actions last 6 frames; jump actions continue until landing, with no new decision in the air; a hop releases jump after 8 frames. Avoid side contact with enemies and jump before a gap or wall, allowing for current momentum. A hop is low; tall walls and wide gaps need a full jump with enough speed. Check the landing surface and all nearby enemies, including the next enemy after a stomp. An enemy near a predicted full-jump landing is a reason to prefer a later jump or a short hop whose landing is clear. Time a jump to pass above the enemy, not land directly in front of it; recheck the next enemy after a stomp. Landing distances and enemy collision risks are estimates, not prohibitions; terrain and enemy positions are observations. Beyond the visible range is unknown. If blocked, change the action marked STUCK; back off for speed only when the space behind is safe. State units are tiles: dx is rightward, up is height above Mario's feet. Terrain entries [from_dx,to_dx,solid_up_intervals] preserve solid geometry; all intervals include endpoints. Enemies are [dx,up,kind]. A gap's width_known=false means its width is only a lower bound. Speed is the signed game speed byte (full rightward speed is about 48). Coach plans, when present, are advice to check against current geometry and recent failures.\nOPTIONS (answer with the LETTER):\n  A) stand = wait in place; use when an enemy on a wall or pipe ahead has to move away first\n  B) walk right = move right slowly\n  C) jump right = full jump while moving right at walking speed; about 4 tiles high, 3 to 5 tiles far\n  D) run right = move right fast; does not jump; builds speed for a longer jump\n  E) run and jump right = full jump at running speed; up to 5 tiles high and 9 tiles far when already at full speed\n  F) jump in place = full jump straight up\n  G) walk left = back off to the left\n  H) hop right = short low jump to the right, about 2 tiles high; lands 1 to 4 tiles ahead depending on speed; use to land on top of an enemy 2 tiles ahead\n  I) back off for a run-up = walk left until the wall or gap ahead is 6 tiles away, so that 'run right' can build full speed before jumping; do not use with an enemy behind Mario"
+          },
+          {
+            "role": "user",
+            "content": "RECENT DECISIONS (oldest first; x before each action):\n  jump right -> x=735\n  jump right -> x=854 (+119)\n  jump right -> x=924 (+70)\n  jump right -> x=1043 (+119)\n  jump right -> x=1139 (+96)\n  jump right -> x=1236 (+97)\n\nSTATE:\n{\"on_ground\":true,\"speed\":28,\"visible_ahead\":9,\"unknown_from\":10,\"wall\":null,\"gap\":{\"tiles\":6,\"width\":3,\"width_known\":true},\"terrain\":[[-4,-4,[[-2,-1]]],[-3,-1,[[3,3],[-2,-1]]],[0,5,[[-2,-1]]],[6,8,[]],[9,9,[[-2,-1]]]],\"enemies\":[],\"enemies_behind\":[],\"clear_behind\":4,\"estimated_jump\":{\"height\":4,\"distance\":5,\"landing\":5,\"hop\":2},\"landing_enemy_risk\":[],\"previous_buttons\":1}\n\nAnswer with one letter."
+          }
+        ],
+        "max_tokens": 8,
+        "temperature": 0
+      },
+      "observed_output": "C"
+    },
+    {
+      "source": "output/model-opt-20260923/local-guided/attempt-1/1-2/http.jsonl",
+      "line": 1,
+      "request_sha256": "ad94c4e663a205018dbf7e425715fc1202c32081d71cada28e5bc15c1d20c1eb",
+      "request": {
+        "model": "Qwen2.5-1.5B-Instruct",
+        "messages": [
+          {
+            "role": "system",
+            "content": "Choose Mario's next action. Reply with exactly one option letter. Move right without dying. Prefer running on clear ground. Ground actions last 6 frames; jump actions continue until landing, with no new decision in the air; a hop releases jump after 8 frames. Avoid side contact with enemies and jump before a gap or wall, allowing for current momentum. A hop is low; tall walls and wide gaps need a full jump with enough speed. Check the landing surface and all nearby enemies, including the next enemy after a stomp. An enemy near a predicted full-jump landing is a reason to prefer a later jump or a short hop whose landing is clear. Time a jump to pass above the enemy, not land directly in front of it; recheck the next enemy after a stomp. Landing distances and enemy collision risks are estimates, not prohibitions; terrain and enemy positions are observations. Beyond the visible range is unknown. If blocked, change the action marked STUCK; back off for speed only when the space behind is safe. State units are tiles: dx is rightward, up is height above Mario's feet. Terrain entries [from_dx,to_dx,solid_up_intervals] preserve solid geometry; all intervals include endpoints. Enemies are [dx,up,kind]. A gap's width_known=false means its width is only a lower bound. Speed is the signed game speed byte (full rightward speed is about 48). Coach plans, when present, are advice to check against current geometry and recent failures.\nOPTIONS (answer with the LETTER):\n  A) stand = wait in place; use when an enemy on a wall or pipe ahead has to move away first\n  B) walk right = move right slowly\n  C) jump right = full jump while moving right at walking speed; about 4 tiles high, 3 to 5 tiles far\n  D) run right = move right fast; does not jump; builds speed for a longer jump\n  E) run and jump right = full jump at running speed; up to 5 tiles high and 9 tiles far when already at full speed\n  F) jump in place = full jump straight up\n  G) walk left = back off to the left\n  H) hop right = short low jump to the right, about 2 tiles high; lands 1 to 4 tiles ahead depending on speed; use to land on top of an enemy 2 tiles ahead\n  I) back off for a run-up = walk left until the wall or gap ahead is 6 tiles away, so that 'run right' can build full speed before jumping; do not use with an enemy behind Mario"
+          },
+          {
+            "role": "user",
+            "content": "RECENT DECISIONS (oldest first; x before each action):\n  (this is the first decision of the episode)\n\nSTATE:\n{\"on_ground\":true,\"speed\":0,\"visible_ahead\":13,\"unknown_from\":14,\"wall\":null,\"gap\":null,\"terrain\":[[-4,-3,[]],[-2,-2,[[-2,6]]],[-1,7,[[-2,-1]]],[8,12,[[3,3],[-2,-1]]],[13,13,[[-2,-1]]]],\"enemies\":[[12,0,\"goomba\"],[13,0,\"goomba\"]],\"enemies_behind\":[],\"clear_behind\":1,\"estimated_jump\":{\"height\":4,\"distance\":3,\"landing\":3,\"hop\":1},\"landing_enemy_risk\":[],\"previous_buttons\":0}\n\nAnswer with one letter."
+          }
+        ],
+        "max_tokens": 8,
+        "temperature": 0
+      },
+      "observed_output": "C"
+    },
+    {
+      "source": "output/model-opt-20260923/local-guided/attempt-1/1-2/http.jsonl",
+      "line": 8,
+      "request_sha256": "dd38b4513079e854af8d041d6d213db5ae95411aac95e4dd9fd091d35dd14548",
+      "request": {
+        "model": "Qwen2.5-1.5B-Instruct",
+        "messages": [
+          {
+            "role": "system",
+            "content": "Choose Mario's next action. Reply with exactly one option letter. Move right without dying. Prefer running on clear ground. Ground actions last 6 frames; jump actions continue until landing, with no new decision in the air; a hop releases jump after 8 frames. Avoid side contact with enemies and jump before a gap or wall, allowing for current momentum. A hop is low; tall walls and wide gaps need a full jump with enough speed. Check the landing surface and all nearby enemies, including the next enemy after a stomp. An enemy near a predicted full-jump landing is a reason to prefer a later jump or a short hop whose landing is clear. Time a jump to pass above the enemy, not land directly in front of it; recheck the next enemy after a stomp. Landing distances and enemy collision risks are estimates, not prohibitions; terrain and enemy positions are observations. Beyond the visible range is unknown. If blocked, change the action marked STUCK; back off for speed only when the space behind is safe. State units are tiles: dx is rightward, up is height above Mario's feet. Terrain entries [from_dx,to_dx,solid_up_intervals] preserve solid geometry; all intervals include endpoints. Enemies are [dx,up,kind]. A gap's width_known=false means its width is only a lower bound. Speed is the signed game speed byte (full rightward speed is about 48). Coach plans, when present, are advice to check against current geometry and recent failures.\nOPTIONS (answer with the LETTER):\n  A) stand = wait in place; use when an enemy on a wall or pipe ahead has to move away first\n  B) walk right = move right slowly\n  C) jump right = full jump while moving right at walking speed; about 4 tiles high, 3 to 5 tiles far\n  D) run right = move right fast; does not jump; builds speed for a longer jump\n  E) run and jump right = full jump at running speed; up to 5 tiles high and 9 tiles far when already at full speed\n  F) jump in place = full jump straight up\n  G) walk left = back off to the left\n  H) hop right = short low jump to the right, about 2 tiles high; lands 1 to 4 tiles ahead depending on speed; use to land on top of an enemy 2 tiles ahead\n  I) back off for a run-up = walk left until the wall or gap ahead is 6 tiles away, so that 'run right' can build full speed before jumping; do not use with an enemy behind Mario"
+          },
+          {
+            "role": "user",
+            "content": "RECENT DECISIONS (oldest first; x before each action):\n  jump right -> x=103\n  jump right -> x=173 (+70)\n  jump right -> x=290 (+117)\n  jump right -> x=336 (+46)\n  jump right -> x=432 (+96)\n  jump right -> x=534 (+102)\n\nSTATE:\n{\"on_ground\":true,\"speed\":16,\"visible_ahead\":8,\"unknown_from\":9,\"wall\":null,\"gap\":null,\"terrain\":[[-4,0,[[-2,-1]]],[1,1,[[3,5],[-2,-1]]],[2,2,[[3,4],[-2,-1]]],[3,3,[[3,5],[-2,-1]]],[4,5,[[5,5],[-2,-1]]],[6,6,[[3,5],[-2,-1]]],[7,7,[[3,4],[-2,-1]]],[8,8,[[3,5],[-2,-1]]]],\"enemies\":[[4,0,\"koopa\"],[5,0,\"koopa\"]],\"enemies_behind\":[],\"clear_behind\":4,\"estimated_jump\":{\"height\":4,\"distance\":5,\"landing\":2,\"hop\":2},\"landing_enemy_risk\":[4,5],\"overhead_clearance\":2,\"previous_buttons\":1}\n\nAnswer with one letter."
+          }
+        ],
+        "max_tokens": 8,
+        "temperature": 0
+      },
+      "observed_output": "C"
+    },
+    {
+      "source": "output/model-opt-20260923/local-guided/attempt-1/1-3/http.jsonl",
+      "line": 4,
+      "request_sha256": "d692e47a9ef80c2ce9ce1dc78a4a7a0054361c057a5de9245ff8c8c9bb5f47f8",
+      "request": {
+        "model": "Qwen2.5-1.5B-Instruct",
+        "messages": [
+          {
+            "role": "system",
+            "content": "Choose Mario's next action. Reply with exactly one option letter. Move right without dying. Prefer running on clear ground. Ground actions last 6 frames; jump actions continue until landing, with no new decision in the air; a hop releases jump after 8 frames. Avoid side contact with enemies and jump before a gap or wall, allowing for current momentum. A hop is low; tall walls and wide gaps need a full jump with enough speed. Check the landing surface and all nearby enemies, including the next enemy after a stomp. An enemy near a predicted full-jump landing is a reason to prefer a later jump or a short hop whose landing is clear. Time a jump to pass above the enemy, not land directly in front of it; recheck the next enemy after a stomp. Landing distances and enemy collision risks are estimates, not prohibitions; terrain and enemy positions are observations. Beyond the visible range is unknown. If blocked, change the action marked STUCK; back off for speed only when the space behind is safe. State units are tiles: dx is rightward, up is height above Mario's feet. Terrain entries [from_dx,to_dx,solid_up_intervals] preserve solid geometry; all intervals include endpoints. Enemies are [dx,up,kind]. A gap's width_known=false means its width is only a lower bound. Speed is the signed game speed byte (full rightward speed is about 48). Coach plans, when present, are advice to check against current geometry and recent failures.\nOPTIONS (answer with the LETTER):\n  A) stand = wait in place; use when an enemy on a wall or pipe ahead has to move away first\n  B) walk right = move right slowly\n  C) jump right = full jump while moving right at walking speed; about 4 tiles high, 3 to 5 tiles far\n  D) run right = move right fast; does not jump; builds speed for a longer jump\n  E) run and jump right = full jump at running speed; up to 5 tiles high and 9 tiles far when already at full speed\n  F) jump in place = full jump straight up\n  G) walk left = back off to the left\n  H) hop right = short low jump to the right, about 2 tiles high; lands 1 to 4 tiles ahead depending on speed; use to land on top of an enemy 2 tiles ahead\n  I) back off for a run-up = walk left until the wall or gap ahead is 6 tiles away, so that 'run right' can build full speed before jumping; do not use with an enemy behind Mario"
+          },
+          {
+            "role": "user",
+            "content": "RECENT DECISIONS (oldest first; x before each action):\n  jump right -> x=0\n  jump right -> x=103 (+103)\n  jump right -> x=200 (+97)\n\nSTATE:\n{\"on_ground\":true,\"speed\":28,\"visible_ahead\":9,\"unknown_from\":10,\"wall\":null,\"gap\":{\"tiles\":4,\"width\":6,\"width_known\":false},\"terrain\":[[-4,-3,[[-3,-2]]],[-2,-1,[]],[0,3,[[-1,-1]]],[4,5,[]],[6,7,[[2,2]]],[8,9,[[6,6],[2,2]]]],\"enemies\":[],\"enemies_behind\":[],\"clear_behind\":0,\"estimated_jump\":{\"height\":4,\"distance\":5,\"landing\":5,\"hop\":2},\"landing_enemy_risk\":[],\"previous_buttons\":1}\n\nAnswer with one letter."
+          }
+        ],
+        "max_tokens": 8,
+        "temperature": 0
+      },
+      "observed_output": "C"
+    },
+    {
+      "source": "output/model-opt-20260923/local-prose/attempt-1/1-1/http.jsonl",
+      "line": 1,
+      "request_sha256": "069249f1daf2a2a8572b34d478e65e10858145df8d2989e006b4646ce6772f12",
+      "request": {
+        "model": "Qwen2.5-1.5B-Instruct",
+        "messages": [
+          {
+            "role": "system",
+            "content": "Choose Mario's next action. Reply with exactly one option letter. Move right without dying. Prefer running on clear ground. Ground actions last 6 frames; jump actions continue until landing, with no new decision in the air; a hop releases jump after 8 frames. Avoid side contact with enemies and jump before a gap or wall, allowing for current momentum. A hop is low; tall walls and wide gaps need a full jump with enough speed. Check the landing surface and all nearby enemies, including the next enemy after a stomp. An enemy near a predicted full-jump landing is a reason to prefer a later jump or a short hop whose landing is clear. Time a jump to pass above the enemy, not land directly in front of it; recheck the next enemy after a stomp. Landing distances and enemy collision risks are estimates, not prohibitions; terrain and enemy positions are observations. Beyond the visible range is unknown. If blocked, change the action marked STUCK; back off for speed only when the space behind is safe. State units are tiles: dx is rightward, up is height above Mario's feet. Terrain entries [from_dx,to_dx,solid_up_intervals] preserve solid geometry; all intervals include endpoints. Enemies are [dx,up,kind]. A gap's width_known=false means its width is only a lower bound. Speed is the signed game speed byte (full rightward speed is about 48). Coach plans, when present, are advice to check against current geometry and recent failures.\nOPTIONS (answer with the LETTER):\n  A) stand = wait in place; use when an enemy on a wall or pipe ahead has to move away first\n  B) walk right = move right slowly\n  C) jump right = full jump while moving right at walking speed; about 4 tiles high, 3 to 5 tiles far\n  D) run right = move right fast; does not jump; builds speed for a longer jump\n  E) run and jump right = full jump at running speed; up to 5 tiles high and 9 tiles far when already at full speed\n  F) jump in place = full jump straight up\n  G) walk left = back off to the left\n  H) hop right = short low jump to the right, about 2 tiles high; lands 1 to 4 tiles ahead depending on speed; use to land on top of an enemy 2 tiles ahead\n  I) back off for a run-up = walk left until the wall or gap ahead is 6 tiles away, so that 'run right' can build full speed before jumping; do not use with an enemy behind Mario"
+          },
+          {
+            "role": "user",
+            "content": "RECENT DECISIONS (oldest first; x before each action):\n  (this is the first decision of the episode)\n\nSTATE:\nNo wall in the observed range. There are 2 tiles of clear ground behind Mario for a run-up. Ground support is visible for the next 13 tiles. No enemy in the observed range. Mario is on the ground, standing still. A jump from this speed clears 4 tiles high and 3 tiles far; at full running speed it clears 5 high and 9 far. A full jump right now would land about 3 tiles ahead; a hop about 1. The screen shows 13 tiles ahead; enemies beyond that are unknown until Mario moves closer.\n....................\n....................\n....................\n..................#.\n....................\n....................\n....M...............\n..##################\n..##################\n....................\n....................\n....................\n....................\n\nAnswer with one letter."
+          }
+        ],
+        "max_tokens": 8,
+        "temperature": 0
+      },
+      "observed_output": "C"
+    },
+    {
+      "source": "output/model-opt-20260923/local-prose/attempt-1/1-1/http.jsonl",
+      "line": 18,
+      "request_sha256": "6085d1b36b776252d5db1f5601d8d61704ee9534489ee4cf8bab94271f62a701",
+      "request": {
+        "model": "Qwen2.5-1.5B-Instruct",
+        "messages": [
+          {
+            "role": "system",
+            "content": "Choose Mario's next action. Reply with exactly one option letter. Move right without dying. Prefer running on clear ground. Ground actions last 6 frames; jump actions continue until landing, with no new decision in the air; a hop releases jump after 8 frames. Avoid side contact with enemies and jump before a gap or wall, allowing for current momentum. A hop is low; tall walls and wide gaps need a full jump with enough speed. Check the landing surface and all nearby enemies, including the next enemy after a stomp. An enemy near a predicted full-jump landing is a reason to prefer a later jump or a short hop whose landing is clear. Time a jump to pass above the enemy, not land directly in front of it; recheck the next enemy after a stomp. Landing distances and enemy collision risks are estimates, not prohibitions; terrain and enemy positions are observations. Beyond the visible range is unknown. If blocked, change the action marked STUCK; back off for speed only when the space behind is safe. State units are tiles: dx is rightward, up is height above Mario's feet. Terrain entries [from_dx,to_dx,solid_up_intervals] preserve solid geometry; all intervals include endpoints. Enemies are [dx,up,kind]. A gap's width_known=false means its width is only a lower bound. Speed is the signed game speed byte (full rightward speed is about 48). Coach plans, when present, are advice to check against current geometry and recent failures.\nOPTIONS (answer with the LETTER):\n  A) stand = wait in place; use when an enemy on a wall or pipe ahead has to move away first\n  B) walk right = move right slowly\n  C) jump right = full jump while moving right at walking speed; about 4 tiles high, 3 to 5 tiles far\n  D) run right = move right fast; does not jump; builds speed for a longer jump\n  E) run and jump right = full jump at running speed; up to 5 tiles high and 9 tiles far when already at full speed\n  F) jump in place = full jump straight up\n  G) walk left = back off to the left\n  H) hop right = short low jump to the right, about 2 tiles high; lands 1 to 4 tiles ahead depending on speed; use to land on top of an enemy 2 tiles ahead\n  I) back off for a run-up = walk left until the wall or gap ahead is 6 tiles away, so that 'run right' can build full speed before jumping; do not use with an enemy behind Mario"
+          },
+          {
+            "role": "user",
+            "content": "RECENT DECISIONS (oldest first; x before each action):\n  jump right -> x=732\n  jump right -> x=849 (+117)\n  jump right -> x=919 (+70)\n  run right -> x=1038 (+119)\n  run right -> x=1050 (+12)\n  run right -> x=1066 (+16)\n\nSTATE:\nNo wall in the observed range. There are 4 tiles of clear ground behind Mario for a run-up. No support at foot level or below begins 2 tile(s) ahead for 2 tiles; check terrain for elevated landing platforms. No enemy in the observed range. Mario is on the ground, running at full speed. A jump from this speed clears 5 tiles high and 9 tiles far; at full running speed it clears 5 high and 9 far. A full jump right now would land about 9 tiles ahead; a hop about 5. The screen shows 8 tiles ahead; enemies beyond that are unknown until Mario moves closer. ESTIMATED RISKS: The estimated full-jump landing reaches the observation boundary or unknown ground.\n....................\n....................\n.#..................\n..............###...\n....................\n....................\n....M...............\n######..############\n######..############\n....................\n....................\n....................\n....................\n\nAnswer with one letter."
+          }
+        ],
+        "max_tokens": 8,
+        "temperature": 0
+      },
+      "observed_output": "D"
+    },
+    {
+      "source": "output/model-opt-20260923/local-prose/attempt-1/1-2/http.jsonl",
+      "line": 1,
+      "request_sha256": "1af3d521c26f4aa459a98faef4818359ae28ada67a93bc7a11ef9dc9871a3f03",
+      "request": {
+        "model": "Qwen2.5-1.5B-Instruct",
+        "messages": [
+          {
+            "role": "system",
+            "content": "Choose Mario's next action. Reply with exactly one option letter. Move right without dying. Prefer running on clear ground. Ground actions last 6 frames; jump actions continue until landing, with no new decision in the air; a hop releases jump after 8 frames. Avoid side contact with enemies and jump before a gap or wall, allowing for current momentum. A hop is low; tall walls and wide gaps need a full jump with enough speed. Check the landing surface and all nearby enemies, including the next enemy after a stomp. An enemy near a predicted full-jump landing is a reason to prefer a later jump or a short hop whose landing is clear. Time a jump to pass above the enemy, not land directly in front of it; recheck the next enemy after a stomp. Landing distances and enemy collision risks are estimates, not prohibitions; terrain and enemy positions are observations. Beyond the visible range is unknown. If blocked, change the action marked STUCK; back off for speed only when the space behind is safe. State units are tiles: dx is rightward, up is height above Mario's feet. Terrain entries [from_dx,to_dx,solid_up_intervals] preserve solid geometry; all intervals include endpoints. Enemies are [dx,up,kind]. A gap's width_known=false means its width is only a lower bound. Speed is the signed game speed byte (full rightward speed is about 48). Coach plans, when present, are advice to check against current geometry and recent failures.\nOPTIONS (answer with the LETTER):\n  A) stand = wait in place; use when an enemy on a wall or pipe ahead has to move away first\n  B) walk right = move right slowly\n  C) jump right = full jump while moving right at walking speed; about 4 tiles high, 3 to 5 tiles far\n  D) run right = move right fast; does not jump; builds speed for a longer jump\n  E) run and jump right = full jump at running speed; up to 5 tiles high and 9 tiles far when already at full speed\n  F) jump in place = full jump straight up\n  G) walk left = back off to the left\n  H) hop right = short low jump to the right, about 2 tiles high; lands 1 to 4 tiles ahead depending on speed; use to land on top of an enemy 2 tiles ahead\n  I) back off for a run-up = walk left until the wall or gap ahead is 6 tiles away, so that 'run right' can build full speed before jumping; do not use with an enemy behind Mario"
+          },
+          {
+            "role": "user",
+            "content": "RECENT DECISIONS (oldest first; x before each action):\n  (this is the first decision of the episode)\n\nSTATE:\nNo wall in the observed range. There are 1 tiles of clear ground behind Mario for a run-up. Ground support is visible for the next 13 tiles. Enemies: a goomba 12 tiles ahead at ground level; a goomba 13 tiles ahead at ground level. Mario is on the ground, standing still. A jump from this speed clears 4 tiles high and 3 tiles far; at full running speed it clears 5 high and 9 far. A full jump right now would land about 3 tiles ahead; a hop about 1. The screen shows 13 tiles ahead; enemies beyond that are unknown until Mario moves closer.\n..#.................\n..#.................\n..#.................\n..#.........#####...\n..#.................\n..#.................\n..#.M...........GG.#\n..##################\n..##################\n....................\n....................\n....................\n....................\n\nAnswer with one letter."
+          }
+        ],
+        "max_tokens": 8,
+        "temperature": 0
+      },
+      "observed_output": "C"
+    },
+    {
+      "source": "output/model-opt-20260923/local-prose/attempt-1/1-2/http.jsonl",
+      "line": 13,
+      "request_sha256": "d8c493235214b39028382730b96f6023755e32978d8a2df1d84377c97fc2912d",
+      "request": {
+        "model": "Qwen2.5-1.5B-Instruct",
+        "messages": [
+          {
+            "role": "system",
+            "content": "Choose Mario's next action. Reply with exactly one option letter. Move right without dying. Prefer running on clear ground. Ground actions last 6 frames; jump actions continue until landing, with no new decision in the air; a hop releases jump after 8 frames. Avoid side contact with enemies and jump before a gap or wall, allowing for current momentum. A hop is low; tall walls and wide gaps need a full jump with enough speed. Check the landing surface and all nearby enemies, including the next enemy after a stomp. An enemy near a predicted full-jump landing is a reason to prefer a later jump or a short hop whose landing is clear. Time a jump to pass above the enemy, not land directly in front of it; recheck the next enemy after a stomp. Landing distances and enemy collision risks are estimates, not prohibitions; terrain and enemy positions are observations. Beyond the visible range is unknown. If blocked, change the action marked STUCK; back off for speed only when the space behind is safe. State units are tiles: dx is rightward, up is height above Mario's feet. Terrain entries [from_dx,to_dx,solid_up_intervals] preserve solid geometry; all intervals include endpoints. Enemies are [dx,up,kind]. A gap's width_known=false means its width is only a lower bound. Speed is the signed game speed byte (full rightward speed is about 48). Coach plans, when present, are advice to check against current geometry and recent failures.\nOPTIONS (answer with the LETTER):\n  A) stand = wait in place; use when an enemy on a wall or pipe ahead has to move away first\n  B) walk right = move right slowly\n  C) jump right = full jump while moving right at walking speed; about 4 tiles high, 3 to 5 tiles far\n  D) run right = move right fast; does not jump; builds speed for a longer jump\n  E) run and jump right = full jump at running speed; up to 5 tiles high and 9 tiles far when already at full speed\n  F) jump in place = full jump straight up\n  G) walk left = back off to the left\n  H) hop right = short low jump to the right, about 2 tiles high; lands 1 to 4 tiles ahead depending on speed; use to land on top of an enemy 2 tiles ahead\n  I) back off for a run-up = walk left until the wall or gap ahead is 6 tiles away, so that 'run right' can build full speed before jumping; do not use with an enemy behind Mario"
+          },
+          {
+            "role": "user",
+            "content": "RECENT DECISIONS (oldest first; x before each action):\n  jump right -> x=354\n  jump right -> x=363 (+9)\n  jump right -> x=482 (+119)\n  jump right -> x=523 (+41)\n  run right -> x=629 (+106)\n  run right -> x=642 (+13)\n\nSTATE:\nNo wall in the observed range. There are 4 tiles of clear ground behind Mario for a run-up. Ground support is visible for the next 7 tiles. Enemies: a koopa 2 tiles ahead at ground level; a koopa 3 tiles ahead at ground level. Mario is on the ground, running at full speed. A jump from this speed clears 5 tiles high and 9 tiles far; at full running speed it clears 5 high and 9 far. Overhead blocks leave as little as 2 tiles of clearance along the path; estimated landing is 4 tiles ahead instead of 9, depending on the arc. A full jump right now would land about 4 tiles ahead; a hop about 5. The screen shows 7 tiles ahead; enemies beyond that are unknown until Mario moves closer. ESTIMATED RISKS: Enemies may reach the estimated landing area 4 tiles ahead; their future positions are uncertain.\n...............##...\n..#.####.#.....##...\n..###..###.....##...\n..###..###.....####.\n.................##.\n.................##.\n....M.KK............\n####################\n####################\n....................\n....................\n....................\n....................\n\nAnswer with one letter."
+          }
+        ],
+        "max_tokens": 8,
+        "temperature": 0
+      },
+      "observed_output": "D"
+    },
+    {
+      "source": "output/model-opt-20260923/local-prose/attempt-1/1-3/http.jsonl",
+      "line": 1,
+      "request_sha256": "90cb7bbcd6c60bf3bccedb4482053778fbc1e34449a27bf90b8d42cec23803d9",
+      "request": {
+        "model": "Qwen2.5-1.5B-Instruct",
+        "messages": [
+          {
+            "role": "system",
+            "content": "Choose Mario's next action. Reply with exactly one option letter. Move right without dying. Prefer running on clear ground. Ground actions last 6 frames; jump actions continue until landing, with no new decision in the air; a hop releases jump after 8 frames. Avoid side contact with enemies and jump before a gap or wall, allowing for current momentum. A hop is low; tall walls and wide gaps need a full jump with enough speed. Check the landing surface and all nearby enemies, including the next enemy after a stomp. An enemy near a predicted full-jump landing is a reason to prefer a later jump or a short hop whose landing is clear. Time a jump to pass above the enemy, not land directly in front of it; recheck the next enemy after a stomp. Landing distances and enemy collision risks are estimates, not prohibitions; terrain and enemy positions are observations. Beyond the visible range is unknown. If blocked, change the action marked STUCK; back off for speed only when the space behind is safe. State units are tiles: dx is rightward, up is height above Mario's feet. Terrain entries [from_dx,to_dx,solid_up_intervals] preserve solid geometry; all intervals include endpoints. Enemies are [dx,up,kind]. A gap's width_known=false means its width is only a lower bound. Speed is the signed game speed byte (full rightward speed is about 48). Coach plans, when present, are advice to check against current geometry and recent failures.\nOPTIONS (answer with the LETTER):\n  A) stand = wait in place; use when an enemy on a wall or pipe ahead has to move away first\n  B) walk right = move right slowly\n  C) jump right = full jump while moving right at walking speed; about 4 tiles high, 3 to 5 tiles far\n  D) run right = move right fast; does not jump; builds speed for a longer jump\n  E) run and jump right = full jump at running speed; up to 5 tiles high and 9 tiles far when already at full speed\n  F) jump in place = full jump straight up\n  G) walk left = back off to the left\n  H) hop right = short low jump to the right, about 2 tiles high; lands 1 to 4 tiles ahead depending on speed; use to land on top of an enemy 2 tiles ahead\n  I) back off for a run-up = walk left until the wall or gap ahead is 6 tiles away, so that 'run right' can build full speed before jumping; do not use with an enemy behind Mario"
+          },
+          {
+            "role": "user",
+            "content": "RECENT DECISIONS (oldest first; x before each action):\n  (this is the first decision of the episode)\n\nSTATE:\nNo wall in the observed range. There are 2 tiles of clear ground behind Mario for a run-up. Ground support is visible for the next 13 tiles. No enemy in the observed range. Mario is on the ground, standing still. A jump from this speed clears 4 tiles high and 3 tiles far; at full running speed it clears 5 high and 9 far. A full jump right now would land about 3 tiles ahead; a hop about 1. The screen shows 13 tiles ahead; enemies beyond that are unknown until Mario moves closer.\n....................\n....................\n....................\n....................\n....................\n....................\n....M...............\n..################..\n..################..\n....................\n....................\n....................\n....................\n\nAnswer with one letter."
+          }
+        ],
+        "max_tokens": 8,
+        "temperature": 0
+      },
+      "observed_output": "C"
+    },
+    {
+      "source": "output/model-opt-20260923/local-prose/attempt-1/1-3/http.jsonl",
+      "line": 3,
+      "request_sha256": "f418dc36cd239545dc2da2876fb338fe25f9cff7d32fb9dfe6df60abfdfbcb2c",
+      "request": {
+        "model": "Qwen2.5-1.5B-Instruct",
+        "messages": [
+          {
+            "role": "system",
+            "content": "Choose Mario's next action. Reply with exactly one option letter. Move right without dying. Prefer running on clear ground. Ground actions last 6 frames; jump actions continue until landing, with no new decision in the air; a hop releases jump after 8 frames. Avoid side contact with enemies and jump before a gap or wall, allowing for current momentum. A hop is low; tall walls and wide gaps need a full jump with enough speed. Check the landing surface and all nearby enemies, including the next enemy after a stomp. An enemy near a predicted full-jump landing is a reason to prefer a later jump or a short hop whose landing is clear. Time a jump to pass above the enemy, not land directly in front of it; recheck the next enemy after a stomp. Landing distances and enemy collision risks are estimates, not prohibitions; terrain and enemy positions are observations. Beyond the visible range is unknown. If blocked, change the action marked STUCK; back off for speed only when the space behind is safe. State units are tiles: dx is rightward, up is height above Mario's feet. Terrain entries [from_dx,to_dx,solid_up_intervals] preserve solid geometry; all intervals include endpoints. Enemies are [dx,up,kind]. A gap's width_known=false means its width is only a lower bound. Speed is the signed game speed byte (full rightward speed is about 48). Coach plans, when present, are advice to check against current geometry and recent failures.\nOPTIONS (answer with the LETTER):\n  A) stand = wait in place; use when an enemy on a wall or pipe ahead has to move away first\n  B) walk right = move right slowly\n  C) jump right = full jump while moving right at walking speed; about 4 tiles high, 3 to 5 tiles far\n  D) run right = move right fast; does not jump; builds speed for a longer jump\n  E) run and jump right = full jump at running speed; up to 5 tiles high and 9 tiles far when already at full speed\n  F) jump in place = full jump straight up\n  G) walk left = back off to the left\n  H) hop right = short low jump to the right, about 2 tiles high; lands 1 to 4 tiles ahead depending on speed; use to land on top of an enemy 2 tiles ahead\n  I) back off for a run-up = walk left until the wall or gap ahead is 6 tiles away, so that 'run right' can build full speed before jumping; do not use with an enemy behind Mario"
+          },
+          {
+            "role": "user",
+            "content": "RECENT DECISIONS (oldest first; x before each action):\n  jump right -> x=0\n  run right -> x=103 (+103)\n\nSTATE:\nNo wall in the observed range. There are 4 tiles of clear ground behind Mario for a run-up. No support at foot level or below begins 9 tile(s) ahead for at least 2 tiles; check terrain for elevated landing platforms. No enemy in the observed range. Mario is on the ground, running at full speed. A jump from this speed clears 5 tiles high and 9 tiles far; at full running speed it clears 5 high and 9 far. A full jump right now would land about 9 tiles ahead; a hop about 5. The screen shows 10 tiles ahead; enemies beyond that are unknown until Mario moves closer.\n....................\n....................\n....................\n....................\n....................\n....................\n....M..........####.\n#############.......\n#############.......\n....................\n....................\n....................\n....................\n\nAnswer with one letter."
+          }
+        ],
+        "max_tokens": 8,
+        "temperature": 0
+      },
+      "observed_output": "C"
+    },
+    {
+      "source": "output/model-opt-20260923/local-v1/attempt-1/1-1/http.jsonl",
+      "line": 9,
+      "request_sha256": "66aa79e1e8321ac62ee91fb1e682bdad485650e5cebb98a7e16b0ffd05501b25",
+      "request": {
+        "model": "Qwen2.5-1.5B-Instruct",
+        "messages": [
+          {
+            "role": "system",
+            "content": "Choose Mario's next action. Reply with exactly one option letter. Move right without dying. Prefer running on clear ground. Ground actions last 6 frames; jump actions continue until landing, with no new decision in the air; a hop releases jump after 8 frames. Avoid side contact with enemies and jump before a gap or wall, allowing for current momentum. A hop is low; tall walls and wide gaps need a full jump with enough speed. Check the landing surface and all nearby enemies, including the next enemy after a stomp. Landing distances and enemy collision risks are estimates, not prohibitions; terrain and enemy positions are observations. Beyond the visible range is unknown. If blocked, change the action marked STUCK; back off for speed only when the space behind is safe. State units are tiles: dx is rightward, up is height above Mario's feet. Terrain entries [from_dx,to_dx,solid_up_intervals] preserve solid geometry; all intervals include endpoints. Enemies are [dx,up,kind]. A gap's width_known=false means its width is only a lower bound. Speed is the signed game speed byte (full rightward speed is about 48). Coach plans, when present, are advice to check against current geometry and recent failures.\nOPTIONS (answer with the LETTER):\n  A) stand = wait in place; use when an enemy on a wall or pipe ahead has to move away first\n  B) walk right = move right slowly\n  C) jump right = full jump while moving right at walking speed; about 4 tiles high, 3 to 5 tiles far\n  D) run right = move right fast; does not jump; builds speed for a longer jump\n  E) run and jump right = full jump at running speed; up to 5 tiles high and 9 tiles far when already at full speed\n  F) jump in place = full jump straight up\n  G) walk left = back off to the left\n  H) hop right = short low jump to the right, about 2 tiles high; lands 1 to 4 tiles ahead depending on speed; use to land on top of an enemy 2 tiles ahead\n  I) back off for a run-up = walk left until the wall or gap ahead is 6 tiles away, so that 'run right' can build full speed before jumping; do not use with an enemy behind Mario"
+          },
+          {
+            "role": "user",
+            "content": "RECENT DECISIONS (oldest first; x before each action):\n  jump right -> x=118\n  jump right -> x=214 (+96)\n  jump right -> x=256 (+42)\n  jump right -> x=351 (+95)\n  jump right -> x=458 (+107)\n  jump right -> x=565 (+107)\n\nSTATE:\n{\"on_ground\":true,\"speed\":28,\"visible_ahead\":8,\"unknown_from\":9,\"wall\":{\"tiles\":5,\"height\":4},\"gap\":null,\"terrain\":[[-4,-4,[[-2,-1]]],[-3,-2,[[-2,2]]],[-1,4,[[-2,-1]]],[5,6,[[-2,3]]],[7,8,[[-2,-1]]]],\"enemies\":[[3,0,\"goomba\"]],\"enemies_behind\":[],\"clear_behind\":1,\"estimated_jump\":{\"height\":4,\"distance\":5,\"landing\":5,\"hop\":2},\"landing_enemy_risk\":[3],\"previous_buttons\":1}\n\nAnswer with one letter."
+          }
+        ],
+        "max_tokens": 8,
+        "temperature": 0
+      },
+      "observed_output": "D"
+    },
+    {
+      "source": "output/model-opt-20260923/local-v1/attempt-1/1-1/http.jsonl",
+      "line": 2,
+      "request_sha256": "5bd4b6eabb1f237710d36dd109d7096799ce099453909eb50e94e82833f7ea7c",
+      "request": {
+        "model": "Qwen2.5-1.5B-Instruct",
+        "messages": [
+          {
+            "role": "system",
+            "content": "Choose Mario's next action. Reply with exactly one option letter. Move right without dying. Prefer running on clear ground. Ground actions last 6 frames; jump actions continue until landing, with no new decision in the air; a hop releases jump after 8 frames. Avoid side contact with enemies and jump before a gap or wall, allowing for current momentum. A hop is low; tall walls and wide gaps need a full jump with enough speed. Check the landing surface and all nearby enemies, including the next enemy after a stomp. Landing distances and enemy collision risks are estimates, not prohibitions; terrain and enemy positions are observations. Beyond the visible range is unknown. If blocked, change the action marked STUCK; back off for speed only when the space behind is safe. State units are tiles: dx is rightward, up is height above Mario's feet. Terrain entries [from_dx,to_dx,solid_up_intervals] preserve solid geometry; all intervals include endpoints. Enemies are [dx,up,kind]. A gap's width_known=false means its width is only a lower bound. Speed is the signed game speed byte (full rightward speed is about 48). Coach plans, when present, are advice to check against current geometry and recent failures.\nOPTIONS (answer with the LETTER):\n  A) stand = wait in place; use when an enemy on a wall or pipe ahead has to move away first\n  B) walk right = move right slowly\n  C) jump right = full jump while moving right at walking speed; about 4 tiles high, 3 to 5 tiles far\n  D) run right = move right fast; does not jump; builds speed for a longer jump\n  E) run and jump right = full jump at running speed; up to 5 tiles high and 9 tiles far when already at full speed\n  F) jump in place = full jump straight up\n  G) walk left = back off to the left\n  H) hop right = short low jump to the right, about 2 tiles high; lands 1 to 4 tiles ahead depending on speed; use to land on top of an enemy 2 tiles ahead\n  I) back off for a run-up = walk left until the wall or gap ahead is 6 tiles away, so that 'run right' can build full speed before jumping; do not use with an enemy behind Mario"
+          },
+          {
+            "role": "user",
+            "content": "RECENT DECISIONS (oldest first; x before each action):\n  run right -> x=0\n\nSTATE:\n{\"on_ground\":true,\"speed\":9,\"visible_ahead\":13,\"unknown_from\":14,\"wall\":null,\"gap\":null,\"terrain\":[[-4,-3,[]],[-2,13,[[-2,-1]]]],\"enemies\":[],\"enemies_behind\":[],\"clear_behind\":2,\"estimated_jump\":{\"height\":4,\"distance\":3,\"landing\":3,\"hop\":1},\"landing_enemy_risk\":[],\"previous_buttons\":3}\n\nAnswer with one letter."
+          }
+        ],
+        "max_tokens": 8,
+        "temperature": 0
+      },
+      "observed_output": "C"
+    },
+    {
+      "source": "output/model-opt-20260923/local-v1/attempt-1/1-1/http.jsonl",
+      "line": 3,
+      "request_sha256": "d620c99aefa30eac006efe6ac9d6ff5649058d19a73f765dac980236aa55ba6d",
+      "request": {
+        "model": "Qwen2.5-1.5B-Instruct",
+        "messages": [
+          {
+            "role": "system",
+            "content": "Choose Mario's next action. Reply with exactly one option letter. Move right without dying. Prefer running on clear ground. Ground actions last 6 frames; jump actions continue until landing, with no new decision in the air; a hop releases jump after 8 frames. Avoid side contact with enemies and jump before a gap or wall, allowing for current momentum. A hop is low; tall walls and wide gaps need a full jump with enough speed. Check the landing surface and all nearby enemies, including the next enemy after a stomp. Landing distances and enemy collision risks are estimates, not prohibitions; terrain and enemy positions are observations. Beyond the visible range is unknown. If blocked, change the action marked STUCK; back off for speed only when the space behind is safe. State units are tiles: dx is rightward, up is height above Mario's feet. Terrain entries [from_dx,to_dx,solid_up_intervals] preserve solid geometry; all intervals include endpoints. Enemies are [dx,up,kind]. A gap's width_known=false means its width is only a lower bound. Speed is the signed game speed byte (full rightward speed is about 48). Coach plans, when present, are advice to check against current geometry and recent failures.\nOPTIONS (answer with the LETTER):\n  A) stand = wait in place; use when an enemy on a wall or pipe ahead has to move away first\n  B) walk right = move right slowly\n  C) jump right = full jump while moving right at walking speed; about 4 tiles high, 3 to 5 tiles far\n  D) run right = move right fast; does not jump; builds speed for a longer jump\n  E) run and jump right = full jump at running speed; up to 5 tiles high and 9 tiles far when already at full speed\n  F) jump in place = full jump straight up\n  G) walk left = back off to the left\n  H) hop right = short low jump to the right, about 2 tiles high; lands 1 to 4 tiles ahead depending on speed; use to land on top of an enemy 2 tiles ahead\n  I) back off for a run-up = walk left until the wall or gap ahead is 6 tiles away, so that 'run right' can build full speed before jumping; do not use with an enemy behind Mario"
+          },
+          {
+            "role": "user",
+            "content": "RECENT DECISIONS (oldest first; x before each action):\n  run right -> x=0\n  jump right -> x=41 (+41)\n\nSTATE:\n{\"on_ground\":true,\"speed\":28,\"visible_ahead\":9,\"unknown_from\":10,\"wall\":null,\"gap\":null,\"terrain\":[[-4,8,[[-2,-1]]],[9,9,[[3,3],[-2,-1]]]],\"enemies\":[],\"enemies_behind\":[],\"clear_behind\":4,\"estimated_jump\":{\"height\":4,\"distance\":5,\"landing\":5,\"hop\":2},\"landing_enemy_risk\":[],\"previous_buttons\":1}\n\nAnswer with one letter."
+          }
+        ],
+        "max_tokens": 8,
+        "temperature": 0
+      },
+      "observed_output": "C"
+    },
+    {
+      "source": "output/model-opt-20260923/local-v1/attempt-1/1-1/http.jsonl",
+      "line": 1,
+      "request_sha256": "fd258d445d25678eef3c740fbb991595a74b7ee8378fc1fc3b0ed2d49bd2fd6c",
+      "request": {
+        "model": "Qwen2.5-1.5B-Instruct",
+        "messages": [
+          {
+            "role": "system",
+            "content": "Choose Mario's next action. Reply with exactly one option letter. Move right without dying. Prefer running on clear ground. Ground actions last 6 frames; jump actions continue until landing, with no new decision in the air; a hop releases jump after 8 frames. Avoid side contact with enemies and jump before a gap or wall, allowing for current momentum. A hop is low; tall walls and wide gaps need a full jump with enough speed. Check the landing surface and all nearby enemies, including the next enemy after a stomp. Landing distances and enemy collision risks are estimates, not prohibitions; terrain and enemy positions are observations. Beyond the visible range is unknown. If blocked, change the action marked STUCK; back off for speed only when the space behind is safe. State units are tiles: dx is rightward, up is height above Mario's feet. Terrain entries [from_dx,to_dx,solid_up_intervals] preserve solid geometry; all intervals include endpoints. Enemies are [dx,up,kind]. A gap's width_known=false means its width is only a lower bound. Speed is the signed game speed byte (full rightward speed is about 48). Coach plans, when present, are advice to check against current geometry and recent failures.\nOPTIONS (answer with the LETTER):\n  A) stand = wait in place; use when an enemy on a wall or pipe ahead has to move away first\n  B) walk right = move right slowly\n  C) jump right = full jump while moving right at walking speed; about 4 tiles high, 3 to 5 tiles far\n  D) run right = move right fast; does not jump; builds speed for a longer jump\n  E) run and jump right = full jump at running speed; up to 5 tiles high and 9 tiles far when already at full speed\n  F) jump in place = full jump straight up\n  G) walk left = back off to the left\n  H) hop right = short low jump to the right, about 2 tiles high; lands 1 to 4 tiles ahead depending on speed; use to land on top of an enemy 2 tiles ahead\n  I) back off for a run-up = walk left until the wall or gap ahead is 6 tiles away, so that 'run right' can build full speed before jumping; do not use with an enemy behind Mario"
+          },
+          {
+            "role": "user",
+            "content": "RECENT DECISIONS (oldest first; x before each action):\n  (this is the first decision of the episode)\n\nSTATE:\n{\"on_ground\":true,\"speed\":0,\"visible_ahead\":13,\"unknown_from\":14,\"wall\":null,\"gap\":null,\"terrain\":[[-4,-3,[]],[-2,13,[[-2,-1]]]],\"enemies\":[],\"enemies_behind\":[],\"clear_behind\":2,\"estimated_jump\":{\"height\":4,\"distance\":3,\"landing\":3,\"hop\":1},\"landing_enemy_risk\":[],\"previous_buttons\":0}\n\nAnswer with one letter."
+          }
+        ],
+        "max_tokens": 8,
+        "temperature": 0
+      },
+      "observed_output": "D"
+    },
+    {
+      "source": "output/model-opt-20260923/local-v1/attempt-1/1-1/http.jsonl",
+      "line": 1,
+      "request_sha256": "fd258d445d25678eef3c740fbb991595a74b7ee8378fc1fc3b0ed2d49bd2fd6c",
+      "request": {
+        "model": "Qwen2.5-1.5B-Instruct",
+        "messages": [
+          {
+            "role": "system",
+            "content": "Choose Mario's next action. Reply with exactly one option letter. Move right without dying. Prefer running on clear ground. Ground actions last 6 frames; jump actions continue until landing, with no new decision in the air; a hop releases jump after 8 frames. Avoid side contact with enemies and jump before a gap or wall, allowing for current momentum. A hop is low; tall walls and wide gaps need a full jump with enough speed. Check the landing surface and all nearby enemies, including the next enemy after a stomp. Landing distances and enemy collision risks are estimates, not prohibitions; terrain and enemy positions are observations. Beyond the visible range is unknown. If blocked, change the action marked STUCK; back off for speed only when the space behind is safe. State units are tiles: dx is rightward, up is height above Mario's feet. Terrain entries [from_dx,to_dx,solid_up_intervals] preserve solid geometry; all intervals include endpoints. Enemies are [dx,up,kind]. A gap's width_known=false means its width is only a lower bound. Speed is the signed game speed byte (full rightward speed is about 48). Coach plans, when present, are advice to check against current geometry and recent failures.\nOPTIONS (answer with the LETTER):\n  A) stand = wait in place; use when an enemy on a wall or pipe ahead has to move away first\n  B) walk right = move right slowly\n  C) jump right = full jump while moving right at walking speed; about 4 tiles high, 3 to 5 tiles far\n  D) run right = move right fast; does not jump; builds speed for a longer jump\n  E) run and jump right = full jump at running speed; up to 5 tiles high and 9 tiles far when already at full speed\n  F) jump in place = full jump straight up\n  G) walk left = back off to the left\n  H) hop right = short low jump to the right, about 2 tiles high; lands 1 to 4 tiles ahead depending on speed; use to land on top of an enemy 2 tiles ahead\n  I) back off for a run-up = walk left until the wall or gap ahead is 6 tiles away, so that 'run right' can build full speed before jumping; do not use with an enemy behind Mario"
+          },
+          {
+            "role": "user",
+            "content": "RECENT DECISIONS (oldest first; x before each action):\n  (this is the first decision of the episode)\n\nSTATE:\n{\"on_ground\":true,\"speed\":0,\"visible_ahead\":13,\"unknown_from\":14,\"wall\":null,\"gap\":null,\"terrain\":[[-4,-3,[]],[-2,13,[[-2,-1]]]],\"enemies\":[],\"enemies_behind\":[],\"clear_behind\":2,\"estimated_jump\":{\"height\":4,\"distance\":3,\"landing\":3,\"hop\":1},\"landing_enemy_risk\":[],\"previous_buttons\":0}\n\nAnswer with one letter."
+          }
+        ],
+        "max_tokens": 8,
+        "temperature": 0
+      },
+      "observed_output": "D"
+    },
+    {
+      "source": "output/model-opt-20260923/local-v1/attempt-1/1-1/http.jsonl",
+      "line": 3,
+      "request_sha256": "d620c99aefa30eac006efe6ac9d6ff5649058d19a73f765dac980236aa55ba6d",
+      "request": {
+        "model": "Qwen2.5-1.5B-Instruct",
+        "messages": [
+          {
+            "role": "system",
+            "content": "Choose Mario's next action. Reply with exactly one option letter. Move right without dying. Prefer running on clear ground. Ground actions last 6 frames; jump actions continue until landing, with no new decision in the air; a hop releases jump after 8 frames. Avoid side contact with enemies and jump before a gap or wall, allowing for current momentum. A hop is low; tall walls and wide gaps need a full jump with enough speed. Check the landing surface and all nearby enemies, including the next enemy after a stomp. Landing distances and enemy collision risks are estimates, not prohibitions; terrain and enemy positions are observations. Beyond the visible range is unknown. If blocked, change the action marked STUCK; back off for speed only when the space behind is safe. State units are tiles: dx is rightward, up is height above Mario's feet. Terrain entries [from_dx,to_dx,solid_up_intervals] preserve solid geometry; all intervals include endpoints. Enemies are [dx,up,kind]. A gap's width_known=false means its width is only a lower bound. Speed is the signed game speed byte (full rightward speed is about 48). Coach plans, when present, are advice to check against current geometry and recent failures.\nOPTIONS (answer with the LETTER):\n  A) stand = wait in place; use when an enemy on a wall or pipe ahead has to move away first\n  B) walk right = move right slowly\n  C) jump right = full jump while moving right at walking speed; about 4 tiles high, 3 to 5 tiles far\n  D) run right = move right fast; does not jump; builds speed for a longer jump\n  E) run and jump right = full jump at running speed; up to 5 tiles high and 9 tiles far when already at full speed\n  F) jump in place = full jump straight up\n  G) walk left = back off to the left\n  H) hop right = short low jump to the right, about 2 tiles high; lands 1 to 4 tiles ahead depending on speed; use to land on top of an enemy 2 tiles ahead\n  I) back off for a run-up = walk left until the wall or gap ahead is 6 tiles away, so that 'run right' can build full speed before jumping; do not use with an enemy behind Mario"
+          },
+          {
+            "role": "user",
+            "content": "RECENT DECISIONS (oldest first; x before each action):\n  run right -> x=0\n  jump right -> x=41 (+41)\n\nSTATE:\n{\"on_ground\":true,\"speed\":28,\"visible_ahead\":9,\"unknown_from\":10,\"wall\":null,\"gap\":null,\"terrain\":[[-4,8,[[-2,-1]]],[9,9,[[3,3],[-2,-1]]]],\"enemies\":[],\"enemies_behind\":[],\"clear_behind\":4,\"estimated_jump\":{\"height\":4,\"distance\":5,\"landing\":5,\"hop\":2},\"landing_enemy_risk\":[],\"previous_buttons\":1}\n\nAnswer with one letter."
+          }
+        ],
+        "max_tokens": 8,
+        "temperature": 0
+      },
+      "observed_output": "C"
+    },
+    {
+      "source": "output/model-opt-20260923/local-v1/attempt-1/1-1/http.jsonl",
+      "line": 11,
+      "request_sha256": "470f9ec327fa00e3ec06303a909ae6efc11a0b9a4c5375f71f252e0ed1eac8ef",
+      "request": {
+        "model": "Qwen2.5-1.5B-Instruct",
+        "messages": [
+          {
+            "role": "system",
+            "content": "Choose Mario's next action. Reply with exactly one option letter. Move right without dying. Prefer running on clear ground. Ground actions last 6 frames; jump actions continue until landing, with no new decision in the air; a hop releases jump after 8 frames. Avoid side contact with enemies and jump before a gap or wall, allowing for current momentum. A hop is low; tall walls and wide gaps need a full jump with enough speed. Check the landing surface and all nearby enemies, including the next enemy after a stomp. Landing distances and enemy collision risks are estimates, not prohibitions; terrain and enemy positions are observations. Beyond the visible range is unknown. If blocked, change the action marked STUCK; back off for speed only when the space behind is safe. State units are tiles: dx is rightward, up is height above Mario's feet. Terrain entries [from_dx,to_dx,solid_up_intervals] preserve solid geometry; all intervals include endpoints. Enemies are [dx,up,kind]. A gap's width_known=false means its width is only a lower bound. Speed is the signed game speed byte (full rightward speed is about 48). Coach plans, when present, are advice to check against current geometry and recent failures.\nOPTIONS (answer with the LETTER):\n  A) stand = wait in place; use when an enemy on a wall or pipe ahead has to move away first\n  B) walk right = move right slowly\n  C) jump right = full jump while moving right at walking speed; about 4 tiles high, 3 to 5 tiles far\n  D) run right = move right fast; does not jump; builds speed for a longer jump\n  E) run and jump right = full jump at running speed; up to 5 tiles high and 9 tiles far when already at full speed\n  F) jump in place = full jump straight up\n  G) walk left = back off to the left\n  H) hop right = short low jump to the right, about 2 tiles high; lands 1 to 4 tiles ahead depending on speed; use to land on top of an enemy 2 tiles ahead\n  I) back off for a run-up = walk left until the wall or gap ahead is 6 tiles away, so that 'run right' can build full speed before jumping; do not use with an enemy behind Mario"
+          },
+          {
+            "role": "user",
+            "content": "RECENT DECISIONS (oldest first; x before each action):\n  jump right -> x=256\n  jump right -> x=351 (+95)\n  jump right -> x=458 (+107)\n  jump right -> x=565 (+107)\n  run right -> x=663 (+98)\n  run right -> x=675 (+12)\n\nSTATE:\n{\"on_ground\":true,\"speed\":48,\"visible_ahead\":8,\"unknown_from\":9,\"wall\":{\"tiles\":3,\"height\":4},\"gap\":null,\"terrain\":[[-4,-4,[[-2,2]]],[-3,2,[[-2,-1]]],[3,4,[[-2,3]]],[5,8,[[-2,-1]]]],\"enemies\":[[2,0,\"goomba\"],[8,0,\"goomba\"]],\"enemies_behind\":[],\"clear_behind\":3,\"estimated_jump\":{\"height\":5,\"distance\":9,\"landing\":9,\"hop\":5},\"landing_enemy_risk\":[8],\"previous_buttons\":3}\n\nAnswer with one letter."
+          }
+        ],
+        "max_tokens": 8,
+        "temperature": 0
+      },
+      "observed_output": "D"
+    }
+  ],
+  "cache-check-on": [
+    {
+      "case": 0,
+      "request_sha256": "fd258d445d25678eef3c740fbb991595a74b7ee8378fc1fc3b0ed2d49bd2fd6c",
+      "seconds": 1.9563997918739915,
+      "output": "D",
+      "usage": {
+        "prompt_tokens": 635,
+        "completion_tokens": 2,
+        "total_tokens": 637,
+        "prompt_tokens_details": {
+          "cached_tokens": 111
+        }
+      },
+      "timings": {
+        "backend": "mlx",
+        "dtype": "float16",
+        "seconds": 1.91185,
+        "tokenize_seconds": 0.021876,
+        "inference_seconds": 1.889675,
+        "prefill_to_first_token_seconds": 1.604783,
+        "decode_seconds": 0.044036,
+        "prompt_tokens": 635,
+        "cached_tokens": 111,
+        "prefill_tokens": 524,
+        "completion_tokens": 2,
+        "peak_memory_gb": 3.5363
+      }
+    },
+    {
+      "case": 1,
+      "request_sha256": "470f9ec327fa00e3ec06303a909ae6efc11a0b9a4c5375f71f252e0ed1eac8ef",
+      "seconds": 0.5983250420540571,
+      "output": "D",
+      "usage": {
+        "prompt_tokens": 746,
+        "completion_tokens": 2,
+        "total_tokens": 748,
+        "prompt_tokens_details": {
+          "cached_tokens": 515
+        }
+      },
+      "timings": {
+        "backend": "mlx",
+        "dtype": "float16",
+        "seconds": 0.59457,
+        "tokenize_seconds": 0.005388,
+        "inference_seconds": 0.588957,
+        "prefill_to_first_token_seconds": 0.170515,
+        "decode_seconds": 0.029244,
+        "prompt_tokens": 746,
+        "cached_tokens": 515,
+        "prefill_tokens": 231,
+        "completion_tokens": 2,
+        "peak_memory_gb": 3.5363
+      }
+    },
+    {
+      "case": 2,
+      "request_sha256": "f3aec6b180041c34078d6df5ed23651c4acefc09218776bd4e3607f9005a7759",
+      "seconds": 0.5880359588190913,
+      "output": "C",
+      "usage": {
+        "prompt_tokens": 689,
+        "completion_tokens": 2,
+        "total_tokens": 691,
+        "prompt_tokens_details": {
+          "cached_tokens": 515
+        }
+      },
+      "timings": {
+        "backend": "mlx",
+        "dtype": "float16",
+        "seconds": 0.584117,
+        "tokenize_seconds": 0.004225,
+        "inference_seconds": 0.579589,
+        "prefill_to_first_token_seconds": 0.157639,
+        "decode_seconds": 0.029536,
+        "prompt_tokens": 689,
+        "cached_tokens": 515,
+        "prefill_tokens": 174,
+        "completion_tokens": 2,
+        "peak_memory_gb": 3.5363
+      }
+    },
+    {
+      "case": 3,
+      "request_sha256": "d52588dcb94cd4b3876aaf0eaad49a4ef87e62f828cfe8ffa8811814decc2ca3",
+      "seconds": 0.5953114167787135,
+      "output": "C",
+      "usage": {
+        "prompt_tokens": 826,
+        "completion_tokens": 2,
+        "total_tokens": 828,
+        "prompt_tokens_details": {
+          "cached_tokens": 515
+        }
+      },
+      "timings": {
+        "backend": "mlx",
+        "dtype": "float16",
+        "seconds": 0.592401,
+        "tokenize_seconds": 0.005599,
+        "inference_seconds": 0.586582,
+        "prefill_to_first_token_seconds": 0.221191,
+        "decode_seconds": 0.029573,
+        "prompt_tokens": 826,
+        "cached_tokens": 515,
+        "prefill_tokens": 311,
+        "completion_tokens": 2,
+        "peak_memory_gb": 3.5363
+      }
+    },
+    {
+      "case": 4,
+      "request_sha256": "584e93c5296f2f24e4a663a6e0eece7232d12aabaf10758b935e1cf1bc357532",
+      "seconds": 0.6157124168239534,
+      "output": "C",
+      "usage": {
+        "prompt_tokens": 807,
+        "completion_tokens": 2,
+        "total_tokens": 809,
+        "prompt_tokens_details": {
+          "cached_tokens": 515
+        }
+      },
+      "timings": {
+        "backend": "mlx",
+        "dtype": "float16",
+        "seconds": 0.613157,
+        "tokenize_seconds": 0.004381,
+        "inference_seconds": 0.608542,
+        "prefill_to_first_token_seconds": 0.226573,
+        "decode_seconds": 0.031599,
+        "prompt_tokens": 807,
+        "cached_tokens": 515,
+        "prefill_tokens": 292,
+        "completion_tokens": 2,
+        "peak_memory_gb": 3.5363
+      }
+    },
+    {
+      "case": 5,
+      "request_sha256": "9b623fe724878444c66683e75e40b6d44d26f96c8976cb8a7e8897934ef939ea",
+      "seconds": 0.8928079162724316,
+      "output": "C",
+      "usage": {
+        "prompt_tokens": 688,
+        "completion_tokens": 2,
+        "total_tokens": 690,
+        "prompt_tokens_details": {
+          "cached_tokens": 111
+        }
+      },
+      "timings": {
+        "backend": "mlx",
+        "dtype": "float16",
+        "seconds": 0.889917,
+        "tokenize_seconds": 0.003446,
+        "inference_seconds": 0.886347,
+        "prefill_to_first_token_seconds": 0.375345,
+        "decode_seconds": 0.037374,
+        "prompt_tokens": 688,
+        "cached_tokens": 111,
+        "prefill_tokens": 577,
+        "completion_tokens": 2,
+        "peak_memory_gb": 3.5363
+      }
+    },
+    {
+      "case": 6,
+      "request_sha256": "d319999d315b5c0210e60f5aa86f38d383830ffbecd4625073ba184b13c532f1",
+      "seconds": 1.0163147919811308,
+      "output": "C",
+      "usage": {
+        "prompt_tokens": 801,
+        "completion_tokens": 2,
+        "total_tokens": 803,
+        "prompt_tokens_details": {
+          "cached_tokens": 568
+        }
+      },
+      "timings": {
+        "backend": "mlx",
+        "dtype": "float16",
+        "seconds": 1.011696,
+        "tokenize_seconds": 0.006145,
+        "inference_seconds": 1.00347,
+        "prefill_to_first_token_seconds": 0.227409,
+        "decode_seconds": 0.034391,
+        "prompt_tokens": 801,
+        "cached_tokens": 568,
+        "prefill_tokens": 233,
+        "completion_tokens": 2,
+        "peak_memory_gb": 3.5363
+      }
+    },
+    {
+      "case": 7,
+      "request_sha256": "ad94c4e663a205018dbf7e425715fc1202c32081d71cada28e5bc15c1d20c1eb",
+      "seconds": 0.7730866246856749,
+      "output": "C",
+      "usage": {
+        "prompt_tokens": 742,
+        "completion_tokens": 2,
+        "total_tokens": 744,
+        "prompt_tokens_details": {
+          "cached_tokens": 568
+        }
+      },
+      "timings": {
+        "backend": "mlx",
+        "dtype": "float16",
+        "seconds": 0.769828,
+        "tokenize_seconds": 0.004459,
+        "inference_seconds": 0.765198,
+        "prefill_to_first_token_seconds": 0.261208,
+        "decode_seconds": 0.029748,
+        "prompt_tokens": 742,
+        "cached_tokens": 568,
+        "prefill_tokens": 174,
+        "completion_tokens": 2,
+        "peak_memory_gb": 3.5363
+      }
+    },
+    {
+      "case": 8,
+      "request_sha256": "dd38b4513079e854af8d041d6d213db5ae95411aac95e4dd9fd091d35dd14548",
+      "seconds": 0.7769119581207633,
+      "output": "C",
+      "usage": {
+        "prompt_tokens": 870,
+        "completion_tokens": 2,
+        "total_tokens": 872,
+        "prompt_tokens_details": {
+          "cached_tokens": 568
+        }
+      },
+      "timings": {
+        "backend": "mlx",
+        "dtype": "float16",
+        "seconds": 0.77434,
+        "tokenize_seconds": 0.003688,
+        "inference_seconds": 0.770505,
+        "prefill_to_first_token_seconds": 0.285962,
+        "decode_seconds": 0.025649,
+        "prompt_tokens": 870,
+        "cached_tokens": 568,
+        "prefill_tokens": 302,
+        "completion_tokens": 2,
+        "peak_memory_gb": 3.5363
+      }
+    },
+    {
+      "case": 9,
+      "request_sha256": "d692e47a9ef80c2ce9ce1dc78a4a7a0054361c057a5de9245ff8c8c9bb5f47f8",
+      "seconds": 0.6196762081235647,
+      "output": "C",
+      "usage": {
+        "prompt_tokens": 762,
+        "completion_tokens": 2,
+        "total_tokens": 764,
+        "prompt_tokens_details": {
+          "cached_tokens": 573
+        }
+      },
+      "timings": {
+        "backend": "mlx",
+        "dtype": "float16",
+        "seconds": 0.616704,
+        "tokenize_seconds": 0.003392,
+        "inference_seconds": 0.612758,
+        "prefill_to_first_token_seconds": 0.169163,
+        "decode_seconds": 0.027577,
+        "prompt_tokens": 762,
+        "cached_tokens": 573,
+        "prefill_tokens": 189,
+        "completion_tokens": 2,
+        "peak_memory_gb": 3.5363
+      }
+    },
+    {
+      "case": 10,
+      "request_sha256": "069249f1daf2a2a8572b34d478e65e10858145df8d2989e006b4646ce6772f12",
+      "seconds": 0.6255578328855336,
+      "output": "C",
+      "usage": {
+        "prompt_tokens": 741,
+        "completion_tokens": 2,
+        "total_tokens": 743,
+        "prompt_tokens_details": {
+          "cached_tokens": 568
+        }
+      },
+      "timings": {
+        "backend": "mlx",
+        "dtype": "float16",
+        "seconds": 0.619396,
+        "tokenize_seconds": 0.006858,
+        "inference_seconds": 0.612341,
+        "prefill_to_first_token_seconds": 0.168065,
+        "decode_seconds": 0.026504,
+        "prompt_tokens": 741,
+        "cached_tokens": 568,
+        "prefill_tokens": 173,
+        "completion_tokens": 2,
+        "peak_memory_gb": 3.5363
+      }
+    },
+    {
+      "case": 11,
+      "request_sha256": "6085d1b36b776252d5db1f5601d8d61704ee9534489ee4cf8bab94271f62a701",
+      "seconds": 0.75337208295241,
+      "output": "D",
+      "usage": {
+        "prompt_tokens": 849,
+        "completion_tokens": 2,
+        "total_tokens": 851,
+        "prompt_tokens_details": {
+          "cached_tokens": 568
+        }
+      },
+      "timings": {
+        "backend": "mlx",
+        "dtype": "float16",
+        "seconds": 0.744954,
+        "tokenize_seconds": 0.012094,
+        "inference_seconds": 0.732693,
+        "prefill_to_first_token_seconds": 0.224077,
+        "decode_seconds": 0.026334,
+        "prompt_tokens": 849,
+        "cached_tokens": 568,
+        "prefill_tokens": 281,
+        "completion_tokens": 2,
+        "peak_memory_gb": 3.5363
+      }
+    },
+    {
+      "case": 12,
+      "request_sha256": "1af3d521c26f4aa459a98faef4818359ae28ada67a93bc7a11ef9dc9871a3f03",
+      "seconds": 0.736754166893661,
+      "output": "C",
+      "usage": {
+        "prompt_tokens": 774,
+        "completion_tokens": 2,
+        "total_tokens": 776,
+        "prompt_tokens_details": {
+          "cached_tokens": 568
+        }
+      },
+      "timings": {
+        "backend": "mlx",
+        "dtype": "float16",
+        "seconds": 0.734298,
+        "tokenize_seconds": 0.003266,
+        "inference_seconds": 0.73085,
+        "prefill_to_first_token_seconds": 0.192473,
+        "decode_seconds": 0.028025,
+        "prompt_tokens": 774,
+        "cached_tokens": 568,
+        "prefill_tokens": 206,
+        "completion_tokens": 2,
+        "peak_memory_gb": 3.5363
+      }
+    },
+    {
+      "case": 13,
+      "request_sha256": "d8c493235214b39028382730b96f6023755e32978d8a2df1d84377c97fc2912d",
+      "seconds": 0.6411919589154422,
+      "output": "D",
+      "usage": {
+        "prompt_tokens": 898,
+        "completion_tokens": 2,
+        "total_tokens": 900,
+        "prompt_tokens_details": {
+          "cached_tokens": 568
+        }
+      },
+      "timings": {
+        "backend": "mlx",
+        "dtype": "float16",
+        "seconds": 0.637449,
+        "tokenize_seconds": 0.005456,
+        "inference_seconds": 0.631679,
+        "prefill_to_first_token_seconds": 0.214858,
+        "decode_seconds": 0.026547,
+        "prompt_tokens": 898,
+        "cached_tokens": 568,
+        "prefill_tokens": 330,
+        "completion_tokens": 2,
+        "peak_memory_gb": 3.5363
+      }
+    },
+    {
+      "case": 14,
+      "request_sha256": "90cb7bbcd6c60bf3bccedb4482053778fbc1e34449a27bf90b8d42cec23803d9",
+      "seconds": 0.5145649160258472,
+      "output": "C",
+      "usage": {
+        "prompt_tokens": 739,
+        "completion_tokens": 2,
+        "total_tokens": 741,
+        "prompt_tokens_details": {
+          "cached_tokens": 568
+        }
+      },
+      "timings": {
+        "backend": "mlx",
+        "dtype": "float16",
+        "seconds": 0.511221,
+        "tokenize_seconds": 0.005347,
+        "inference_seconds": 0.505635,
+        "prefill_to_first_token_seconds": 0.160771,
+        "decode_seconds": 0.026492,
+        "prompt_tokens": 739,
+        "cached_tokens": 568,
+        "prefill_tokens": 171,
+        "completion_tokens": 2,
+        "peak_memory_gb": 3.5363
+      }
+    },
+    {
+      "case": 15,
+      "request_sha256": "f418dc36cd239545dc2da2876fb338fe25f9cff7d32fb9dfe6df60abfdfbcb2c",
+      "seconds": 0.5375025826506317,
+      "output": "C",
+      "usage": {
+        "prompt_tokens": 770,
+        "completion_tokens": 2,
+        "total_tokens": 772,
+        "prompt_tokens_details": {
+          "cached_tokens": 568
+        }
+      },
+      "timings": {
+        "backend": "mlx",
+        "dtype": "float16",
+        "seconds": 0.534463,
+        "tokenize_seconds": 0.00354,
+        "inference_seconds": 0.530736,
+        "prefill_to_first_token_seconds": 0.17521,
+        "decode_seconds": 0.035388,
+        "prompt_tokens": 770,
+        "cached_tokens": 568,
+        "prefill_tokens": 202,
+        "completion_tokens": 2,
+        "peak_memory_gb": 3.5363
+      }
+    },
+    {
+      "case": 16,
+      "request_sha256": "66aa79e1e8321ac62ee91fb1e682bdad485650e5cebb98a7e16b0ffd05501b25",
+      "seconds": 0.7817353326827288,
+      "output": "D",
+      "usage": {
+        "prompt_tokens": 748,
+        "completion_tokens": 2,
+        "total_tokens": 750,
+        "prompt_tokens_details": {
+          "cached_tokens": 111
+        }
+      },
+      "timings": {
+        "backend": "mlx",
+        "dtype": "float16",
+        "seconds": 0.774942,
+        "tokenize_seconds": 0.004905,
+        "inference_seconds": 0.769848,
+        "prefill_to_first_token_seconds": 0.392663,
+        "decode_seconds": 0.030872,
+        "prompt_tokens": 748,
+        "cached_tokens": 111,
+        "prefill_tokens": 637,
+        "completion_tokens": 2,
+        "peak_memory_gb": 3.5363
+      }
+    },
+    {
+      "case": 17,
+      "request_sha256": "5bd4b6eabb1f237710d36dd109d7096799ce099453909eb50e94e82833f7ea7c",
+      "seconds": 0.526951165869832,
+      "output": "C",
+      "usage": {
+        "prompt_tokens": 632,
+        "completion_tokens": 2,
+        "total_tokens": 634,
+        "prompt_tokens_details": {
+          "cached_tokens": 515
+        }
+      },
+      "timings": {
+        "backend": "mlx",
+        "dtype": "float16",
+        "seconds": 0.523552,
+        "tokenize_seconds": 0.00529,
+        "inference_seconds": 0.518097,
+        "prefill_to_first_token_seconds": 0.134831,
+        "decode_seconds": 0.030024,
+        "prompt_tokens": 632,
+        "cached_tokens": 515,
+        "prefill_tokens": 117,
+        "completion_tokens": 2,
+        "peak_memory_gb": 3.5363
+      }
+    },
+    {
+      "case": 18,
+      "request_sha256": "d620c99aefa30eac006efe6ac9d6ff5649058d19a73f765dac980236aa55ba6d",
+      "seconds": 0.5182586251758039,
+      "output": "C",
+      "usage": {
+        "prompt_tokens": 651,
+        "completion_tokens": 2,
+        "total_tokens": 653,
+        "prompt_tokens_details": {
+          "cached_tokens": 521
+        }
+      },
+      "timings": {
+        "backend": "mlx",
+        "dtype": "float16",
+        "seconds": 0.513954,
+        "tokenize_seconds": 0.005032,
+        "inference_seconds": 0.508717,
+        "prefill_to_first_token_seconds": 0.144362,
+        "decode_seconds": 0.02832,
+        "prompt_tokens": 651,
+        "cached_tokens": 521,
+        "prefill_tokens": 130,
+        "completion_tokens": 2,
+        "peak_memory_gb": 3.5363
+      }
+    },
+    {
+      "case": 19,
+      "request_sha256": "fd258d445d25678eef3c740fbb991595a74b7ee8378fc1fc3b0ed2d49bd2fd6c",
+      "seconds": 0.5402039168402553,
+      "output": "D",
+      "usage": {
+        "prompt_tokens": 635,
+        "completion_tokens": 2,
+        "total_tokens": 637,
+        "prompt_tokens_details": {
+          "cached_tokens": 515
+        }
+      },
+      "timings": {
+        "backend": "mlx",
+        "dtype": "float16",
+        "seconds": 0.538313,
+        "tokenize_seconds": 0.002728,
+        "inference_seconds": 0.535467,
+        "prefill_to_first_token_seconds": 0.139745,
+        "decode_seconds": 0.026939,
+        "prompt_tokens": 635,
+        "cached_tokens": 515,
+        "prefill_tokens": 120,
+        "completion_tokens": 2,
+        "peak_memory_gb": 3.5363
+      }
+    },
+    {
+      "case": 20,
+      "request_sha256": "fd258d445d25678eef3c740fbb991595a74b7ee8378fc1fc3b0ed2d49bd2fd6c",
+      "seconds": 0.5712900841608644,
+      "output": "D",
+      "usage": {
+        "prompt_tokens": 635,
+        "completion_tokens": 2,
+        "total_tokens": 637,
+        "prompt_tokens_details": {
+          "cached_tokens": 634
+        }
+      },
+      "timings": {
+        "backend": "mlx",
+        "dtype": "float16",
+        "seconds": 0.568587,
+        "tokenize_seconds": 0.004407,
+        "inference_seconds": 0.563971,
+        "prefill_to_first_token_seconds": 0.07906,
+        "decode_seconds": 0.026557,
+        "prompt_tokens": 635,
+        "cached_tokens": 634,
+        "prefill_tokens": 1,
+        "completion_tokens": 2,
+        "peak_memory_gb": 3.5363
+      }
+    },
+    {
+      "case": 21,
+      "request_sha256": "d620c99aefa30eac006efe6ac9d6ff5649058d19a73f765dac980236aa55ba6d",
+      "seconds": 0.4910415420308709,
+      "output": "C",
+      "usage": {
+        "prompt_tokens": 651,
+        "completion_tokens": 2,
+        "total_tokens": 653,
+        "prompt_tokens_details": {
+          "cached_tokens": 515
+        }
+      },
+      "timings": {
+        "backend": "mlx",
+        "dtype": "float16",
+        "seconds": 0.488072,
+        "tokenize_seconds": 0.002146,
+        "inference_seconds": 0.485786,
+        "prefill_to_first_token_seconds": 0.137739,
+        "decode_seconds": 0.02575,
+        "prompt_tokens": 651,
+        "cached_tokens": 515,
+        "prefill_tokens": 136,
+        "completion_tokens": 2,
+        "peak_memory_gb": 3.5363
+      }
+    },
+    {
+      "case": 22,
+      "request_sha256": "470f9ec327fa00e3ec06303a909ae6efc11a0b9a4c5375f71f252e0ed1eac8ef",
+      "seconds": 0.5379244582727551,
+      "output": "D",
+      "usage": {
+        "prompt_tokens": 746,
+        "completion_tokens": 2,
+        "total_tokens": 748,
+        "prompt_tokens_details": {
+          "cached_tokens": 515
+        }
+      },
+      "timings": {
+        "backend": "mlx",
+        "dtype": "float16",
+        "seconds": 0.5351,
+        "tokenize_seconds": 0.002938,
+        "inference_seconds": 0.532022,
+        "prefill_to_first_token_seconds": 0.153507,
+        "decode_seconds": 0.033607,
+        "prompt_tokens": 746,
+        "cached_tokens": 515,
+        "prefill_tokens": 231,
+        "completion_tokens": 2,
+        "peak_memory_gb": 3.5363
+      }
+    }
+  ],
+  "cache-check-off": [
+    {
+      "case": 0,
+      "request_sha256": "fd258d445d25678eef3c740fbb991595a74b7ee8378fc1fc3b0ed2d49bd2fd6c",
+      "seconds": 1.8453801251016557,
+      "output": "D",
+      "usage": {
+        "prompt_tokens": 635,
+        "completion_tokens": 2,
+        "total_tokens": 637,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        }
+      },
+      "timings": {
+        "backend": "mlx",
+        "dtype": "float16",
+        "seconds": 1.810744,
+        "tokenize_seconds": 0.020089,
+        "inference_seconds": 1.790378,
+        "prefill_to_first_token_seconds": 1.575587,
+        "decode_seconds": 0.032561,
+        "prompt_tokens": 635,
+        "cached_tokens": 0,
+        "prefill_tokens": 635,
+        "completion_tokens": 2,
+        "peak_memory_gb": 3.5081
+      }
+    },
+    {
+      "case": 1,
+      "request_sha256": "470f9ec327fa00e3ec06303a909ae6efc11a0b9a4c5375f71f252e0ed1eac8ef",
+      "seconds": 0.7946169590577483,
+      "output": "D",
+      "usage": {
+        "prompt_tokens": 746,
+        "completion_tokens": 2,
+        "total_tokens": 748,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        }
+      },
+      "timings": {
+        "backend": "mlx",
+        "dtype": "float16",
+        "seconds": 0.790375,
+        "tokenize_seconds": 0.004411,
+        "inference_seconds": 0.785643,
+        "prefill_to_first_token_seconds": 0.440569,
+        "decode_seconds": 0.039864,
+        "prompt_tokens": 746,
+        "cached_tokens": 0,
+        "prefill_tokens": 746,
+        "completion_tokens": 2,
+        "peak_memory_gb": 3.5081
+      }
+    },
+    {
+      "case": 2,
+      "request_sha256": "f3aec6b180041c34078d6df5ed23651c4acefc09218776bd4e3607f9005a7759",
+      "seconds": 1.2102140001952648,
+      "output": "C",
+      "usage": {
+        "prompt_tokens": 689,
+        "completion_tokens": 2,
+        "total_tokens": 691,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        }
+      },
+      "timings": {
+        "backend": "mlx",
+        "dtype": "float16",
+        "seconds": 1.200924,
+        "tokenize_seconds": 0.00584,
+        "inference_seconds": 1.194482,
+        "prefill_to_first_token_seconds": 0.665259,
+        "decode_seconds": 0.044298,
+        "prompt_tokens": 689,
+        "cached_tokens": 0,
+        "prefill_tokens": 689,
+        "completion_tokens": 2,
+        "peak_memory_gb": 3.5081
+      }
+    },
+    {
+      "case": 3,
+      "request_sha256": "d52588dcb94cd4b3876aaf0eaad49a4ef87e62f828cfe8ffa8811814decc2ca3",
+      "seconds": 1.111022874712944,
+      "output": "C",
+      "usage": {
+        "prompt_tokens": 826,
+        "completion_tokens": 2,
+        "total_tokens": 828,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        }
+      },
+      "timings": {
+        "backend": "mlx",
+        "dtype": "float16",
+        "seconds": 1.103955,
+        "tokenize_seconds": 0.003696,
+        "inference_seconds": 1.099452,
+        "prefill_to_first_token_seconds": 0.747647,
+        "decode_seconds": 0.041026,
+        "prompt_tokens": 826,
+        "cached_tokens": 0,
+        "prefill_tokens": 826,
+        "completion_tokens": 2,
+        "peak_memory_gb": 3.5081
+      }
+    },
+    {
+      "case": 4,
+      "request_sha256": "584e93c5296f2f24e4a663a6e0eece7232d12aabaf10758b935e1cf1bc357532",
+      "seconds": 1.1284392080269754,
+      "output": "C",
+      "usage": {
+        "prompt_tokens": 807,
+        "completion_tokens": 2,
+        "total_tokens": 809,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        }
+      },
+      "timings": {
+        "backend": "mlx",
+        "dtype": "float16",
+        "seconds": 1.125537,
+        "tokenize_seconds": 0.004828,
+        "inference_seconds": 1.120323,
+        "prefill_to_first_token_seconds": 0.626149,
+        "decode_seconds": 0.039654,
+        "prompt_tokens": 807,
+        "cached_tokens": 0,
+        "prefill_tokens": 807,
+        "completion_tokens": 2,
+        "peak_memory_gb": 3.5081
+      }
+    },
+    {
+      "case": 5,
+      "request_sha256": "9b623fe724878444c66683e75e40b6d44d26f96c8976cb8a7e8897934ef939ea",
+      "seconds": 0.8726464589126408,
+      "output": "C",
+      "usage": {
+        "prompt_tokens": 688,
+        "completion_tokens": 2,
+        "total_tokens": 690,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        }
+      },
+      "timings": {
+        "backend": "mlx",
+        "dtype": "float16",
+        "seconds": 0.863926,
+        "tokenize_seconds": 0.002947,
+        "inference_seconds": 0.860271,
+        "prefill_to_first_token_seconds": 0.561255,
+        "decode_seconds": 0.041016,
+        "prompt_tokens": 688,
+        "cached_tokens": 0,
+        "prefill_tokens": 688,
+        "completion_tokens": 2,
+        "peak_memory_gb": 3.5081
+      }
+    },
+    {
+      "case": 6,
+      "request_sha256": "d319999d315b5c0210e60f5aa86f38d383830ffbecd4625073ba184b13c532f1",
+      "seconds": 1.308583540841937,
+      "output": "C",
+      "usage": {
+        "prompt_tokens": 801,
+        "completion_tokens": 2,
+        "total_tokens": 803,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        }
+      },
+      "timings": {
+        "backend": "mlx",
+        "dtype": "float16",
+        "seconds": 1.302408,
+        "tokenize_seconds": 0.015313,
+        "inference_seconds": 1.286744,
+        "prefill_to_first_token_seconds": 0.667725,
+        "decode_seconds": 0.042778,
+        "prompt_tokens": 801,
+        "cached_tokens": 0,
+        "prefill_tokens": 801,
+        "completion_tokens": 2,
+        "peak_memory_gb": 3.5081
+      }
+    },
+    {
+      "case": 7,
+      "request_sha256": "ad94c4e663a205018dbf7e425715fc1202c32081d71cada28e5bc15c1d20c1eb",
+      "seconds": 1.0232055829837918,
+      "output": "C",
+      "usage": {
+        "prompt_tokens": 742,
+        "completion_tokens": 2,
+        "total_tokens": 744,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        }
+      },
+      "timings": {
+        "backend": "mlx",
+        "dtype": "float16",
+        "seconds": 1.017844,
+        "tokenize_seconds": 0.008629,
+        "inference_seconds": 1.008761,
+        "prefill_to_first_token_seconds": 0.596854,
+        "decode_seconds": 0.054652,
+        "prompt_tokens": 742,
+        "cached_tokens": 0,
+        "prefill_tokens": 742,
+        "completion_tokens": 2,
+        "peak_memory_gb": 3.5081
+      }
+    },
+    {
+      "case": 8,
+      "request_sha256": "dd38b4513079e854af8d041d6d213db5ae95411aac95e4dd9fd091d35dd14548",
+      "seconds": 1.0764585002325475,
+      "output": "C",
+      "usage": {
+        "prompt_tokens": 870,
+        "completion_tokens": 2,
+        "total_tokens": 872,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        }
+      },
+      "timings": {
+        "backend": "mlx",
+        "dtype": "float16",
+        "seconds": 1.072979,
+        "tokenize_seconds": 0.003458,
+        "inference_seconds": 1.069204,
+        "prefill_to_first_token_seconds": 0.729535,
+        "decode_seconds": 0.043663,
+        "prompt_tokens": 870,
+        "cached_tokens": 0,
+        "prefill_tokens": 870,
+        "completion_tokens": 2,
+        "peak_memory_gb": 3.5113
+      }
+    },
+    {
+      "case": 9,
+      "request_sha256": "d692e47a9ef80c2ce9ce1dc78a4a7a0054361c057a5de9245ff8c8c9bb5f47f8",
+      "seconds": 1.0345672080293298,
+      "output": "C",
+      "usage": {
+        "prompt_tokens": 762,
+        "completion_tokens": 2,
+        "total_tokens": 764,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        }
+      },
+      "timings": {
+        "backend": "mlx",
+        "dtype": "float16",
+        "seconds": 1.032034,
+        "tokenize_seconds": 0.005109,
+        "inference_seconds": 1.026597,
+        "prefill_to_first_token_seconds": 0.6689,
+        "decode_seconds": 0.041168,
+        "prompt_tokens": 762,
+        "cached_tokens": 0,
+        "prefill_tokens": 762,
+        "completion_tokens": 2,
+        "peak_memory_gb": 3.5113
+      }
+    },
+    {
+      "case": 10,
+      "request_sha256": "069249f1daf2a2a8572b34d478e65e10858145df8d2989e006b4646ce6772f12",
+      "seconds": 0.9861460840329528,
+      "output": "C",
+      "usage": {
+        "prompt_tokens": 741,
+        "completion_tokens": 2,
+        "total_tokens": 743,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        }
+      },
+      "timings": {
+        "backend": "mlx",
+        "dtype": "float16",
+        "seconds": 0.98391,
+        "tokenize_seconds": 0.005254,
+        "inference_seconds": 0.978317,
+        "prefill_to_first_token_seconds": 0.632838,
+        "decode_seconds": 0.039639,
+        "prompt_tokens": 741,
+        "cached_tokens": 0,
+        "prefill_tokens": 741,
+        "completion_tokens": 2,
+        "peak_memory_gb": 3.5113
+      }
+    },
+    {
+      "case": 11,
+      "request_sha256": "6085d1b36b776252d5db1f5601d8d61704ee9534489ee4cf8bab94271f62a701",
+      "seconds": 1.0423188749700785,
+      "output": "D",
+      "usage": {
+        "prompt_tokens": 849,
+        "completion_tokens": 2,
+        "total_tokens": 851,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        }
+      },
+      "timings": {
+        "backend": "mlx",
+        "dtype": "float16",
+        "seconds": 1.033947,
+        "tokenize_seconds": 0.003327,
+        "inference_seconds": 1.029871,
+        "prefill_to_first_token_seconds": 0.697957,
+        "decode_seconds": 0.040404,
+        "prompt_tokens": 849,
+        "cached_tokens": 0,
+        "prefill_tokens": 849,
+        "completion_tokens": 2,
+        "peak_memory_gb": 3.5113
+      }
+    },
+    {
+      "case": 12,
+      "request_sha256": "1af3d521c26f4aa459a98faef4818359ae28ada67a93bc7a11ef9dc9871a3f03",
+      "seconds": 1.0279319155961275,
+      "output": "C",
+      "usage": {
+        "prompt_tokens": 774,
+        "completion_tokens": 2,
+        "total_tokens": 776,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        }
+      },
+      "timings": {
+        "backend": "mlx",
+        "dtype": "float16",
+        "seconds": 1.023775,
+        "tokenize_seconds": 0.014815,
+        "inference_seconds": 1.00864,
+        "prefill_to_first_token_seconds": 0.678434,
+        "decode_seconds": 0.041215,
+        "prompt_tokens": 774,
+        "cached_tokens": 0,
+        "prefill_tokens": 774,
+        "completion_tokens": 2,
+        "peak_memory_gb": 3.5113
+      }
+    },
+    {
+      "case": 13,
+      "request_sha256": "d8c493235214b39028382730b96f6023755e32978d8a2df1d84377c97fc2912d",
+      "seconds": 1.1255286247469485,
+      "output": "D",
+      "usage": {
+        "prompt_tokens": 898,
+        "completion_tokens": 2,
+        "total_tokens": 900,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        }
+      },
+      "timings": {
+        "backend": "mlx",
+        "dtype": "float16",
+        "seconds": 1.122556,
+        "tokenize_seconds": 0.005278,
+        "inference_seconds": 1.116988,
+        "prefill_to_first_token_seconds": 0.779093,
+        "decode_seconds": 0.04075,
+        "prompt_tokens": 898,
+        "cached_tokens": 0,
+        "prefill_tokens": 898,
+        "completion_tokens": 2,
+        "peak_memory_gb": 3.5231
+      }
+    },
+    {
+      "case": 14,
+      "request_sha256": "90cb7bbcd6c60bf3bccedb4482053778fbc1e34449a27bf90b8d42cec23803d9",
+      "seconds": 0.9932542918249965,
+      "output": "C",
+      "usage": {
+        "prompt_tokens": 739,
+        "completion_tokens": 2,
+        "total_tokens": 741,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        }
+      },
+      "timings": {
+        "backend": "mlx",
+        "dtype": "float16",
+        "seconds": 0.990819,
+        "tokenize_seconds": 0.004461,
+        "inference_seconds": 0.98607,
+        "prefill_to_first_token_seconds": 0.649772,
+        "decode_seconds": 0.041489,
+        "prompt_tokens": 739,
+        "cached_tokens": 0,
+        "prefill_tokens": 739,
+        "completion_tokens": 2,
+        "peak_memory_gb": 3.5231
+      }
+    },
+    {
+      "case": 15,
+      "request_sha256": "f418dc36cd239545dc2da2876fb338fe25f9cff7d32fb9dfe6df60abfdfbcb2c",
+      "seconds": 1.0213747089728713,
+      "output": "C",
+      "usage": {
+        "prompt_tokens": 770,
+        "completion_tokens": 2,
+        "total_tokens": 772,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        }
+      },
+      "timings": {
+        "backend": "mlx",
+        "dtype": "float16",
+        "seconds": 1.018114,
+        "tokenize_seconds": 0.003487,
+        "inference_seconds": 1.014325,
+        "prefill_to_first_token_seconds": 0.688364,
+        "decode_seconds": 0.039533,
+        "prompt_tokens": 770,
+        "cached_tokens": 0,
+        "prefill_tokens": 770,
+        "completion_tokens": 2,
+        "peak_memory_gb": 3.5231
+      }
+    },
+    {
+      "case": 16,
+      "request_sha256": "66aa79e1e8321ac62ee91fb1e682bdad485650e5cebb98a7e16b0ffd05501b25",
+      "seconds": 0.92533841682598,
+      "output": "D",
+      "usage": {
+        "prompt_tokens": 748,
+        "completion_tokens": 2,
+        "total_tokens": 750,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        }
+      },
+      "timings": {
+        "backend": "mlx",
+        "dtype": "float16",
+        "seconds": 0.922303,
+        "tokenize_seconds": 0.002929,
+        "inference_seconds": 0.919149,
+        "prefill_to_first_token_seconds": 0.585798,
+        "decode_seconds": 0.04031,
+        "prompt_tokens": 748,
+        "cached_tokens": 0,
+        "prefill_tokens": 748,
+        "completion_tokens": 2,
+        "peak_memory_gb": 3.5231
+      }
+    },
+    {
+      "case": 17,
+      "request_sha256": "5bd4b6eabb1f237710d36dd109d7096799ce099453909eb50e94e82833f7ea7c",
+      "seconds": 0.869102249853313,
+      "output": "C",
+      "usage": {
+        "prompt_tokens": 632,
+        "completion_tokens": 2,
+        "total_tokens": 634,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        }
+      },
+      "timings": {
+        "backend": "mlx",
+        "dtype": "float16",
+        "seconds": 0.866893,
+        "tokenize_seconds": 0.003234,
+        "inference_seconds": 0.863395,
+        "prefill_to_first_token_seconds": 0.517602,
+        "decode_seconds": 0.040853,
+        "prompt_tokens": 632,
+        "cached_tokens": 0,
+        "prefill_tokens": 632,
+        "completion_tokens": 2,
+        "peak_memory_gb": 3.5231
+      }
+    },
+    {
+      "case": 18,
+      "request_sha256": "d620c99aefa30eac006efe6ac9d6ff5649058d19a73f765dac980236aa55ba6d",
+      "seconds": 0.8542919592000544,
+      "output": "C",
+      "usage": {
+        "prompt_tokens": 651,
+        "completion_tokens": 2,
+        "total_tokens": 653,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        }
+      },
+      "timings": {
+        "backend": "mlx",
+        "dtype": "float16",
+        "seconds": 0.851429,
+        "tokenize_seconds": 0.003001,
+        "inference_seconds": 0.848135,
+        "prefill_to_first_token_seconds": 0.535237,
+        "decode_seconds": 0.041179,
+        "prompt_tokens": 651,
+        "cached_tokens": 0,
+        "prefill_tokens": 651,
+        "completion_tokens": 2,
+        "peak_memory_gb": 3.5231
+      }
+    },
+    {
+      "case": 19,
+      "request_sha256": "fd258d445d25678eef3c740fbb991595a74b7ee8378fc1fc3b0ed2d49bd2fd6c",
+      "seconds": 0.9096524161286652,
+      "output": "D",
+      "usage": {
+        "prompt_tokens": 635,
+        "completion_tokens": 2,
+        "total_tokens": 637,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        }
+      },
+      "timings": {
+        "backend": "mlx",
+        "dtype": "float16",
+        "seconds": 0.905102,
+        "tokenize_seconds": 0.003544,
+        "inference_seconds": 0.901202,
+        "prefill_to_first_token_seconds": 0.51942,
+        "decode_seconds": 0.043384,
+        "prompt_tokens": 635,
+        "cached_tokens": 0,
+        "prefill_tokens": 635,
+        "completion_tokens": 2,
+        "peak_memory_gb": 3.5231
+      }
+    },
+    {
+      "case": 20,
+      "request_sha256": "fd258d445d25678eef3c740fbb991595a74b7ee8378fc1fc3b0ed2d49bd2fd6c",
+      "seconds": 0.8697947501204908,
+      "output": "D",
+      "usage": {
+        "prompt_tokens": 635,
+        "completion_tokens": 2,
+        "total_tokens": 637,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        }
+      },
+      "timings": {
+        "backend": "mlx",
+        "dtype": "float16",
+        "seconds": 0.866683,
+        "tokenize_seconds": 0.004379,
+        "inference_seconds": 0.861946,
+        "prefill_to_first_token_seconds": 0.505367,
+        "decode_seconds": 0.040698,
+        "prompt_tokens": 635,
+        "cached_tokens": 0,
+        "prefill_tokens": 635,
+        "completion_tokens": 2,
+        "peak_memory_gb": 3.5231
+      }
+    },
+    {
+      "case": 21,
+      "request_sha256": "d620c99aefa30eac006efe6ac9d6ff5649058d19a73f765dac980236aa55ba6d",
+      "seconds": 0.8943289169110358,
+      "output": "C",
+      "usage": {
+        "prompt_tokens": 651,
+        "completion_tokens": 2,
+        "total_tokens": 653,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        }
+      },
+      "timings": {
+        "backend": "mlx",
+        "dtype": "float16",
+        "seconds": 0.89142,
+        "tokenize_seconds": 0.003558,
+        "inference_seconds": 0.88757,
+        "prefill_to_first_token_seconds": 0.52557,
+        "decode_seconds": 0.041263,
+        "prompt_tokens": 651,
+        "cached_tokens": 0,
+        "prefill_tokens": 651,
+        "completion_tokens": 2,
+        "peak_memory_gb": 3.5231
+      }
+    },
+    {
+      "case": 22,
+      "request_sha256": "470f9ec327fa00e3ec06303a909ae6efc11a0b9a4c5375f71f252e0ed1eac8ef",
+      "seconds": 0.9977462501265109,
+      "output": "D",
+      "usage": {
+        "prompt_tokens": 746,
+        "completion_tokens": 2,
+        "total_tokens": 748,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        }
+      },
+      "timings": {
+        "backend": "mlx",
+        "dtype": "float16",
+        "seconds": 0.99399,
+        "tokenize_seconds": 0.004454,
+        "inference_seconds": 0.989201,
+        "prefill_to_first_token_seconds": 0.598165,
+        "decode_seconds": 0.04072,
+        "prompt_tokens": 746,
+        "cached_tokens": 0,
+        "prefill_tokens": 746,
+        "completion_tokens": 2,
+        "peak_memory_gb": 3.5231
+      }
+    }
+  ],
+  "cache-check-summary": {
+    "cases": 23,
+    "exact_output_matches": 23,
+    "mismatches": [],
+    "distinct_outputs": [
+      "C",
+      "D"
+    ],
+    "note": "This is inference consistency on logged game requests, not an action-correctness or win-rate test."
+  }
+}

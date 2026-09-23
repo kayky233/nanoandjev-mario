@@ -84,24 +84,17 @@ RELEASE = {2: 1, 4: 3, 5: 0}  # same action without A
 
 # ----------------------------------------------------------------------------- EDIT HERE: rules
 RULES = (
-    "You control Mario in Super Mario Bros. Pick the joypad action that moves right as far as possible "
-    "without dying. A jump action is held until Mario lands, so one decision is one full jump. "
-    "The 'summary' field describes what is ahead; the grid is the same information drawn out. "
-    "Choose in this priority order: "
-    "(1) Obey every WARNING in the summary as a hard constraint; never pick an option it rules out. "
-    "(2) An enemy 1-3 tiles ahead at Mario's level must be jumped over; 'run right'/'walk right' never leave the ground. "
-    "(3) If a full jump would land where an enemy will be, use 'hop right' or 'jump in place' instead. "
-    "(4) A gap must be jumped 1 tile before its edge. "
-    "(5) Otherwise move right as far and as fast as possible. "
-    "Reach: a jump clears a wall only if its reach in tiles high is at least the wall height, and a gap "
-    "only if its reach far exceeds the gap width plus 1. Reach grows with speed; 'run right' reaches "
-    "full speed after about 3 decisions on clear ground. "
-    "For a wall or gap you cannot clear from here, back off ONCE, then 'run right' to full speed, then "
-    "'run and jump right' 2-3 tiles out; never back off twice in a row. "
-    "A jump arc peaks halfway, so start a jump over a wall about half the far reach ahead. "
-    "Against an enemy ahead, jump when it is 2-3 tiles away; a hop clears or stomps one enemy and lands sooner. "
-    "Enemies appear at the right edge as Mario advances, so a jump that lands past what is visible lands blind. "
-    "An enemy 1-2 tiles behind Mario will hit him within a second: jump immediately."
+    "Move right without dying. Prefer running on clear ground. Ground actions last 6 frames; "
+    "jump actions continue until landing, with no new decision in the air; a hop releases jump after 8 frames. "
+    "Avoid side contact with enemies and jump before a gap or wall, allowing for current momentum. "
+    "A hop is low; tall walls and wide gaps need a full jump with enough speed. "
+    "Check the landing surface and all nearby enemies, including the next enemy after a stomp. "
+    "An enemy near a predicted full-jump landing is a reason to prefer a later jump or a short hop "
+    "whose landing is clear. Time a jump to pass above the enemy, not land directly in front of it; "
+    "recheck the next enemy after a stomp. "
+    "Landing distances and enemy collision risks are estimates, not prohibitions; terrain and enemy positions "
+    "are observations. Beyond the visible range is unknown. If blocked, change the action marked STUCK; "
+    "back off for speed only when the space behind is safe."
 )
 GRID_LEGEND = (
     "Text grid, 13 rows x 20 columns, each cell one 16px tile. Row 7 is Mario's row. "
@@ -141,32 +134,54 @@ def speed_word(v: int) -> str:
 def features(g: str, v: int = 0, airborne: bool | None = None, visible: int = 15) -> dict:
     """Turn the grid into fields and a summary sentence. Mario is row 6, column 4; right is +column."""
     rows = g.splitlines()
-    look = range(1, 9)
+    visible = max(0, min(int(visible), 15))
+    look = range(1, visible + 1)
     # The grid is Mario-relative, so mid-jump his own row is air. Anchor on the ground under him.
     ground = next((r for r in range(7, 13) if rows[r][4] == "#"), 7)
     feet = ground - 1
     on_ground = (not airborne) if airborne is not None else ground == 7
-    f = {"on_ground": on_ground, "wall_ahead": None, "gap_ahead": None, "enemy_ahead": None}
+    f = {"on_ground": on_ground, "wall_ahead": None, "gap_ahead": None, "enemy_ahead": None,
+         "visible_tiles_ahead": visible, "unknown_from_tile": visible + 1, "speed_byte": v}
+
+    # Preserve every observed solid tile, including elevated landing platforms.
+    # Equal neighboring columns share a segment; up=0 is Mario's feet row.
+    terrain = []
+    for dx in range(-4, visible + 1):
+        solid_up, start = [], None
+        for r in range(14):
+            solid = r < 13 and rows[r][4 + dx] == "#"
+            if solid and start is None:
+                start = r
+            elif not solid and start is not None:
+                solid_up.append([feet - (r - 1), feet - start])
+                start = None
+        if terrain and terrain[-1]["solid_up"] == solid_up:
+            terrain[-1]["to"] = dx
+        else:
+            terrain.append({"from": dx, "to": dx, "solid_up": solid_up})
+    f["terrain"] = terrain
     for dx in look:
         if rows[feet][4 + dx] == "#":
-            height = sum(1 for r in range(feet, -1, -1) if rows[r][4 + dx] == "#")
+            height = 0
+            while feet - height >= 0 and rows[feet - height][4 + dx] == "#":
+                height += 1
             f["wall_ahead"] = {"tiles": dx, "height": height}
             break
 
     def bottomless(col: int) -> bool:
         # No solid tile from the ground row to the bottom of the grid; a step down is not a gap.
-        return all(rows[r][col] == "." for r in range(ground, 13))
+        return not any(rows[r][col] == "#" for r in range(feet, 13))
 
     for dx in look:
         if bottomless(4 + dx):
             width = 0
-            while 4 + dx + width < 20 and bottomless(4 + dx + width):
+            while dx + width <= visible and bottomless(4 + dx + width):
                 width += 1
-            f["gap_ahead"] = {"tiles": dx, "width": width}
+            f["gap_ahead"] = {"tiles": dx, "width": width, "width_known": dx + width <= visible}
             break
     # Enemies anywhere ahead, with height above Mario's feet (0 = same level).
     seen = []
-    for dx in range(1, 16):
+    for dx in look:
         for r in range(13):
             if rows[r][4 + dx] in ENEMY_LETTERS:
                 seen.append({"tiles": dx, "up": feet - r, "kind": ENEMY_NAME[rows[r][4 + dx]]})
@@ -181,11 +196,16 @@ def features(g: str, v: int = 0, airborne: bool | None = None, visible: int = 15
         behind += 1
     f["clear_behind"] = behind
 
-    parts, warns = [], []
+    parts, warns, risks = [], [], []
     w, gp = f["wall_ahead"], f["gap_ahead"]
-    parts.append(f"A solid wall {w['height']} tiles tall is {w['tiles']} tile(s) ahead." if w else "No wall ahead.")
+    parts.append(f"A solid wall {w['height']} tiles tall is {w['tiles']} tile(s) ahead." if w else "No wall in the observed range.")
     parts.append(f"There are {behind} tiles of clear ground behind Mario for a run-up.")
-    parts.append(f"A gap {gp['width']} tiles wide is {gp['tiles']} tile(s) ahead." if gp else "Solid ground ahead.")
+    if gp:
+        width = str(gp['width']) if gp['width_known'] else f"at least {gp['width']}"
+        parts.append(f"No support at foot level or below begins {gp['tiles']} tile(s) ahead for {width} tiles; "
+                     "check terrain for elevated landing platforms.")
+    else:
+        parts.append(f"Ground support is visible for the next {visible} tiles.")
     if seen:
         def where(en: dict) -> str:
             if en["up"] > 1:
@@ -195,14 +215,13 @@ def features(g: str, v: int = 0, airborne: bool | None = None, visible: int = 15
             return f"a {en['kind']} {en['tiles']} tiles ahead at ground level"
         parts.append("Enemies: " + "; ".join(where(en) for en in seen[:4]) + ".")
     else:
-        parts.append("No enemy ahead.")
+        parts.append("No enemy in the observed range.")
     if f["enemies_behind"]:
         parts.append(f"An enemy is {f['enemies_behind'][0]} tile(s) behind Mario; walking left into it is death.")
     f["speed"] = speed_word(v)
     high, far = jump_reach(v)
     hop_far = HOP_TABLE[0][1] if abs(v) >= HOP_TABLE[0][0] else (HOP_TABLE[1][1] if abs(v) >= HOP_TABLE[1][0] else HOP_TABLE[2][1])
     f["hop_lands_tiles_ahead"] = hop_far
-    f["visible_tiles_ahead"] = visible
     f["jump_reach_now"] = {"tiles_high": high, "tiles_far": far}
     f["jump_reach_at_full_speed"] = {"tiles_high": JUMP_TABLE[0][1], "tiles_far": JUMP_TABLE[0][2]}
     parts.append(("Mario is on the ground, " if f["on_ground"] else "Mario is in the air, ") + f["speed"] + ".")
@@ -213,18 +232,25 @@ def features(g: str, v: int = 0, airborne: bool | None = None, visible: int = 15
         if high >= w["height"]:  # verified by replay: a 4-tile standing jump lands on a 4-tall ledge
             parts.append(f"Start the jump when the wall is about {max(1, far // 2)} tiles ahead.")
         else:
-            warns.append("A jump from this speed is not high enough for the wall ahead; more speed is needed.")
+            risks.append("The estimated jump height is below the wall height; more speed may be needed.")
     # Headroom: blocks above the arc cut a jump short.
     headroom = 13
-    for dx in range(0, min(far, 15) + 1):
+    overhead = []
+    for dx in range(0, min(far, visible) + 1):
+        # A column occupied at foot level is a wall to clear, not a ceiling.
+        if rows[feet][4 + dx] == "#":
+            continue
         for r in range(feet - 1, -1, -1):
             if rows[r][4 + dx] == "#":
                 headroom = min(headroom, feet - r - 1)
+                overhead.append({"tiles": dx, "clearance": feet - r - 1})
                 break
+    f["overhead"] = overhead
     if headroom < high:
         eff_far = max(1, round(far * headroom / high))
         f["headroom"] = headroom
-        parts.append(f"Blocks overhead {headroom + 1} tiles up cap the jump: it would land about {eff_far} tiles ahead instead of {far}.")
+        parts.append(f"Overhead blocks leave as little as {headroom} tiles of clearance along the path; "
+                     f"estimated landing is {eff_far} tiles ahead instead of {far}, depending on the arc.")
     else:
         eff_far = far
     # Keep the physics estimate available to the execution guard.  The raw
@@ -237,22 +263,21 @@ def features(g: str, v: int = 0, airborne: bool | None = None, visible: int = 15
     parts.append(f"A full jump right now would land about {eff_far} tiles ahead; a hop about {hop_far}. "
                  f"The screen shows {visible} tiles ahead; enemies beyond that are unknown until Mario moves closer.")
     if land:
-        warns.append(f"Do not take a full jump now: it lands about {eff_far} tiles ahead, where an enemy will be by then.")
+        risks.append(f"Enemies may reach the estimated landing area {eff_far} tiles ahead; their future positions are uncertain.")
     if eff_far >= visible:
-        warns.append("A full jump now lands past what is visible, on unknown ground.")
+        risks.append("The estimated full-jump landing reaches the observation boundary or unknown ground.")
     on_wall = [en for en in seen if w and en["tiles"] in (w["tiles"], w["tiles"] + 1) and en["up"] >= 1]
     if on_wall:
-        clear_over = JUMP_TABLE[0][1] >= w["height"] + 2
-        warns.append("An enemy is on top of the wall ahead: jumping onto it is death. "
-                     + ("A full-speed jump started 4 tiles before the wall clears the wall and the enemy together."
-                        if clear_over else "Back off, wait for it to move, then jump when the top is clear."))
+        warns.append("An enemy is on the raised surface ahead; account for it when choosing a landing.")
     if enemies and enemies[0] <= 1:
-        warns.append("An enemy is right in front of Mario: moving toward it is death. Jump in place if standing still; "
-                     "momentum carries into a jump, so at speed a full jump forward is the only way over it.")
+        warns.append("An enemy is immediately ahead; moving into its side is dangerous, including during a jump.")
     if f["enemies_behind"] and f["enemies_behind"][0] <= 2:
-        warns.append("The enemy behind reaches Mario in about a second: jump over it or away from it, but not into another enemy.")
+        warns.append("An enemy is close behind; retreating or waiting may cause a collision.")
     f["warnings"] = warns
-    f["summary"] = (("WARNINGS: " + " ".join(warns) + " ") if warns else "") + " ".join(parts)
+    f["risks"] = risks
+    f["summary"] = (("OBSERVED HAZARDS: " + " ".join(warns) + " ") if warns else "") + " ".join(parts)
+    if risks:
+        f["summary"] += " ESTIMATED RISKS: " + " ".join(risks)
     return f
 
 
@@ -596,20 +621,18 @@ def parse_mentor_plan(mentor, failed_action: str | None = None) -> dict | None:
 
 # ----------------------------------------------------------------------------- Jev
 JEV_MEMORY_NOTE = (
-    " The state may carry 'recent_decisions' (your last few choices with the x position after each, "
+    " The state may carry 'recent_decisions' (your last few choices with the x position before each, "
     "plus a STUCK line when a choice made no progress - never repeat a STUCK action) and "
     "'past_failures' (lessons from earlier deaths in previous runs; do not repeat those mistakes). "
     "Obey them when present; ignore them when absent."
 )
 
 JEV_DECISION_PROTOCOL = (
-    " The JSON state is the complete measured game state. Read state.summary and its WARNINGS as hard "
-    "physical constraints, then use the same action meanings listed in criteria. Decision priority is: "
-    "(1) never violate a warning or choose a jump that the measured landing makes impossible; "
-    "(2) if coach_plan is present, execute its first action exactly for this state; "
-    "if it has a follow-up, expect that phase on the next decision and do not replace it with an old heuristic; "
-    "(3) apply the normal enemy/gap/wall rules; (4) move right. "
-    "A coach plan is advice from a separate failure-analysis LLM, not a reason to repeat an action marked failed. "
+    " The JSON state describes the observed region, not the complete level. "
+    "A gap with width_known=false continues beyond observation; width is a lower bound. "
+    "Terrain solid_up intervals are tile heights relative to Mario's feet, positive upward; "
+    "from/to are horizontal tile offsets, positive right. Elevated platforms can be landing surfaces. "
+    "Coach plans, when present, are advice to check against current geometry and recent failures. "
     "Return exactly one offered action choice."
 )
 
@@ -636,15 +659,6 @@ def ask_jev(client: httpx.Client, state: dict, history=(), lessons=(), experienc
                 "plan_id": mentor.get("plan_id") if isinstance(mentor, dict) else None,
                 "origin": mentor.get("origin") if isinstance(mentor, dict) else "llm",
             }
-    # Give System One the same compact, human-readable decision context that
-    # the local chat prompt receives; the structured fields remain available
-    # for its evaluator, while this removes an avoidable prompt-format gap.
-    enriched["decision_context"] = (
-        f"STATE SUMMARY:\n{state.get('summary', '')}\n"
-        f"RECENT DECISIONS:\n{_history_block(history)}\n"
-        f"PAST FAILURES:\n{json.dumps(enriched.get('past_failures', []), ensure_ascii=False)}\n"
-        f"GRID:\n{state.get('grid', '')}"
-    )
     body = {
         "state": enriched,
         "model": "jev-latest",
@@ -670,43 +684,41 @@ LOCAL_POLICY_TIMEOUT = float(os.environ.get("LOCAL_POLICY_TIMEOUT", "30"))
 LOCAL_TEMPERATURE = float(os.environ.get("LOCAL_POLICY_TEMPERATURE", "0.5"))
 LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
-# 进提示词用的动作描述。**不要压缩** —— 实测把 ACTION_HELP 的长描述换成短短语后，
-# 1-1 从 3161(通关) 掉到 722：那些描述承载的是"这个动作到底做什么"的语义
-# （比如 hop right 是"低跳、约 2 格高、用来踩 2 格外的敌人"），删掉就没法选了。
-# 省下的那点 token（约 130 个 ≈ 0.2 秒）换不来任何东西。
+# Keep full action semantics, including jump height and duration, in both prompts.
 OPTION_HINTS = ACTION_HELP
 
-CHAT_SYSTEM = """You play Super Mario Bros one decision at a time. You get the state and a multiple-choice question.
-Answer with the letter of the best option. Reply with exactly one letter and nothing else.
-
-How to choose, in order:
-1. If the state begins with WARNINGS, obey every warning as a hard constraint. Never choose an
-   option a warning rules out, even if it looks like progress.
-2. An enemy 1 to 3 tiles ahead at Mario's level must be jumped over: choose a jump option.
-   "run right" and "walk right" never leave the ground, so they walk straight into it.
-3. If the state says a full forward jump would land where an enemy will be, choose "hop right" or
-   "jump in place" instead of a full jump.
-4. A gap must be jumped before its edge.
-5. Otherwise move right as far and as fast as possible.
-6. If the RECENT DECISIONS block says STUCK, do NOT choose that action again - pick a different one.
-
-Example: the state says an enemy is 1 tile ahead at full speed, and warns that a full jump lands
-about 4 tiles ahead where an enemy will be by then. A short hop clears the enemy in front without
-landing on the next one, so the answer is the letter for "hop right".
-
-Grid legend: M Mario, # solid ground/brick/block/pipe, . empty air,
-G goomba, K koopa, S shell, F flying koopa, P piranha plant, B buzzy beetle, H hammer brother.
-Row 7 is Mario's row; Mario walks toward higher columns."""
+CHAT_SYSTEM = (
+    "Choose Mario's next action. Reply with exactly one option letter. " + RULES +
+    " State units are tiles: dx is rightward, up is height above Mario's feet. "
+    "Terrain entries [from_dx,to_dx,solid_up_intervals] preserve solid geometry; all intervals include endpoints. "
+    "Enemies are [dx,up,kind]. A gap's width_known=false means its width is only a lower bound. "
+    "Speed is the signed game speed byte (full rightward speed is about 48). "
+    "Coach plans, when present, are advice to check against current geometry and recent failures."
+)
 
 
 def _state_block(state: dict) -> str:
-    """只给 summary + 上一动作 + 网格。
-
-    RULES / GRID_LEGEND 是给 Jev 的 system-one 模型写的长说明，对 3B 本地模型是纯噪声，
-    summary 里已经用自然语言复述了所有关键几何量，网格逐格可读，够用。
-    """
-    lines = [state["summary"], f"action just taken: {state.get('action_before')}", "grid:", state["grid"]]
-    return "\n".join(lines)
+    """One compact observation, without repeating geometry in prose and a grid."""
+    if "terrain" not in state:
+        # Legacy callers may provide only a hand-written summary; never drop it.
+        return "\n".join((state.get("summary", ""), state.get("grid", "")))
+    reach = state["jump_reach_now"]
+    compact = {
+        "on_ground": state["on_ground"], "speed": state["speed_byte"],
+        "visible_ahead": state["visible_tiles_ahead"], "unknown_from": state["unknown_from_tile"],
+        "wall": state["wall_ahead"], "gap": state["gap_ahead"],
+        "terrain": [[s["from"], s["to"], s["solid_up"]] for s in state["terrain"]],
+        "enemies": [[e["tiles"], e["up"], e["kind"]] for e in state["enemies"]],
+        "enemies_behind": state["enemies_behind"], "clear_behind": state["clear_behind"],
+        "estimated_jump": {"height": reach["tiles_high"], "distance": reach["tiles_far"],
+                           "landing": state["jump_lands_tiles_ahead"], "hop": state["hop_lands_tiles_ahead"]},
+        "landing_enemy_risk": state["enemies_near_landing_spot"],
+    }
+    if "headroom" in state:
+        compact["overhead_clearance"] = state["headroom"]
+    if "action_before" in state:
+        compact["previous_buttons"] = state["action_before"]
+    return json.dumps(compact, separators=(",", ":"))
 
 
 def _letter_to_action(text: str, labels: str, keys: list) -> str | None:
@@ -1128,6 +1140,8 @@ def ask_local(client: httpx.Client, state: dict, history=(), lessons=(), experie
     labels = LETTERS[: len(keys)]
     options = "\n".join(f"  {label}) {key} = {OPTION_HINTS.get(key, ACTION_HELP[key])}"
                          for label, key in zip(labels, keys))
+    # Keep all invariant text before the dynamic turn for prefix caching.
+    system = f"{CHAT_SYSTEM}\nOPTIONS (answer with the LETTER):\n{options}"
     lesson_block = ""
     if lessons:
         lesson_block = ("PAST FAILURES (the [APPLY NOW] one matches your current state, follow it; do NOT repeat these mistakes):\n"
@@ -1144,24 +1158,19 @@ def ask_local(client: httpx.Client, state: dict, history=(), lessons=(), experie
                 "plan_id": mentor.get("plan_id") if isinstance(mentor, dict) else None,
                 "origin": mentor.get("origin", "llm") if isinstance(mentor, dict) else "llm",
             }
-            mentor_block = ("COACH PLAN (advisory from the failure-analysis LLM; execute the first_action "
-                            "unless a measured physical WARNING makes it impossible):\n"
+            mentor_block = ("COACH PLAN (advice; check against current geometry):\n"
                             + json.dumps(coach_payload, ensure_ascii=False) + "\n"
                             + f"COACH REFLECTION:\n{plan.get('reflection') or mentor_text(mentor)}\n\n")
         else:
             mentor_block = f"COACH GUIDANCE (advisory; follow this when physically safe):\n{mentor_text(mentor)}\n\n"
     user = (
-        f"RECENT DECISIONS (oldest first; x is where Mario stood at that decision):\n"
+        f"RECENT DECISIONS (oldest first; x before each action):\n"
         f"{_history_block(history)}\n\n"
         f"{mentor_block}"
         f"{exp_block}"
         f"{lesson_block}"
         f"STATE:\n{_state_block(state)}\n\n"
-        f"OPTIONS (answer with the LETTER):\n{options}\n\n"
-        "Priority is WARNINGS/physical constraints, then the active COACH PLAN first_action, then normal rules. "
-        "Never pick an option warnings rule out; a jump is required whenever an "
-        "enemy is 1 to 3 tiles ahead; never repeat an action marked STUCK.\n"
-        "Which letter is the best choice for action? Answer with one letter."
+        "Answer with one letter."
     )
     policy_key = os.environ.get("LOCAL_POLICY_API_KEY", LOCAL_POLICY_API_KEY)
     policy_mode = os.environ.get("LOCAL_POLICY_MODE", LOCAL_POLICY_MODE)
@@ -1173,7 +1182,7 @@ def ask_local(client: httpx.Client, state: dict, history=(), lessons=(), experie
 
     if policy_mode == "score":
         # 候选打分：能拿到真实分布，且返回值必然落在候选集合内。
-        body = {"items": [{"messages": [{"role": "system", "content": CHAT_SYSTEM},
+        body = {"items": [{"messages": [{"role": "system", "content": system},
                                         {"role": "user", "content": user}],
                            "candidates": [f" {label}" for label in labels]}]}
         r = client.post(policy_root + "/score", json=body, headers=headers, timeout=policy_timeout)
@@ -1193,7 +1202,7 @@ def ask_local(client: httpx.Client, state: dict, history=(), lessons=(), experie
 
     model_name = os.environ.get("LOCAL_POLICY_MODEL", LOCAL_POLICY_MODEL)
     payload = {"model": model_name,
-               "messages": [{"role": "system", "content": CHAT_SYSTEM},
+               "messages": [{"role": "system", "content": system},
                             {"role": "user", "content": user}],
                "max_tokens": 8, "temperature": 0}
     r = client.post(policy_root + "/chat/completions", json=payload, headers=headers, timeout=policy_timeout)
