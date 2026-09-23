@@ -1,0 +1,23 @@
+{
+  "request": {
+    "model": "mario-eval-gemma4-cpu",
+    "messages": [
+      {
+        "role": "user",
+        "content": "Reply with the single letter A."
+      }
+    ],
+    "max_tokens": 8,
+    "temperature": 0
+  },
+  "status_code": 500,
+  "response": {
+    "error": {
+      "message": "model failed to load, this may be due to resource limitations or an internal error, check ollama server logs for details",
+      "type": "api_error",
+      "param": null,
+      "code": null
+    }
+  },
+  "wall_seconds": 6.372
+}

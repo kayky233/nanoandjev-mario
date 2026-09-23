@@ -664,7 +664,9 @@ def ask_jev(client: httpx.Client, state: dict, history=(), lessons=(), experienc
 # ----------------------------------------------------------------------------- 本地模型
 LOCAL_POLICY_BASE_URL = os.environ.get("LOCAL_POLICY_BASE_URL", "http://127.0.0.1:11500/v1")
 LOCAL_POLICY_API_KEY = os.environ.get("LOCAL_POLICY_API_KEY", "local")
+LOCAL_POLICY_MODEL = os.environ.get("LOCAL_POLICY_MODEL", "local")
 LOCAL_POLICY_MODE = os.environ.get("LOCAL_POLICY_MODE", "chat")
+LOCAL_POLICY_TIMEOUT = float(os.environ.get("LOCAL_POLICY_TIMEOUT", "30"))
 LOCAL_TEMPERATURE = float(os.environ.get("LOCAL_POLICY_TEMPERATURE", "0.5"))
 LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
@@ -1114,12 +1116,13 @@ def _experience_hint(state: dict, experience) -> str:
             f"the correct action was '{act}'.\n\n")
 
 
-def ask_local(client: httpx.Client, state: dict, history=(), lessons=(), experience=None, mentor="") -> tuple[str, dict | None, int, float, str]:
+def ask_local(client: httpx.Client, state: dict, history=(), lessons=(), experience=None, mentor="", *, strict: bool = False) -> tuple[str, dict | None, int, float, str]:
     """Same state, same question as ask_jev, but answered by the local model.
 
     Returns (action, probabilities_or_None, tokens, latency, source).
     source is "model" when the local model answered, "rules_fallback" when its reply
     could not be parsed as an offered option and the deterministic rules policy stood in.
+    strict requires exactly one candidate letter and raises instead of using rules.
     """
     keys = list(ACTION_HELP)
     labels = LETTERS[: len(keys)]
@@ -1163,6 +1166,7 @@ def ask_local(client: httpx.Client, state: dict, history=(), lessons=(), experie
     policy_key = os.environ.get("LOCAL_POLICY_API_KEY", LOCAL_POLICY_API_KEY)
     policy_mode = os.environ.get("LOCAL_POLICY_MODE", LOCAL_POLICY_MODE)
     policy_root = os.environ.get("LOCAL_POLICY_BASE_URL", LOCAL_POLICY_BASE_URL).rstrip("/")
+    policy_timeout = float(os.environ.get("LOCAL_POLICY_TIMEOUT", str(LOCAL_POLICY_TIMEOUT)))
     temperature = float(os.environ.get("LOCAL_POLICY_TEMPERATURE", str(LOCAL_TEMPERATURE)))
     headers = {"Authorization": f"Bearer {policy_key}"}
     t0 = time.perf_counter()
@@ -1172,7 +1176,7 @@ def ask_local(client: httpx.Client, state: dict, history=(), lessons=(), experie
         body = {"items": [{"messages": [{"role": "system", "content": CHAT_SYSTEM},
                                         {"role": "user", "content": user}],
                            "candidates": [f" {label}" for label in labels]}]}
-        r = client.post(policy_root + "/score", json=body, headers=headers, timeout=600)
+        r = client.post(policy_root + "/score", json=body, headers=headers, timeout=policy_timeout)
         lat = time.perf_counter() - t0
         r.raise_for_status()
         item = r.json()["items"][0]
@@ -1181,19 +1185,28 @@ def ask_local(client: httpx.Client, state: dict, history=(), lessons=(), experie
         total = sum(weights)
         probabilities = {key: weight / total for key, weight in zip(keys, weights)}
         best = item["best"].strip()
-        if best not in labels:
-            raise ValueError(f"本地模型返回 {best!r}，不在候选字母 {labels} 里")
+        if strict:
+            best = best.upper()
+        if len(best) != 1 or best not in labels:
+            raise ValueError(f"本地模型返回 {item['best']!r}，不在候选字母 {labels} 里")
         return keys[labels.index(best)], probabilities, 0, lat, "model"
 
-    payload = {"model": "local",
+    model_name = os.environ.get("LOCAL_POLICY_MODEL", LOCAL_POLICY_MODEL)
+    payload = {"model": model_name,
                "messages": [{"role": "system", "content": CHAT_SYSTEM},
                             {"role": "user", "content": user}],
                "max_tokens": 8, "temperature": 0}
-    r = client.post(policy_root + "/chat/completions", json=payload, headers=headers, timeout=600)
+    r = client.post(policy_root + "/chat/completions", json=payload, headers=headers, timeout=policy_timeout)
     lat = time.perf_counter() - t0
     r.raise_for_status()
     text = r.json()["choices"][0]["message"]["content"]
-    picked = _letter_to_action(text, labels, keys)
+    if strict:
+        label = text.strip().upper() if isinstance(text, str) else ""
+        if len(label) != 1 or label not in labels:
+            raise ValueError(f"Strict local model expected one letter from {labels}, received {text!r}")
+        picked = keys[labels.index(label)]
+    else:
+        picked = _letter_to_action(text, labels, keys)
     if picked is None:
         return policy(state), None, 0, lat, "rules_fallback"
     return picked, None, 0, lat, "model"
@@ -1220,7 +1233,9 @@ class Replay:
         return name
 
 
-def run(bot: str, level: str = "1-1", dump: bool = False) -> dict:
+def run(bot: str, level: str = "1-1", dump: bool = False, model_only: bool = False) -> dict:
+    if model_only and (bot not in ("jev", "local") or dump):
+        raise ValueError("--model-only requires --bot jev or local, without --dump")
     warnings.simplefilter("ignore")  # gym's env checker re-enables a numpy deprecation warning
     env = JoypadSpace(make_mario_env(gym_super_mario_bros, level), SIMPLE_MOVEMENT)
     ram = nes(env).ram
@@ -1229,141 +1244,183 @@ def run(bot: str, level: str = "1-1", dump: bool = False) -> dict:
     frames, tokens, lats, log = [obs.copy()], 0, [], []
     action, prev, hold_cap = 0, 0, FULL_JUMP_FRAMES
     frame, best, last_best, last_gain = 0, 0, 0, 0
+    actual_frames = valid_model_answers = guard_rewrites = unstick_rewrites = 0
     info = {"x_pos": 0, "flag_get": False}
     term = trunc = False
+    error = None
     deciding = bot in ("jev", "local", "rules") or bot.startswith("replay:") or dump
     replay = Replay(bot) if bot.startswith("replay:") else None
     client = httpx.Client(timeout=30)
 
     def step(a: int) -> bool:
         """Advance one frame; record every other frame; return True when the episode is over."""
-        nonlocal obs, term, trunc, info, frame, best
+        nonlocal obs, term, trunc, info, frame, actual_frames, best
         obs, _, term, trunc, info = env.step(a)
         frame += 1
+        actual_frames += 1
         best = max(best, int(info["x_pos"]))
-        if frame % 2 == 0:
+        if actual_frames % 2 == 0:
             frames.append(obs.copy())
         return bool(term or trunc)
 
-    while frame < MAX_FRAMES:
-        if frame % HOLD == 0 and deciding:
-            # Decide only on the ground: keep the current direction (without A) while airborne.
-            fall = 0
-            while airborne(ram) and fall < 120 and not step(RELEASE.get(action, action)):
-                fall += 1
-            if term or trunc:
-                break
-            frame += (-frame) % HOLD
-        if frame % HOLD == 0:
-            g, _, _ = grid(ram)
-            feats = features(g, speed(ram), airborne=airborne(ram), visible=(256 - int(ram[0x03AD])) // 16)
-            state = {"summary": feats.pop("summary"), **feats, "grid": g, "action_before": action}
-            if dump:
-                print(f"frame {frame} x={info['x_pos']}\n{state['summary']}\n{g}\n")
-                name = "run and jump right" if (frame // 12) % 2 == 0 else "run right"
-            elif bot == "jev":
-                name, probs, tok, lat = ask_jev(client, state, [(r["choice"], r["x"]) for r in log[-6:]])
-                guarded = hazard_guard(name, state)
-                if guarded != name:
-                    print("  [guard] " + name + " -> " + guarded + " (x=" + str(int(info["x_pos"])) + ")")
-                    name = guarded
-                forced = unstick(name, log, int(info["x_pos"]))
-                if forced != name:
-                    print("  [unstick] " + name + " -> " + forced + " (x=" + str(int(info["x_pos"])) + ")")
-                    name = forced
-                tokens += tok
-                lats.append(lat)
-                log.append({"frame": frame, "x": int(info["x_pos"]), "choice": name,
-                            "p": round(probs.get(name, 0), 2) if probs else None,
-                            "probs": {k: round(p, 2) for k, p in probs.items()} if probs else None,
-                            "summary": state["summary"], "grid": g})
-            elif bot == "local":
-                name, probs, tok, lat, source = ask_local(client, state, [(r["choice"], r["x"]) for r in log[-6:]])
-                guarded = hazard_guard(name, state)
-                if guarded != name:
-                    print("  [guard] " + name + " -> " + guarded + " (x=" + str(int(info["x_pos"])) + ")")
-                    name, source = guarded, "guard"
-                forced = unstick(name, log, int(info["x_pos"]))
-                if forced != name:
-                    print("  [unstick] " + name + " -> " + forced + " (x=" + str(int(info["x_pos"])) + ")")
-                    name, source = forced, "unstick"
-                lats.append(lat)
-                log.append({"frame": frame, "x": int(info["x_pos"]), "choice": name, "p": round(probs[name], 2) if probs else None,
-                            "probs": {k: round(p, 2) for k, p in probs.items()} if probs else None,
-                            "local_source": source, "summary": state["summary"], "grid": g})
-            elif replay:
-                name = replay.next()
-                log.append({"frame": frame, "x": int(info["x_pos"]), "choice": name, "summary": state["summary"], "grid": g})
-            elif bot == "rules":
-                name = policy({**feats, "summary": state["summary"]})
-                log.append({"frame": frame, "x": int(info["x_pos"]), "choice": name, "summary": state["summary"], "grid": g})
-            elif bot == "alternate":
-                name = "run and jump right" if (frame // 12) % 2 == 0 else "run right"
-            else:
-                name = bot
-            action = ACTIONS[name]
-            hold_cap = HOP_FRAMES if name == "hop right" else FULL_JUMP_FRAMES
+    try:
+        while frame < MAX_FRAMES:
+            if frame % HOLD == 0 and deciding:
+                # Decide only on the ground: keep the current direction (without A) while airborne.
+                fall = 0
+                while airborne(ram) and fall < 120 and not step(RELEASE.get(action, action)):
+                    fall += 1
+                if term or trunc:
+                    break
+                frame += (-frame) % HOLD
+            if frame % HOLD == 0:
+                g, _, _ = grid(ram)
+                feats = features(g, speed(ram), airborne=airborne(ram), visible=(256 - int(ram[0x03AD])) // 16)
+                state = {"summary": feats.pop("summary"), **feats, "grid": g, "action_before": action}
+                if dump:
+                    print(f"frame {frame} x={info['x_pos']}\n{state['summary']}\n{g}\n")
+                    name = "run and jump right" if (frame // 12) % 2 == 0 else "run right"
+                elif bot == "jev":
+                    name, probs, tok, lat = ask_jev(client, state, [(r["choice"], r["x"]) for r in log[-6:]])
+                    if name not in ACTIONS:
+                        raise RuntimeError(f"Jev returned an invalid action: {name!r}")
+                    model_choice, model_source = name, "model"
+                    valid_model_answers += 1
+                    guarded = name if model_only else hazard_guard(name, state)
+                    if guarded != name:
+                        guard_rewrites += 1
+                        print("  [guard] " + name + " -> " + guarded + " (x=" + str(int(info["x_pos"])) + ")")
+                        name = guarded
+                    forced = name if model_only else unstick(name, log, int(info["x_pos"]))
+                    if forced != name:
+                        unstick_rewrites += 1
+                        print("  [unstick] " + name + " -> " + forced + " (x=" + str(int(info["x_pos"])) + ")")
+                        name = forced
+                    tokens += tok
+                    lats.append(lat)
+                    log.append({"frame": actual_frames, "decision_clock": frame,
+                                "x": int(info["x_pos"]), "choice": name, "executed_choice": name,
+                                "model_choice": model_choice, "model_source": model_source,
+                                "p": round(probs.get(name, 0), 2) if probs else None,
+                                "probs": {k: round(p, 2) for k, p in probs.items()} if probs else None,
+                                "summary": state["summary"], "grid": g})
+                elif bot == "local":
+                    name, probs, tok, lat, source = ask_local(client, state, [(r["choice"], r["x"]) for r in log[-6:]], strict=model_only)
+                    if model_only and source != "model":
+                        raise RuntimeError(f"--model-only rejected local decision source: {source}")
+                    if name not in ACTIONS:
+                        raise RuntimeError(f"Local policy returned an invalid action: {name!r}")
+                    model_choice, model_source = (name if source == "model" else None), source
+                    valid_model_answers += int(source == "model")
+                    guarded = name if model_only else hazard_guard(name, state)
+                    if guarded != name:
+                        guard_rewrites += 1
+                        print("  [guard] " + name + " -> " + guarded + " (x=" + str(int(info["x_pos"])) + ")")
+                        name, source = guarded, "guard"
+                    forced = name if model_only else unstick(name, log, int(info["x_pos"]))
+                    if forced != name:
+                        unstick_rewrites += 1
+                        print("  [unstick] " + name + " -> " + forced + " (x=" + str(int(info["x_pos"])) + ")")
+                        name, source = forced, "unstick"
+                    lats.append(lat)
+                    log.append({"frame": actual_frames, "decision_clock": frame,
+                                "x": int(info["x_pos"]), "choice": name, "executed_choice": name,
+                                "model_choice": model_choice, "model_source": model_source,
+                                "p": round(probs.get(name, 0), 2) if probs else None,
+                                "probs": {k: round(p, 2) for k, p in probs.items()} if probs else None,
+                                "local_source": source, "summary": state["summary"], "grid": g})
+                elif replay:
+                    name = replay.next()
+                    log.append({"frame": frame, "x": int(info["x_pos"]), "choice": name, "summary": state["summary"], "grid": g})
+                elif bot == "rules":
+                    name = policy({**feats, "summary": state["summary"]})
+                    log.append({"frame": frame, "x": int(info["x_pos"]), "choice": name, "summary": state["summary"], "grid": g})
+                elif bot == "alternate":
+                    name = "run and jump right" if (frame // 12) % 2 == 0 else "run right"
+                else:
+                    name = bot
+                action = ACTIONS[name]
+                hold_cap = HOP_FRAMES if name == "hop right" else FULL_JUMP_FRAMES
 
-            if action == BACK_OFF:
-                # Atomic retreat: actually brake and create a runway.  When no
-                # wall/gap is currently visible, treating the missing obstacle
-                # as distance=99 ends the retreat on its first frame and
-                # destroys the coach's run-up plan.
-                reversed_frames = 0
-                for _ in range(60):
-                    if step(6):
+                if action == BACK_OFF:
+                    # Atomic retreat: actually brake and create a runway.  When no
+                    # wall/gap is currently visible, treating the missing obstacle
+                    # as distance=99 ends the retreat on its first frame and
+                    # destroys the coach's run-up plan.
+                    reversed_frames = 0
+                    for _ in range(60):
+                        if step(6):
+                            break
+                        reversed_frames += 1
+                        fe = features(grid(ram)[0], speed(ram))
+                        obstacle = fe.get("wall_ahead") or fe.get("gap_ahead")
+                        if obstacle and obstacle.get("tiles", 0) >= 6 and reversed_frames >= 18:
+                            break
+                        if (reversed_frames >= 12 and speed(ram) <= 0
+                                and fe.get("clear_behind", 0) >= 3):
+                            break
+                        if reversed_frames >= 24 and speed(ram) <= 0:
+                            break
+                    if term or trunc:
                         break
-                    reversed_frames += 1
-                    fe = features(grid(ram)[0], speed(ram))
-                    obstacle = fe.get("wall_ahead") or fe.get("gap_ahead")
-                    if obstacle and obstacle.get("tiles", 0) >= 6 and reversed_frames >= 18:
-                        break
-                    if (reversed_frames >= 12 and speed(ram) <= 0
-                            and fe.get("clear_behind", 0) >= 3):
-                        break
-                    if reversed_frames >= 24 and speed(ram) <= 0:
-                        break
-                if term or trunc:
+                    frame += (-frame) % HOLD
+                    action = 0
+                # The NES only jumps on an A press, not a hold: release A for one frame between two jumps.
+                if action in JUMPS and prev in JUMPS and step(RELEASE[action]):
                     break
-                frame += (-frame) % HOLD
-                action = 0
-            # The NES only jumps on an A press, not a hold: release A for one frame between two jumps.
-            if action in JUMPS and prev in JUMPS and step(RELEASE[action]):
+                prev = action
+                if action in JUMPS and bot != "alternate":
+                    # One decision is one jump: hold A until Mario lands, or hold_cap frames for a hop.
+                    for i in range(FULL_JUMP_FRAMES):
+                        if step(action) or i >= hold_cap or (i > 4 and not airborne(ram)):
+                            break
+                    if term or trunc:
+                        break
+                    frame += (-frame) % HOLD
+                    action = RELEASE[action]
+            if step(action):
                 break
-            prev = action
-            if action in JUMPS and bot != "alternate":
-                # One decision is one jump: hold A until Mario lands, or hold_cap frames for a hop.
-                for i in range(FULL_JUMP_FRAMES):
-                    if step(action) or i >= hold_cap or (i > 4 and not airborne(ram)):
-                        break
-                if term or trunc:
-                    break
-                frame += (-frame) % HOLD
-                action = RELEASE[action]
-        if step(action):
-            break
-        if best > last_best:
-            last_best, last_gain = best, frame
-        if info["flag_get"] or frame - last_gain > STALL_FRAMES:
-            break
-    env.close()
+            if best > last_best:
+                last_best, last_gain = best, frame
+            if info["flag_get"] or frame - last_gain > STALL_FRAMES:
+                break
+    except Exception as exc:
+        error = exc
+    finally:
+        env.close()
+        client.close()
 
     RUNS.mkdir(exist_ok=True)
     stamp = time.strftime("%Y%m%d-%H%M%S")
     tag = f"{level}-{'replay' if replay else bot.replace(' ', '-')}"
     result = {
-        "level": level, "bot": bot, "stamp": stamp, "best_x": best, "flag": bool(info["flag_get"]),
-        "frames": frame, "api_calls": len(lats), "input_tokens": tokens,
+        "level": level, "bot": bot, "stamp": stamp, "best_x": best, "flag": bool(info["flag_get"]) and error is None,
+        "status": "error" if error else "completed",
+        "error_type": type(error).__name__ if error else None, "error": str(error) if error else None,
+        "frames": actual_frames, "decision_clock": frame, "api_calls": len(lats), "input_tokens": tokens,
+        "model_only": model_only, "valid_model_answers": valid_model_answers,
+        "guard_rewrites": guard_rewrites, "unstick_rewrites": unstick_rewrites,
         "cost_usd": round(tokens * USD_PER_TOKEN, 5),
         "latency_p50": round(sorted(lats)[len(lats) // 2], 3) if lats else None,
-        "gif": None if dump else f"{tag}-{stamp}.gif",
+        "gif": f"{tag}-{stamp}.gif" if not dump and actual_frames else None,
     }
     if not dump:
-        imageio.mimsave(RUNS / result["gif"], frames, duration=1 / 30, loop=0)
+        if result["gif"]:
+            # GIF uses centiseconds. Quantize cumulative emulator time, avoiding drift
+            # and an extra terminal pause; include the final odd-numbered frame.
+            samples = list(range(2, actual_frames + 1, 2))
+            if actual_frames % 2:
+                samples.append(actual_frames)
+                frames.append(obs.copy())
+            times_ms = [0] + [round(sample * 100 / 60) * 10 for sample in samples]
+            durations_ms = [end - start for start, end in zip(times_ms, times_ms[1:])]
+            imageio.mimsave(RUNS / result["gif"], frames[1:], duration=durations_ms, loop=0)
         with (RUNS / "results.jsonl").open("a") as fh:
             fh.write(json.dumps(result) + "\n")
         if log:
             (RUNS / f"{tag}-{stamp}.log.jsonl").write_text("\n".join(json.dumps(l) for l in log) + "\n")
+    if error is not None:
+        raise error
     return result
 
 
@@ -1382,11 +1439,15 @@ if __name__ == "__main__":
     ap.add_argument("--bot", default="jev", help="jev | local | rules | alternate | <action name> | replay:<log.jsonl>[@n]:<action,...>")
     ap.add_argument("--level", default="1-1", help="world-stage, e.g. 2-1")
     ap.add_argument("--dump", action="store_true", help="print the state Jev would see, no API calls")
+    ap.add_argument("--model-only", action="store_true",
+                    help="only execute Jev/local model choices; disable guard, unstick and rules fallback")
     ap.add_argument("--inspect", metavar="LOG", help="print the last decisions of a run log and exit")
     ap.add_argument("-n", type=int, default=3, help="decisions to show with --inspect")
     a = ap.parse_args()
+    if a.model_only and (a.bot not in ("jev", "local") or a.dump or a.inspect):
+        ap.error("--model-only requires --bot jev or local, without --dump or --inspect")
     if a.inspect:
         inspect(a.inspect, a.n)
     else:
         load_env()
-        print(json.dumps(run(a.bot, a.level, a.dump)))
+        print(json.dumps(run(a.bot, a.level, a.dump, a.model_only)))

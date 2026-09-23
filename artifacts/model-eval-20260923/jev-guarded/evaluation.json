@@ -1,0 +1,60 @@
+{
+  "model": "jev-latest",
+  "model_digest": null,
+  "model_details": {
+    "provider": "TypeSafe",
+    "endpoint": "https://api.typesafe.ai/v1/systemone"
+  },
+  "started_at": "2026-09-23T10:38:10+0800",
+  "python": "3.12.10",
+  "dependencies": {
+    "gym-super-mario-bros": "7.4.0",
+    "gym": "0.26.2",
+    "nes-py": "8.2.1",
+    "numpy": "1.26.4",
+    "httpx": "0.28.1",
+    "imageio": "2.37.4",
+    "pillow": "12.3.0"
+  },
+  "code_sha256": {
+    "play_local.py": "a88866bf769d3352dde6a64a0c2c298f7efecbfd23b8b55edd8975b994a86e6d",
+    "mario_env.py": "df76e24cfe975996a48bb5faa01caacd5d8173cb1b8ba84853a958bec0b358b9"
+  },
+  "mode": "model_plus_guard_and_unstick",
+  "temperature": null,
+  "max_tokens": null,
+  "request_timeout_seconds": 30,
+  "route": false,
+  "guard": true,
+  "unstick": true,
+  "mentor": false,
+  "rules_fallback": false,
+  "level_order": [
+    "1-1"
+  ],
+  "trials": [
+    {
+      "level": "1-1",
+      "bot": "jev",
+      "stamp": "20260923-103815",
+      "best_x": 679,
+      "flag": false,
+      "status": "completed",
+      "error_type": null,
+      "error": null,
+      "frames": 278,
+      "decision_clock": 299,
+      "api_calls": 13,
+      "input_tokens": 26243,
+      "model_only": false,
+      "valid_model_answers": 13,
+      "guard_rewrites": 3,
+      "unstick_rewrites": 0,
+      "cost_usd": 0.0011,
+      "latency_p50": 0.283,
+      "gif": "1-1-jev-20260923-103815.gif",
+      "wall_seconds": 5.367
+    }
+  ],
+  "notes": "One additional Jev + guard/unstick episode on 1-1, separate from the nine model-only trials. No route or mentor. Not a paired causal guard ablation."
+}

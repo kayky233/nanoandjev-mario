@@ -1,0 +1,55 @@
+{
+  "models": [
+    {
+      "name": "mario-eval-gemma4-cpu:latest",
+      "model": "mario-eval-gemma4-cpu:latest",
+      "modified_at": "2026-09-23T10:33:54.435455207+08:00",
+      "size": 7162405913,
+      "digest": "46907fa64569ac086c6bb116d072264ce15a24f4fe0187e72db5430bbeb80b7c",
+      "details": {
+        "parent_model": "",
+        "format": "gguf",
+        "family": "gemma4",
+        "families": [
+          "gemma4"
+        ],
+        "parameter_size": "5.1B",
+        "quantization_level": "Q4_K_M"
+      }
+    },
+    {
+      "name": "mario-eval-gemma4-4k:latest",
+      "model": "mario-eval-gemma4-4k:latest",
+      "modified_at": "2026-09-23T10:33:34.929077705+08:00",
+      "size": 7162405901,
+      "digest": "0e25c5e98dcab0d25d123c13b8ceff5e42433c6e4ff648ed5a62c8a6f241e050",
+      "details": {
+        "parent_model": "",
+        "format": "gguf",
+        "family": "gemma4",
+        "families": [
+          "gemma4"
+        ],
+        "parameter_size": "5.1B",
+        "quantization_level": "Q4_K_M"
+      }
+    },
+    {
+      "name": "gemma4:e2b",
+      "model": "gemma4:e2b",
+      "modified_at": "2026-04-12T17:48:53.075913824+08:00",
+      "size": 7162405886,
+      "digest": "7fbdbf8f5e45a75bb122155ed546e765b4d9c53a1285f62fd9f506baa1c5a47e",
+      "details": {
+        "parent_model": "",
+        "format": "gguf",
+        "family": "gemma4",
+        "families": [
+          "gemma4"
+        ],
+        "parameter_size": "5.1B",
+        "quantization_level": "Q4_K_M"
+      }
+    }
+  ]
+}

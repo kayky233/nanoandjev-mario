@@ -1,0 +1,113 @@
+{
+  "model": "gemma4:e2b",
+  "model_digest": "7fbdbf8f5e45a75bb122155ed546e765b4d9c53a1285f62fd9f506baa1c5a47e",
+  "model_details": {
+    "parent_model": "",
+    "format": "gguf",
+    "family": "gemma4",
+    "families": [
+      "gemma4"
+    ],
+    "parameter_size": "5.1B",
+    "quantization_level": "Q4_K_M"
+  },
+  "started_at": "2026-09-23T10:31:47+0800",
+  "python": "3.12.10",
+  "dependencies": {
+    "gym-super-mario-bros": "7.4.0",
+    "gym": "0.26.2",
+    "nes-py": "8.2.1",
+    "numpy": "1.26.4",
+    "httpx": "0.28.1",
+    "imageio": "2.37.4",
+    "pillow": "12.3.0"
+  },
+  "code_sha256": {
+    "play_local.py": "a88866bf769d3352dde6a64a0c2c298f7efecbfd23b8b55edd8975b994a86e6d",
+    "mario_env.py": "df76e24cfe975996a48bb5faa01caacd5d8173cb1b8ba84853a958bec0b358b9",
+    "output/run_model_eval.py": "7b3a9a7500e3042800eacc06c8cdde26a18d749fc29b622ffabe6eb40ffc1bba"
+  },
+  "mode": "model_only",
+  "temperature": 0,
+  "max_tokens": 8,
+  "request_timeout_seconds": 60,
+  "route": false,
+  "guard": false,
+  "unstick": false,
+  "mentor": false,
+  "rules_fallback": false,
+  "level_order": [
+    "1-1",
+    "1-2",
+    "1-3"
+  ],
+  "trials": [
+    {
+      "level": "1-1",
+      "bot": "local",
+      "stamp": "20260923-103156",
+      "best_x": 0,
+      "flag": false,
+      "status": "error",
+      "error_type": "HTTPStatusError",
+      "error": "Server error '500 Internal Server Error' for url 'http://127.0.0.1:11434/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/500",
+      "frames": 0,
+      "decision_clock": 0,
+      "api_calls": 0,
+      "input_tokens": 0,
+      "model_only": true,
+      "valid_model_answers": 0,
+      "guard_rewrites": 0,
+      "unstick_rewrites": 0,
+      "cost_usd": 0.0,
+      "latency_p50": null,
+      "gif": null,
+      "wall_seconds": 8.436
+    },
+    {
+      "level": "1-2",
+      "bot": "local",
+      "stamp": "20260923-103203",
+      "best_x": 40,
+      "flag": false,
+      "status": "error",
+      "error_type": "HTTPStatusError",
+      "error": "Server error '500 Internal Server Error' for url 'http://127.0.0.1:11434/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/500",
+      "frames": 25,
+      "decision_clock": 30,
+      "api_calls": 0,
+      "input_tokens": 0,
+      "model_only": true,
+      "valid_model_answers": 0,
+      "guard_rewrites": 0,
+      "unstick_rewrites": 0,
+      "cost_usd": 0.0,
+      "latency_p50": null,
+      "gif": "1-2-local-20260923-103203.gif",
+      "wall_seconds": 6.9
+    },
+    {
+      "level": "1-3",
+      "bot": "local",
+      "stamp": "20260923-103209",
+      "best_x": 0,
+      "flag": false,
+      "status": "error",
+      "error_type": "HTTPStatusError",
+      "error": "Server error '500 Internal Server Error' for url 'http://127.0.0.1:11434/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/500",
+      "frames": 0,
+      "decision_clock": 0,
+      "api_calls": 0,
+      "input_tokens": 0,
+      "model_only": true,
+      "valid_model_answers": 0,
+      "guard_rewrites": 0,
+      "unstick_rewrites": 0,
+      "cost_usd": 0.0,
+      "latency_p50": null,
+      "gif": null,
+      "wall_seconds": 6.533
+    }
+  ],
+  "notes": "One episode per level, sequential; no tuning or search. Emulator pauses for each request. Existing semantic-action executor retained. HTTP trace stores bodies, never headers."
+}

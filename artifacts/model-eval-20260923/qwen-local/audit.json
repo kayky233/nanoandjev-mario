@@ -1,0 +1,53 @@
+{
+  "passed": true,
+  "all_source_model_and_executed_unchanged": true,
+  "all_http_200": true,
+  "trials": [
+    {
+      "level": "1-1",
+      "http_requests": 26,
+      "valid_model_choices": 26,
+      "executed_model_choices": 26,
+      "choice_counts": {
+        "hop right": 26
+      },
+      "prompt_tokens": 25214,
+      "completion_tokens": 52,
+      "inference_latency_p50_seconds": 0.8256,
+      "gif_duration_ms": 12550,
+      "emulator_duration_ms": 12550,
+      "gif_duration_error_ms": 0.0
+    },
+    {
+      "level": "1-2",
+      "http_requests": 16,
+      "valid_model_choices": 16,
+      "executed_model_choices": 16,
+      "choice_counts": {
+        "hop right": 16
+      },
+      "prompt_tokens": 15392,
+      "completion_tokens": 32,
+      "inference_latency_p50_seconds": 0.8216,
+      "gif_duration_ms": 7800,
+      "emulator_duration_ms": 7800,
+      "gif_duration_error_ms": 0.0
+    },
+    {
+      "level": "1-3",
+      "http_requests": 12,
+      "valid_model_choices": 12,
+      "executed_model_choices": 12,
+      "choice_counts": {
+        "hop right": 12
+      },
+      "prompt_tokens": 10954,
+      "completion_tokens": 24,
+      "inference_latency_p50_seconds": 0.8021,
+      "gif_duration_ms": 5980,
+      "emulator_duration_ms": 5983,
+      "gif_duration_error_ms": -3.33
+    }
+  ],
+  "notes": "play_local result input_tokens=0 is not actual local tokenizer usage; true prompt/completion counts are recorded here from neural model inputs/output."
+}

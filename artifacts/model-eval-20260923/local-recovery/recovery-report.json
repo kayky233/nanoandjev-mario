@@ -1,0 +1,81 @@
+{
+  "classification": "runtime_unavailable_not_game_failure",
+  "hardware": "Apple M5, 16 GiB unified memory",
+  "os": "26.3.2",
+  "ollama": "0.24.0",
+  "endpoint": "http://127.0.0.1:11434/v1/chat/completions",
+  "root_cause_observed": "Metal shader compilation failed: bfloat/half cooperative tensor mismatch; backend initialization failed. No evidence that lack of memory caused this failure.",
+  "attempts": [
+    {
+      "request": {
+        "model": "mario-eval-gemma4-4k",
+        "messages": [
+          {
+            "role": "user",
+            "content": "Reply with the single letter A."
+          }
+        ],
+        "max_tokens": 8,
+        "temperature": 0
+      },
+      "status_code": 500,
+      "response": {
+        "error": {
+          "message": "model failed to load, this may be due to resource limitations or an internal error, check ollama server logs for details",
+          "type": "api_error",
+          "param": null,
+          "code": null
+        }
+      },
+      "wall_seconds": 6.087
+    },
+    {
+      "request": {
+        "model": "mario-eval-gemma4-cpu",
+        "messages": [
+          {
+            "role": "user",
+            "content": "Reply with the single letter A."
+          }
+        ],
+        "max_tokens": 8,
+        "temperature": 0
+      },
+      "status_code": 500,
+      "response": {
+        "error": {
+          "message": "model failed to load, this may be due to resource limitations or an internal error, check ollama server logs for details",
+          "type": "api_error",
+          "param": null,
+          "code": null
+        }
+      },
+      "wall_seconds": 6.372
+    }
+  ],
+  "no_game_episodes_started": true,
+  "downloaded_weights": false,
+  "app_server_restarted": false,
+  "hf_cache": [
+    {
+      "model": "models--Qwen--Qwen2.5-1.5B-Instruct",
+      "revision": "989aa7980e4cf806f80c7fef2b1adb7bc71aa306",
+      "config_present": true,
+      "tokenizer_present": true,
+      "weights": [
+        {
+          "file": "model.safetensors",
+          "bytes": 3087467144
+        }
+      ]
+    }
+  ],
+  "code_sha256": {
+    "play_local.py": "a88866bf769d3352dde6a64a0c2c298f7efecbfd23b8b55edd8975b994a86e6d",
+    "mario_env.py": "df76e24cfe975996a48bb5faa01caacd5d8173cb1b8ba84853a958bec0b358b9"
+  },
+  "references": [
+    "https://docs.ollama.com/modelfile",
+    "https://github.com/ollama/ollama/issues/15594"
+  ]
+}

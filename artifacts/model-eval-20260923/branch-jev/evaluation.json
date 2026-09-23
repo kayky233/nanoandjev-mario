@@ -1,0 +1,30 @@
+{
+  "level": "1-1",
+  "bot": "branch-jev",
+  "stamp": "20260923-110044",
+  "best_x": 2370,
+  "flag": false,
+  "frames": 2544,
+  "api_calls": 22,
+  "input_tokens": 40063,
+  "cost_usd": 0.00168,
+  "latency_p50": 0.624,
+  "gif": "1-1-branch-jev-20260923-110044.gif",
+  "status": "completed",
+  "simulated_frames": 1574417,
+  "executed_frames": 2544,
+  "requests": 22,
+  "wall_seconds": 1642.901,
+  "model": "jev-latest",
+  "mode": "online_branch_simulation",
+  "prewritten_route": false,
+  "code_sha256": {
+    "branch.py": "98dd56cbc81a3aef62d106a34f5232c91be7a4c3338fccd8db597c414264fe0d",
+    "play.py": "3542d878800ce75066e73a751a31c1f4e27e8c1ab274e9e2c3b5ebb06657305d",
+    "mario_env.py": "df76e24cfe975996a48bb5faa01caacd5d8173cb1b8ba84853a958bec0b358b9",
+    "output/run_branch_eval.py": "704b5d727d5c36f49459111c7a6d05d5ba5c1946244b23ed119cb83e8bcaa134"
+  },
+  "escape_decisions": 0,
+  "ride_decisions": 11,
+  "decision_records": 22
+}

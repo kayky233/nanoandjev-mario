@@ -1,80 +1,130 @@
 # nanoandjev-mario
 
-基于 NES 模拟器的 Mario agent 实验：读取 RAM 生成结构化状态，通过规则、本地模型或 [TypeSafe Jev](https://typesafe.ai) 选择动作，结合分支搜索、危险动作拦截和路线回放验证执行结果。源自 [4esv/jev-mario](https://github.com/4esv/jev-mario)。
+验证 **Jev 与本地模型能否根据当前状态自主选择动作、完成 Mario 关卡**。模型读取 NES RAM 生成的结构化状态；每次选择都保留原始回答与实际执行记录。源自 [4esv/jev-mario](https://github.com/4esv/jev-mario)。
 
-## 我们验证的结果
+## 模型实测：2026-09-23
 
-**2026-09-20 本地验收：1-2、1-3 均重复两次通关，模型请求数均为 0。** 两段动图来自真实模拟器的验证路线回放，画面顶部标有 `VERIFIED ROUTE / NO MODEL`。
+**Jev 已完成 9 局真实 API 实测，本地 Qwen2.5-1.5B 已完成 3 局真实推理实测，目前均未通关。** 所有有效模型选择原样执行，关闭 guard、自动脱困、规则兜底、教练和路线接管。此前首页展示的离线路线成功已移至[执行器回归材料](artifacts/current/README.md#离线路线回放仅用于执行器回归)，不计入模型成绩。
 
-| 1-2 · 23 步路线 | 1-3 · 26 步路线 |
-| --- | --- |
-| ![1-2 验证路线回放，未调用模型](artifacts/current/1-2-verified-route.gif) | ![1-3 验证路线回放，未调用模型](artifacts/current/1-3-verified-route.gif) |
+| 模型与模式 | 关卡 | 本次通关 | 逐局最远 x（试验顺序） | 逐局有效模型回答数 |
+| --- | --- | --- | --- | --- |
+| Jev `jev-latest`，纯模型决策 | 1-1 | 0/3 | 1435 / 679 / 2471 | 34 / 14 / 47 |
+| Jev `jev-latest`，纯模型决策 | 1-2 | 0/3 | 198 / 655 / 960 | 9 / 24 / 36 |
+| Jev `jev-latest`，纯模型决策 | 1-3 | 0/3 | 284 / 315 / 315 | 8 / 6 / 6 |
+| Qwen2.5-1.5B-Instruct，纯模型决策 | 1-1 | 0/1 | 722 | 26 |
+| Qwen2.5-1.5B-Instruct，纯模型决策 | 1-2 | 0/1 | 656 | 16 |
+| Qwen2.5-1.5B-Instruct，纯模型决策 | 1-3 | 0/1 | 618 | 12 |
 
-| 关卡 | 重复验收 | 通关标志 | 最远 x | 实际模拟器帧 | 游戏时长 | 模型请求 |
-| --- | --- | --- | ---: | ---: | ---: | ---: |
-| 1-2 | 2/2 成功 | `flag=true` | 3161 | 2300 | 38.33 秒 | 0 |
-| 1-3 | 2/2 成功 | `flag=true` | 2425 | 2430 | 40.50 秒 | 0 |
+**Jev 的 184 次、本地 Qwen 的 54 次有效回答全部满足 `model_choice == executed_choice`**，`guard_rewrites=0`、`unstick_rewrites=0`。Jev 每局 API 延迟 p50 为 0.319–0.603 秒；Qwen 本地推理 p50 约 0.80–0.83 秒。样本只能建立当前配置的基线，不能证明模型永远无法通关。两者提示格式、输入 token 数和样本数不同，不把这组数字当作模型能力排行榜。未修改提示词后挑选成功样本；首轮后补测两轮，全部保留。补测两轮并发运行，延迟不是隔离性能基准。
 
-证据：[验收 JSON](artifacts/current/offline-acceptance.json) · [录像来源与说明](artifacts/current/README.md)。每次记录均为 `route_complete=true`，决策来源为 `offline_replay`；同一关卡两次的距离、帧数一致。通关以模拟器的 `flag_get` 为准，各关卡的旗杆位置不同。
+以下各展示本轮最远的一局；完整九局包含失败录像和原始日志：
 
-帧数统计真实 `env.step()` 次数。GIF 按模拟器 60 fps 的时间线抽样为 10 fps，结尾另停留 1.5 秒。旧版 1-2 记录的 2352 包含调度对齐，实际执行为 2300 帧。
+| Jev · 1-1 · x=2471 | Jev · 1-2 · x=960 | Jev · 1-3 · x=315 |
+| --- | --- | --- |
+| ![Jev 纯模型决策 1-1，未通关](artifacts/model-eval-20260923/jev-repeat-3/1-1/1-1-jev-20260923-103600.gif) | ![Jev 纯模型决策 1-2，未通关](artifacts/model-eval-20260923/jev-repeat-3/1-2/1-2-jev-20260923-103618.gif) | ![Jev 纯模型决策 1-3，未通关](artifacts/model-eval-20260923/jev-repeat-2/1-3/1-3-jev-20260923-103601.gif) |
 
-> **能力边界：这些结果证明模拟器搜索、路线时序和回放执行器可以重复通关，不代表 Jev 或本地模型自主通关。** 1-2 使用已有验证路线；1-3 由 `branch.py --bot search` 找到路线，再交给本地扩展 viewer 回放。当前未验证 1-3 纯模型自主通关、1-4 及后续连续推进。
+证据：[汇总及每局目录](artifacts/model-eval-20260923/summary.json) · [首轮](artifacts/model-eval-20260923/jev/evaluation.json) · [第二轮](artifacts/model-eval-20260923/jev-repeat-2/evaluation.json) · [第三轮](artifacts/model-eval-20260923/jev-repeat-3/evaluation.json) · [请求响应示例](artifacts/model-eval-20260923/jev/1-1/http.jsonl) · [逐决策日志示例](artifacts/model-eval-20260923/jev/1-1/1-1-jev-20260923-103211.log.jsonl)。HTTP 记录不含认证头。
 
-## 验收范围与版本
+GIF 展示模拟器游戏时间，不包含等待模型的时间；模拟器在请求期间暂停。这里的“纯模型决策”指模型独立选择九种语义动作，执行器仍负责按键、跳跃落地和后退时序；不是逐帧视觉控制。
 
-本次验收在 macOS、Python 3.12.10 上完成，使用 `gym-super-mario-bros 7.4.0`、`nes-py 8.2.1`、`gym 0.26.2`、`numpy 1.26.4`。当时本地扩展版的 23 项测试通过，覆盖路线回放、真实帧计数、模型失败来源、进程回收和终态画面推流。
+首轮失败诊断也暴露接口问题：1-1 的“距坑一格再跳”规则与每六帧决策错过了起跳窗口；1-2 低跳踩中首只敌人后碰到紧邻敌人；1-3 摘要只扫描前八格，却在第九格有断层时仍描述为前方实地。原动作诊断回放可复现这些失败，但不计为新增模型试验。后续优先修正观测范围、动作后果和重新决策时机，再验证模型收益。
 
-**本次首页更新发布文档、GIF 和验收 JSON；离线回放扩展代码及测试尚未同步到主分支。** 验收使用的 `verify_routes.py`、`--replay-only` 和 viewer 的 1-3 路线属于该本地扩展版，不能直接在当前主分支使用。下面列出主分支已有的实验入口。
+另外试跑一局 Jev + guard/unstick：1-1 未通关，x=679，13 次有效回答中 guard 改写 3 次，未发生路线接管。该实验与纯模型成绩分开，见[辅助模式记录](artifacts/model-eval-20260923/jev-guarded/evaluation.json)；它不是配对消融，不能据此量化 guard 的收益。
 
-## 运行主分支实验
+## 本地模型实测与运行时故障
 
-先安装 [uv](https://docs.astral.sh/uv/)，再准备锁定依赖：
+本地 Qwen 使用缓存的 **Qwen2.5-1.5B-Instruct**，revision `989aa7980e4cf806f80c7fef2b1adb7bc71aa306`；不是历史展示中的 Qwen2.5-3B。运行于 Apple M5 / 16 GiB、PyTorch 2.14.0 + Transformers 4.57.6、MPS FP16。54 次真实生成均为 `H / hop right`，即使收到 `STUCK` 提示仍重复低跳，未表现出足够的状态适应能力。
+
+| Qwen · 1-1 · x=722 | Qwen · 1-2 · x=656 | Qwen · 1-3 · x=618 |
+| --- | --- | --- |
+| ![Qwen 1-1 未通关](artifacts/model-eval-20260923/qwen-local/1-1/1-1-local-20260923-104238.gif) | ![Qwen 1-2 未通关](artifacts/model-eval-20260923/qwen-local/1-2/1-2-local-20260923-104257.gif) | ![Qwen 1-3 未通关](artifacts/model-eval-20260923/qwen-local/1-3/1-3-local-20260923-104313.gif) |
+
+证据：[本地评测清单](artifacts/model-eval-20260923/qwen-local/evaluation.json) · [动作、token 与录像时长审计](artifacts/model-eval-20260923/qwen-local/audit.json) · [实测脚本](artifacts/model-eval-20260923/qwen-local/run_qwen_local_eval.py)。脚本的 localhost HTTP adapter 将未改动的项目提示交给真实权重生成，未预设模型回答；不下载模型权重，依赖用独立临时环境加载。
+
+若本机已有上述 revision 的 Hugging Face 缓存，可按执行快照重跑本地三关；这条路径独立于 Ollama：
+
+```bash
+mkdir -p output
+cp artifacts/model-eval-20260923/qwen-local/run_qwen_local_eval.py output/
+PYTHONPATH=. uv run --with torch==2.14.0 --with transformers==4.57.6 \
+  python output/run_qwen_local_eval.py
+```
+
+脚本固定使用该权重缓存，不会自动下载；缺少权重时直接失败。本地结果的 `input_tokens=0` 表示原控制器未计本地 token，实际 token 统计见 `audit.json`，不能读成零推理成本。
+
+另试的 `gemma4:e2b` 在 Ollama 服务中返回 HTTP 500，没有有效模型回答，属于运行时故障。日志定位为 Apple M5 / Ollama 0.24.0 的 Metal 类型编译错误；限制到 4096 上下文、设置 `num_gpu=0` 后的两次最小请求仍失败。见[原始错误](artifacts/model-eval-20260923/local-service-errors/evaluation.json)与[恢复证据](artifacts/model-eval-20260923/local-recovery/recovery-report.json)。不把该故障计作模型游戏失败，也未归因为未经证实的内存不足。
+
+## 在线分支试演
+
+本次还重新运行了原始 `branch.py --bot jev --level 1-1`：**未通关，x=2370，22 次真实 Jev 请求，总耗时 27.38 分钟**。
+
+| 实际执行帧 | 候选试演帧 | 自动 escape | 自动 ride 续招 | API 延迟 p50 |
+| ---: | ---: | ---: | ---: | ---: |
+| 2544 | 1,574,417 | 0 | 11 | 0.624 s |
+
+![Jev 在线分支试演 1-1，未通关](artifacts/model-eval-20260923/branch-jev/1-1-branch-jev-20260923-110044.gif)
+
+[结果清单](artifacts/model-eval-20260923/branch-jev/evaluation.json) · [22 次请求响应](artifacts/model-eval-20260923/branch-jev/http.jsonl) · [动作与续招日志](artifacts/model-eval-20260923/branch-jev/1-1-branch-jev-20260923-110044.log.jsonl)。GIF 展示 42.4 秒游戏过程；候选试演消耗的时间没有放进游戏录像。
+
+这条路径在每个决策点现场模拟候选后果，再让 Jev 选择，没有载入预先通关路线。但它有额外复合动作、模拟器搜索和自动续招，不能与九动作的纯模型模式当作只差一个变量的实验。此次额外模拟量约为实际执行帧的 619 倍，说明工具计算预算也必须计入 agent 的整体效率。仪表代码只记录 HTTP、区分执行/模拟帧并修正 GIF 延时单位，未改变 `branch.py` 的选择与执行逻辑。
+
+## 复现纯模型评测
 
 ```bash
 git clone https://github.com/kayky233/nanoandjev-mario.git
 cd nanoandjev-mario
 uv sync --frozen
-```
-
-不依赖模型服务的分支搜索：
-
-```bash
-uv run python branch.py --bot search --level 1-3
-```
-
-搜索会在模拟器快照上试演候选动作和后续动作，耗时包含未展示在录像里的探索过程。首页动图只展示已验证路线的执行时间。
-
-接入模型前，将 `.env.example` 复制为 `.env` 并配置服务。官方 Jev 使用 `TYPESAFE_API_KEY`；本地模型需要独立运行 OpenAI 兼容服务，地址由 `LOCAL_POLICY_BASE_URL` 指定。仓库不包含模型权重。
-
-```bash
 cp .env.example .env
-# 编辑 .env 后，按需运行：
-uv run python branch.py --bot jev --level 1-1
-uv run python play_local.py --bot local --level 1-1
-uv run python watch_local.py --level 1-1 --model local
 ```
 
-观战地址为 <http://127.0.0.1:8123/>。Jev 命令会请求远程 API；教练、网页检索是独立的可选服务，需分别配置。观战页出现规则兜底或路线接管时，应结合决策来源判断模型是否实际参与执行，不能仅凭通关画面判断。
+在 `.env` 中填写 `TYPESAFE_API_KEY`，再运行：
 
-## 实现方式
+```bash
+uv run python play_local.py --bot jev --model-only --level 1-1
+uv run python play_local.py --bot jev --model-only --level 1-2
+uv run python play_local.py --bot jev --model-only --level 1-3
+```
 
-| 模块 | 职责 |
-| --- | --- |
-| [play.py](play.py) | RAM → 网格和特征，规则策略与 Jev 直接动作选择 |
-| [branch.py](branch.py) | 快照试演候选及后续动作；支持 Jev 选择或离线搜索 |
-| [live.py](live.py) | 模拟器不停顿，将请求延迟纳入控制实验 |
-| [play_local.py](play_local.py) | 本地模型接口、危险动作拦截、脱困和教练计划 |
-| [watch_local.py](watch_local.py) | 双通道观战、决策状态、失败教训和恢复路线 |
-| [supervise.py](supervise.py) | 观战进程看护与可选隧道 |
+本地模型需要单独部署 OpenAI 兼容推理服务。以 Ollama 地址为例，设置服务中实际存在的模型名；仓库不包含权重：
 
-模型接收结构化状态或候选试演结果；物理预测来自模拟器，最终按键与帧时序由执行器落实。分支搜索、guard 和路线接管的贡献需要与模型选择分别衡量。
+```dotenv
+LOCAL_POLICY_BASE_URL=http://127.0.0.1:11434/v1
+LOCAL_POLICY_API_KEY=local
+LOCAL_POLICY_MODEL=gemma4:e2b
+LOCAL_POLICY_MODE=chat
+LOCAL_POLICY_TIMEOUT=60
+NO_PROXY=127.0.0.1,localhost
+```
 
-## 历史结果与参考
+```bash
+uv run python play_local.py --bot local --model-only --level 1-1
+uv run python -m unittest discover -s tests -p 'test_model_only.py' -v
+```
 
-首页原来的三张 GIF 对应上游的 **1-1、2-1、3-1** 历史 `branch-jev` 结果，其中 2-1、3-1 使用早期动作集。它们不属于上表的本次验收。
+`--model-only` 只允许 `jev` / `local`，禁止与 replay、rules、dump 混用；非法回答或请求失败会保存错误结果并非零退出。每局保存 `runs/results.jsonl`、逐决策日志和有实际画面时的 GIF。检查 `status`、`flag`、`model_only`、`model_choice` 与 `executed_choice`；`api_calls` 目前统计有效返回，不包含失败请求，HTTP 失败需要单独计数。
 
-- 上游实现与实验记录：[4esv/jev-mario](https://github.com/4esv/jev-mario)。
-- 历史运行数据：[runs/results.jsonl](runs/results.jsonl)。
-- 历史双模型录像：[artifacts/current](artifacts/current/README.md)，与新的离线验收录像分开标记。
-- 本地决策模型参考：[Laya](https://github.com/NandhaKishorM/laya)，提供 `choice / score / noul`；本仓库尚未接入或验证其模型推理。
+本轮运行环境：macOS / Apple Silicon、Python 3.12.10、`gym-super-mario-bros 7.4.0`、`nes-py 8.2.1`、`gym 0.26.2`、`numpy 1.26.4`。依赖版本、源码 SHA-256、模型名称和时间保存在评测清单中。`jev-latest` 是服务端别名，服务未返回固定权重版本。
+
+## 模式与实现
+
+| 入口 | 模型的职责 | 额外控制能力 |
+| --- | --- | --- |
+| [play_local.py](play_local.py) `--model-only` | 根据当前 RAM 状态选择动作 | 语义动作执行器；无规则改写或路线 |
+| [play_local.py](play_local.py)，默认模式 | 提出动作 | guard / unstick 可改写；需检查来源 |
+| [branch.py](branch.py) `--bot jev` | 根据当前候选试演后果选择动作 | 在线模拟器搜索、escape、ride |
+| [live.py](live.py) | 模拟器持续运行时给出动作与风险判断 | 请求延迟进入控制闭环 |
+| [watch_local.py](watch_local.py) | 双通道观战与实验 | 可能发生规则兜底、教练或已验证路线接管 |
+
+在线分支实验命令：
+
+```bash
+uv run python branch.py --bot jev --level 1-1
+```
+
+## 历史证据与参考
+
+原仓库的三张上游 GIF 对应 **1-1、2-1、3-1** 的历史 `branch-jev`；2-1、3-1 使用早期动作集。原本地 Qwen 的 1-1 成功记录缺少逐决策来源，旧合成面板还使用了位置插值和预设动作文字。这些材料保留在[录像索引](artifacts/current/README.md)，不充当本次模型验收。
+
+- [历史运行摘要](runs/results.jsonl)：跨版本留存结果，不能汇总为同配置成功率。
+- [上游实现](https://github.com/4esv/jev-mario)：直接控制、分支试演和实时控制三种设计。
+- [Laya](https://github.com/NandhaKishorM/laya)：本地 `choice / score / noul` 决策接口参考；本仓库尚未接入或实测其推理能力。

@@ -1,0 +1,64 @@
+LOAD mps
+`torch_dtype` is deprecated! Use `dtype` instead!
+LOADED 9.834
+START 1-1
+INFERENCE 1-1 200 'H' 5.0896
+INFERENCE 1-1 200 'H' 0.5158
+INFERENCE 1-1 200 'H' 0.7976
+INFERENCE 1-1 200 'H' 0.8283
+INFERENCE 1-1 200 'H' 1.2356
+INFERENCE 1-1 200 'H' 0.6217
+INFERENCE 1-1 200 'H' 0.7711
+INFERENCE 1-1 200 'H' 0.8151
+INFERENCE 1-1 200 'H' 0.8343
+INFERENCE 1-1 200 'H' 0.7362
+INFERENCE 1-1 200 'H' 0.7697
+INFERENCE 1-1 200 'H' 0.7572
+INFERENCE 1-1 200 'H' 0.855
+INFERENCE 1-1 200 'H' 0.7537
+INFERENCE 1-1 200 'H' 0.74
+INFERENCE 1-1 200 'H' 1.9058
+INFERENCE 1-1 200 'H' 1.286
+INFERENCE 1-1 200 'H' 0.9378
+INFERENCE 1-1 200 'H' 0.9541
+INFERENCE 1-1 200 'H' 1.4744
+INFERENCE 1-1 200 'H' 1.1504
+INFERENCE 1-1 200 'H' 0.7594
+INFERENCE 1-1 200 'H' 0.8732
+INFERENCE 1-1 200 'H' 0.823
+INFERENCE 1-1 200 'H' 0.7246
+INFERENCE 1-1 200 'H' 0.8358
+RESULT {"level": "1-1", "bot": "local", "stamp": "20260923-104238", "best_x": 722, "flag": false, "status": "completed", "error_type": null, "error": null, "frames": 753, "decision_clock": 889, "api_calls": 26, "input_tokens": 0, "model_only": true, "valid_model_answers": 26, "guard_rewrites": 0, "unstick_rewrites": 0, "cost_usd": 0.0, "latency_p50": 0.834, "gif": "1-1-local-20260923-104238.gif", "wall_seconds": 33.189}
+START 1-2
+INFERENCE 1-2 200 'H' 0.9974
+INFERENCE 1-2 200 'H' 0.6969
+INFERENCE 1-2 200 'H' 0.9891
+INFERENCE 1-2 200 'H' 0.8494
+INFERENCE 1-2 200 'H' 1.6323
+INFERENCE 1-2 200 'H' 0.7338
+INFERENCE 1-2 200 'H' 0.9756
+INFERENCE 1-2 200 'H' 0.8315
+INFERENCE 1-2 200 'H' 0.8118
+INFERENCE 1-2 200 'H' 0.7921
+INFERENCE 1-2 200 'H' 0.7798
+INFERENCE 1-2 200 'H' 0.8021
+INFERENCE 1-2 200 'H' 0.834
+INFERENCE 1-2 200 'H' 0.7849
+INFERENCE 1-2 200 'H' 1.2886
+INFERENCE 1-2 200 'H' 0.665
+RESULT {"level": "1-2", "bot": "local", "stamp": "20260923-104257", "best_x": 656, "flag": false, "status": "completed", "error_type": null, "error": null, "frames": 468, "decision_clock": 531, "api_calls": 16, "input_tokens": 0, "model_only": true, "valid_model_answers": 16, "guard_rewrites": 0, "unstick_rewrites": 0, "cost_usd": 0.0, "latency_p50": 0.837, "gif": "1-2-local-20260923-104257.gif", "wall_seconds": 18.239}
+START 1-3
+INFERENCE 1-3 200 'H' 1.3648
+INFERENCE 1-3 200 'H' 0.642
+INFERENCE 1-3 200 'H' 3.0837
+INFERENCE 1-3 200 'H' 0.7409
+INFERENCE 1-3 200 'H' 0.9103
+INFERENCE 1-3 200 'H' 0.7691
+INFERENCE 1-3 200 'H' 0.8038
+INFERENCE 1-3 200 'H' 0.8005
+INFERENCE 1-3 200 'H' 0.8147
+INFERENCE 1-3 200 'H' 0.8572
+INFERENCE 1-3 200 'H' 0.7794
+INFERENCE 1-3 200 'H' 0.7539
+RESULT {"level": "1-3", "bot": "local", "stamp": "20260923-104313", "best_x": 618, "flag": false, "status": "completed", "error_type": null, "error": null, "frames": 359, "decision_clock": 408, "api_calls": 12, "input_tokens": 0, "model_only": true, "valid_model_answers": 12, "guard_rewrites": 0, "unstick_rewrites": 0, "cost_usd": 0.0, "latency_p50": 0.81, "gif": "1-3-local-20260923-104313.gif", "wall_seconds": 14.794}
+DONE
