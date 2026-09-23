@@ -130,6 +130,8 @@ uv run python watch_local.py --model dual --model-only --stay-on-level --level 1
 
 打开 <http://127.0.0.1:8123/>。`--model-only` 关闭路线接管、guard、自动脱困、教练和规则兜底；模型服务异常时该栏停止并显示错误。推理服务需保持运行。
 
+画面推流独立限为每路最高 10 fps，JPEG 质量为 60，状态每秒刷新；切到后台的标签页会断开画面流并暂停状态轮询，返回页面后恢复。这些设置只影响观战传输，不改变模型决策、模拟器帧数或执行时序。每增加一个观众都会增加出口流量。
+
 需要进程看护时，可将最后一行替换为：
 
 ```bash
@@ -137,6 +139,8 @@ uv run python supervise.py --model dual --model-only --stay-on-level --level 1-1
 ```
 
 需要公网只读观战时，在已配置 ngrok 的机器上单独运行 `ngrok http http://127.0.0.1:8123`，或将看护脚本的 `--tunnel none` 改为 `--tunnel ngrok`。临时地址由隧道运行时生成，不写入仓库；电脑与两个模型服务需要持续运行。
+
+ngrok 报 `ERR_NGROK_725` 表示账号带宽额度耗尽，重启同一账号隧道不能恢复额度。本机地址仍可使用；也可在安装 `cloudflared` 后运行 `cloudflared tunnel --url http://127.0.0.1:8123` 创建临时演示地址，或将看护参数改为 `--tunnel cloudflared`。公共演示地址的可用性仍取决于所用隧道服务。
 
 ## 模式与实现
 

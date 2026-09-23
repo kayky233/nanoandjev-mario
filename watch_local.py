@@ -11,8 +11,8 @@
 1. **默认同步决策**。模型回复期间只暂停对应模拟器，网页推流和状态卡仍继续响应并显示“思考中”；
    这样每个动作都对应当前状态，优先保证通关。显式传 `--async` 才会让模拟器不停步，结果可能来自旧状态，
    只适合延迟实验，不作为稳定通关路径。
-2. **MJPEG 推流**。原版靠 JS 每 100ms 轮询换 `img.src`，显示上限被锁在 10fps；
-   改成 `multipart/x-mixed-replace` 长连接，浏览器收到即渲染，没有轮询开销、没有帧率上限。
+2. **MJPEG 推流**。长连接只发送最新画面，每路最多 10fps，避免公网流量随模拟器帧率增长；
+   后台标签页暂停画面与状态请求。画面采样不改变模型决策或模拟器执行时序。
 
 一局结束后停 3 秒自动开下一局，方便反复看。
 """
@@ -42,6 +42,8 @@ import play_local as P
 import mentor_search as MS
 
 BOUNDARY = b"mario-frame"
+STREAM_FPS = 10.0
+JPEG_QUALITY = 60
 CHANNELS = ("local", "jev")  # 双画面：本地模型 vs 官方模型
 LATEST = {c: {"seq": 0, "jpeg": None, "meta": {"status": "starting"}} for c in CHANNELS}
 LESSONS = {c: [] for c in CHANNELS}  # 每个模型全量累积的失败教训（去重后），供页面展开查看
@@ -134,7 +136,7 @@ BRANCH_RAW = {
 # --------------------------------------------------------------------------- 画面分发
 def publish(obs, meta, channel="local"):
     buf = io.BytesIO()
-    Image.fromarray(obs).save(buf, format="JPEG", quality=80)
+    Image.fromarray(obs).save(buf, format="JPEG", quality=JPEG_QUALITY)
     now = time.perf_counter()
     with LOCK:
         FRAME_TIMES.append(now)
@@ -456,7 +458,7 @@ PAGE = """<!doctype html>
   <div class="side">
     <div class="label" id="label-local">本地模型 <span class="tag">等待模型连接</span></div>
     <div class="screen">
-      <img alt="本地模型画面" src="/stream.mjpg">
+      <img alt="本地模型画面" data-stream="/stream.mjpg">
       <div class="chip" id="chip-local"></div>
     </div>
     <div class="bar">
@@ -472,7 +474,7 @@ PAGE = """<!doctype html>
   <div class="side">
     <div class="label" id="label-jev">官方模型 <span class="tag">TypeSafe Jev · api.typesafe.ai</span></div>
     <div class="screen">
-      <img alt="官方模型画面" src="/stream_jev.mjpg">
+      <img alt="官方模型画面" data-stream="/stream_jev.mjpg">
       <div class="chip" id="chip-jev"></div>
     </div>
     <div class="bar">
@@ -514,13 +516,24 @@ PAGE = """<!doctype html>
 </div>
 <script>
 const $ = id => document.getElementById(id);
+function syncStreams() {
+  for (const img of document.querySelectorAll('img[data-stream]')) {
+    if (document.hidden || img.closest('.side').hidden) img.removeAttribute('src');
+    else if (!img.hasAttribute('src')) img.src = img.dataset.stream;
+  }
+}
+let statePending = false;
 function toggleLessons(c) {
   const box = $('lessons-' + c);
   box.style.display = box.style.display === 'none' ? 'block' : 'none';
 }
 async function tick() {
+  if (document.hidden || statePending) return;
+  statePending = true;
   let state;
-  try { state = await (await fetch('/state', {cache:'no-store'})).json(); } catch (e) { return; }
+  try { state = await (await fetch('/state', {cache:'no-store'})).json(); }
+  catch (e) { return; }
+  finally { statePending = false; }
   for (const [c, meta] of Object.entries(state)) {
     if (!meta) continue;
     $('label-' + c).closest('.side').hidden = meta.enabled === false;
@@ -583,8 +596,14 @@ async function tick() {
         }).join('') + '</ul>'
       : '<div class="empty">还没有失败教训</div>';
   }
+  syncStreams();
 }
-setInterval(tick, 250);
+document.addEventListener('visibilitychange', () => {
+  syncStreams();
+  if (!document.hidden) tick();
+});
+setInterval(tick, 1000);
+syncStreams();
 tick();
 </script></body></html>"""
 
@@ -654,6 +673,9 @@ class Handler(BaseHTTPRequestHandler):
                 # terminal image once a second even when no new frame arrives.
                 if jpeg is None or (seq == last and now - last_sent_at < 1.0):
                     time.sleep(0.005)
+                    continue
+                if last != -1 and now - last_sent_at < 1.0 / STREAM_FPS:
+                    time.sleep(1.0 / STREAM_FPS - (now - last_sent_at))
                     continue
                 last = seq
                 last_sent_at = now

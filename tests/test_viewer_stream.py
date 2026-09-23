@@ -2,6 +2,7 @@
 
 import http.client
 import io
+import itertools
 import threading
 import unittest
 from http.server import ThreadingHTTPServer
@@ -13,6 +14,32 @@ import watch_local as viewer
 
 
 class ViewerStreamTests(unittest.TestCase):
+    def test_fast_producer_does_not_exceed_stream_rate(self):
+        clock = [0.0]
+        sent_at = []
+        stop = threading.Event()
+        sequence = itertools.count()
+
+        class Writer:
+            def write(self, _data):
+                sent_at.append(clock[0])
+                if len(sent_at) == 5:
+                    stop.set()
+
+        def sleep(seconds):
+            clock[0] += seconds
+
+        handler = object.__new__(viewer.Handler)
+        handler.wfile = Writer()
+        with patch.object(viewer, "STOP", stop), \
+             patch.object(viewer, "snapshot", side_effect=lambda _c: (next(sequence), b"jpeg", {})), \
+             patch.object(viewer.time, "monotonic", side_effect=lambda: clock[0]), \
+             patch.object(viewer.time, "sleep", side_effect=sleep):
+            handler._stream()
+        self.assertEqual(len(sent_at), 5)
+        self.assertEqual(sent_at[0], 0.0)
+        self.assertTrue(all(b - a >= 0.099 for a, b in zip(sent_at, sent_at[1:])))
+
     def test_model_only_cannot_use_routes_guards_or_fallback(self):
         for source, error in (("model", None), ("rules_fallback", "ValueError")):
             with self.subTest(source=source), \
