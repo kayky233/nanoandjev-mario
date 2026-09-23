@@ -105,6 +105,39 @@ uv run python -m unittest discover -s tests -p 'test_model_only.py' -v
 
 本轮运行环境：macOS / Apple Silicon、Python 3.12.10、`gym-super-mario-bros 7.4.0`、`nes-py 8.2.1`、`gym 0.26.2`、`numpy 1.26.4`。依赖版本、源码 SHA-256、模型名称和时间保存在评测清单中。`jev-latest` 是服务端别名，服务未返回固定权重版本。
 
+## 双栏实时观战
+
+左栏运行本地 Qwen，右栏运行官方 Jev。两边使用独立模拟器，各自等待模型回答，展示真实画面、模型选择、实际动作、延迟、请求次数和最远距离。失败后自动重试；`--stay-on-level` 让通关的一栏停留在成功画面。观战重试不计入上方固定样本的基准结果。
+
+先启动本地推理服务。以下命令复用已缓存的 Qwen2.5-1.5B-Instruct 权重（revision 见上文），不会下载权重；PyTorch 和 Transformers 为可选依赖：
+
+```bash
+uv run --script serve_qwen.py --port 11503
+```
+
+可用 `--model-path /path/to/model` 指定相同模型的完整本地权重目录。该实验适配器绑定 localhost，在 Apple Silicon 上使用 MPS FP16，其他环境回退 CPU；行内部署方案见[分析报告](JEV_REPORT.md)。
+
+在另一个终端配置本地接口，并通过环境变量提供自己的 Jev 凭据，然后启动两栏：
+
+```bash
+export LOCAL_POLICY_BASE_URL=http://127.0.0.1:11503/v1
+export LOCAL_POLICY_MODEL=Qwen2.5-1.5B-Instruct
+export LOCAL_POLICY_MODE=chat
+export NO_PROXY=127.0.0.1,localhost
+# TYPESAFE_API_KEY 由自己的凭据管理方式注入进程环境。
+uv run python watch_local.py --model dual --model-only --stay-on-level --level 1-1
+```
+
+打开 <http://127.0.0.1:8123/>。`--model-only` 关闭路线接管、guard、自动脱困、教练和规则兜底；模型服务异常时该栏停止并显示错误。推理服务需保持运行。
+
+需要进程看护时，可将最后一行替换为：
+
+```bash
+uv run python supervise.py --model dual --model-only --stay-on-level --level 1-1 --tunnel none
+```
+
+需要公网只读观战时，在已配置 ngrok 的机器上单独运行 `ngrok http http://127.0.0.1:8123`，或将看护脚本的 `--tunnel none` 改为 `--tunnel ngrok`。临时地址由隧道运行时生成，不写入仓库；电脑与两个模型服务需要持续运行。
+
 ## 模式与实现
 
 | 入口 | 模型的职责 | 额外控制能力 |
@@ -113,7 +146,9 @@ uv run python -m unittest discover -s tests -p 'test_model_only.py' -v
 | [play_local.py](play_local.py)，默认模式 | 提出动作 | guard / unstick 可改写；需检查来源 |
 | [branch.py](branch.py) `--bot jev` | 根据当前候选试演后果选择动作 | 在线模拟器搜索、escape、ride |
 | [live.py](live.py) | 模拟器持续运行时给出动作与风险判断 | 请求延迟进入控制闭环 |
-| [watch_local.py](watch_local.py) | 双通道观战与实验 | 可能发生规则兜底、教练或已验证路线接管 |
+| [watch_local.py](watch_local.py) `--model-only` | 双通道真实模型观战 | 无规则改写、教练或路线接管；默认模式保留混合策略 |
+| [serve_qwen.py](serve_qwen.py) | 加载本地缓存 Qwen 权重并真实生成 | localhost OpenAI 兼容接口，独立启动 |
+| [supervise.py](supervise.py) | 看护观战进程与可选隧道 | 透传纯模型模式；退出时回收子进程与锁 |
 
 在线分支实验命令：
 
@@ -128,3 +163,5 @@ uv run python branch.py --bot jev --level 1-1
 - [历史运行摘要](runs/results.jsonl)：跨版本留存结果，不能汇总为同配置成功率。
 - [上游实现](https://github.com/4esv/jev-mario)：直接控制、分支试演和实时控制三种设计。
 - [Laya](https://github.com/NandhaKishorM/laya)：本地 `choice / score / noul` 决策接口参考；本仓库尚未接入或实测其推理能力。
+- [分析报告](JEV_REPORT.md)：当前证据、Laya 参考、agent 业务收益与行内部署方案。
+- [实现与验证说明](IMPLEMENTATION.md)：模块划分、运行命令与执行器回归边界。

@@ -61,10 +61,10 @@ LOCK = threading.Lock()
 STOP = threading.Event()
 FRAME_TIMES = collections.deque(maxlen=400)  # 出帧时间戳，用来算真实帧率
 
-# This route was produced by branch.py's emulator-backed search and replayed
-# twice to flag=true (best_x=3161).  It is not an invisible hard-coded policy:
-# the normal model/mentor gets three attempts first, and route use is exposed
-# as source=verified_route with the model's original choice beside it.
+# These routes were produced by branch.py's emulator-backed search and
+# replayed twice to flag=true (1-2 x=3161; 1-3 x=2425). The normal model/mentor
+# gets three attempts first. Route actions and model choices have separate
+# provenance; --replay-only explicitly disables model requests altogether.
 VERIFIED_ROUTES = {
     "1-2": (
         ("short run then jump", None),
@@ -91,6 +91,34 @@ VERIFIED_ROUTES = {
         ("bounce on the spring behind", None),
         ("run and jump right", None),
     ),
+    "1-3": (
+        ("run and jump right", None),
+        ("short run then jump", None),
+        ("run and jump right", None),
+        ("walk left", "run then jump"),
+        ("jump in place", "jump right"),
+        ("jump in place", "short run then jump"),
+        ("hop right", None),
+        ("run then jump", None),
+        ("short run then jump", None),
+        ("jump in place", None),
+        ("hop back onto the ledge behind", "jump right"),
+        ("jump right", None),
+        ("jump right", None),
+        ("jump in place", None),
+        ("jump right", None),
+        ("jump right", None),
+        ("jump in place", None),
+        ("hop back onto the ledge behind", "jump right"),
+        ("hop back onto the ledge behind", "jump right"),
+        ("run and jump right", None),
+        ("short run then jump", None),
+        ("jump in place", None),
+        ("stand", "jump right"),
+        ("run then jump", None),
+        ("short run then jump", None),
+        ("run then jump", None),
+    ),
 }
 
 BRANCH_COMPOSITE = {
@@ -115,7 +143,7 @@ def publish(obs, meta, channel="local"):
         slot = LATEST[channel]
         # ``sync`` and ``channel`` are process-level facts initialized by
         # main(); keep them when a frame replaces the per-episode metadata.
-        for key in ("sync", "channel"):
+        for key in ("sync", "channel", "enabled", "model_only", "model_name"):
             if key not in meta and key in slot["meta"]:
                 meta[key] = slot["meta"][key]
         slot["seq"] += 1
@@ -390,7 +418,7 @@ PAGE = """<!doctype html>
   .wrap { display:flex; gap:16px; padding:16px; align-items:flex-start; flex-wrap:wrap; }
   .side { flex:1; min-width:340px; max-width:620px; }
   .label { font-size:15px; font-weight:600; margin-bottom:8px; }
-  .label .tag { font-size:11px; color:#8b949e; font-weight:400; margin-left:6px; }
+  .label .tag { display:block; font-size:11px; color:#8b949e; font-weight:400; }
   .screen { background:#000; border:1px solid #2a323d; border-radius:10px; padding:8px; position:relative; }
   img { display:block; width:100%; height:auto; image-rendering:pixelated; border-radius:6px; }
   .chip { position:absolute; top:14px; left:14px; background:rgba(13,17,23,.85); border:1px solid #2a323d;
@@ -426,7 +454,7 @@ PAGE = """<!doctype html>
 </style></head><body>
 <div class="wrap">
   <div class="side">
-    <div class="label">本地模型 <span class="tag">Qwen2.5-3B · 127.0.0.1:11500</span></div>
+    <div class="label" id="label-local">本地模型 <span class="tag">等待模型连接</span></div>
     <div class="screen">
       <img alt="本地模型画面" src="/stream.mjpg">
       <div class="chip" id="chip-local"></div>
@@ -438,10 +466,11 @@ PAGE = """<!doctype html>
       <div class="metric"><div class="k">当前 x</div><div class="v" id="x-local">–</div></div>
     </div>
     <div class="status" id="status-local"></div>
+    <div class="status" id="decision-local"></div>
     <div class="status mentor-status" id="mentor-local"></div>
   </div>
   <div class="side">
-    <div class="label">官方模型 <span class="tag">TypeSafe Jev · api.typesafe.ai</span></div>
+    <div class="label" id="label-jev">官方模型 <span class="tag">TypeSafe Jev · api.typesafe.ai</span></div>
     <div class="screen">
       <img alt="官方模型画面" src="/stream_jev.mjpg">
       <div class="chip" id="chip-jev"></div>
@@ -453,6 +482,7 @@ PAGE = """<!doctype html>
       <div class="metric"><div class="k">当前 x</div><div class="v" id="x-jev">–</div></div>
     </div>
     <div class="status" id="status-jev"></div>
+    <div class="status" id="decision-jev"></div>
     <div class="status mentor-status" id="mentor-jev"></div>
   </div>
 </div>
@@ -460,7 +490,7 @@ PAGE = """<!doctype html>
   <div class="cfg local">
     <div class="cfg-title">本地模型 · 策略配置</div>
     <table>
-      <tr><td class="k">决策引擎</td><td>Qwen2.5-3B 逐帧问答，state → 9 选 1 字母</td></tr>
+      <tr><td class="k">决策引擎</td><td>本地模型，结构化状态 → 9 选 1 字母</td></tr>
       <tr><td class="k">提示词</td><td>CHAT_SYSTEM 系统提示 + 状态摘要 + 动作选项</td></tr>
       <tr><td class="k">安全守卫</td><td class="have">hazard_guard：坑 / 墙 / 敌人贴脸时强制改动作</td></tr>
       <tr><td class="k">脱困机制</td><td class="have">unstick：卡住时自动升级跳跃</td></tr>
@@ -493,6 +523,20 @@ async function tick() {
   try { state = await (await fetch('/state', {cache:'no-store'})).json(); } catch (e) { return; }
   for (const [c, meta] of Object.entries(state)) {
     if (!meta) continue;
+    $('label-' + c).closest('.side').hidden = meta.enabled === false;
+    document.querySelector('.cfg.' + c).hidden = meta.enabled === false || meta.model_only;
+    const label = $('label-' + c);
+    label.textContent = (c === 'local' ? '本地模型 · ' : '官方模型 · ') + (meta.model_name || c);
+    const mode = document.createElement('span');
+    mode.className = 'tag';
+    mode.textContent = meta.model_only
+      ? '模型独立决策 · 无路线 / 守卫 / 教练 / 兜底'
+      : '模型与执行策略组合';
+    label.append(mode);
+    if (meta.replay_only) {
+      $('label-' + c).textContent = '离线验证路线回放 · ' + (c === 'local' ? 'A' : 'B') + '（未调用模型）';
+      document.querySelector('.cfg.' + c).hidden = true;
+    }
     const stt = meta.stats || {};
     $('best-' + c).textContent = Math.max(stt.best_x || 0, meta.best_x || 0);
     $('x-' + c).textContent = meta.x ?? '–';
@@ -503,9 +547,13 @@ async function tick() {
       ? ' · 已验证路线纠偏' + (meta.route_step != null ? ' #' + meta.route_step : '') : '';
     if (meta.flag) st.innerHTML = '<span class="flag">通关！</span>' + routeTag;
     else st.textContent = (meta.status ?? '') + routeTag;
+    if (meta.model_only) st.append(' · 第 ' + (meta.edition || 0) + ' 局 · ' + (meta.calls || 0) + ' 次请求 · ' + (meta.frame || 0) + ' 帧');
     const mentorBox = $('mentor-' + c);
     const mentors = meta.mentor || [];
     const decision = meta.decision || {};
+    $('decision-' + c).textContent = '模型选择：' + (decision.model_choice || '–')
+      + ' → 实际执行：' + (decision.choice || '–') + ' · 来源：' + (decision.source || '–')
+      + (decision.latency_ms != null ? ' · ' + decision.latency_ms + ' ms' : '');
     if (decision.mentor_action) {
       mentorBox.textContent = '教练已应用：' + decision.mentor_action + '（' + (decision.source || '') + '）';
     } else if (mentors.length) {
@@ -596,13 +644,19 @@ class Handler(BaseHTTPRequestHandler):
     def _stream(self, channel="local"):
         """长连接推流：只发最新帧，客户端慢就直接跳过中间帧。"""
         last = -1
+        last_sent_at = 0.0
         try:
             while not STOP.is_set():
                 seq, jpeg, _meta = snapshot(channel)
-                if jpeg is None or seq == last:
+                now = time.monotonic()
+                # A browser opening a finished episode still needs the next
+                # multipart boundary to display its first JPEG. Repeat the
+                # terminal image once a second even when no new frame arrives.
+                if jpeg is None or (seq == last and now - last_sent_at < 1.0):
                     time.sleep(0.005)
                     continue
                 last = seq
+                last_sent_at = now
                 header = (b"--" + BOUNDARY + b"\r\nContent-Type: image/jpeg\r\nContent-Length: "
                           + str(len(jpeg)).encode() + b"\r\n\r\n")
                 self.wfile.write(header + jpeg + b"\r\n")
@@ -613,7 +667,20 @@ class Handler(BaseHTTPRequestHandler):
         pass
 
 
-def play_episode(level: str, fps: float, mode: str, edition: int, sync: bool = False, lessons=(), model="local", channel="local", experience=None, mentor=None, verified_route: bool = False) -> dict:
+def play_episode(level: str, fps: float, mode: str, edition: int, sync: bool = False, lessons=(), model="local", channel="local", experience=None, mentor=None, verified_route: bool = False, frame_sink=None, model_only: bool = False) -> dict:
+    replay_only = model == "replay"
+    if model_only:
+        if not sync or verified_route or model not in ("local", "jev"):
+            raise ValueError("model-only requires a synchronous model without a verified route")
+        lessons, experience, mentor = (), None, None
+    if fps <= 0:
+        raise ValueError("fps must be positive")
+    if verified_route and level not in VERIFIED_ROUTES:
+        raise ValueError(f"No verified route for {level}")
+    if replay_only:
+        if not verified_route:
+            raise ValueError("Offline replay requires a verified route")
+        sync = True
     env = JoypadSpace(P.make_mario_env(gym_super_mario_bros, level), SIMPLE_MOVEMENT)
     ram = P.nes(env).ram
     obs, _ = env.reset()
@@ -622,9 +689,12 @@ def play_episode(level: str, fps: float, mode: str, edition: int, sync: bool = F
 
     action, prev, hold_cap = 0, 0, P.FULL_JUMP_FRAMES
     frame, best, last_best, last_gain = 0, 0, 0, 0
+    emulator_frames = 0
     info = {"x_pos": 0, "flag_get": False}
     term = trunc = False
     calls, started, last_decision = 0, time.perf_counter(), None
+    model_decision_sources = collections.Counter()
+    model_error = None
     recent = []  # [(choice, x_at_decision)]，作为"最近决策"块喂给模型
     last_state = None  # 死亡前最后一次决策的 state，用来诊断死因（死亡帧里敌人/坑已消失）
     last_applied_state = None
@@ -641,21 +711,26 @@ def play_episode(level: str, fps: float, mode: str, edition: int, sync: bool = F
     next_frame_at = time.perf_counter()
 
     def step(a: int) -> bool:
-        nonlocal obs, term, trunc, info, frame, best, next_frame_at
+        nonlocal obs, term, trunc, info, frame, best, next_frame_at, emulator_frames
         obs, _, term, trunc, info = env.step(a)
         frame += 1
+        emulator_frames += 1
         best = max(best, int(info["x_pos"]))
         thinking, thinking_ms = pipeline.status()
         publish(obs, {
-            "edition": edition, "level": level, "mode": mode, "frame": frame, "fps": fps,
+            "edition": edition, "level": level, "mode": mode, "frame": emulator_frames, "fps": fps,
+            "replay_only": replay_only, "model_only": model_only,
             "x": int(info["x_pos"]), "best_x": best, "flag": bool(info["flag_get"]),
             "calls": calls, "elapsed": round(time.perf_counter() - started, 1),
             "thinking": thinking, "thinking_ms": thinking_ms or 0,
             "status": "playing", "decision": last_decision,
+            "model_decision_sources": dict(model_decision_sources),
             "verified_route_used": route_used,
             "route_step": max(0, route_index - 1) if route_used else None,
             "route_prefix_frames": route_prefix_frames if route_used else 0,
         }, channel)
+        if frame_sink is not None:
+            frame_sink(obs, emulator_frames)
         # 限速：模拟器本来远快于实时，不限速一局 12 秒就播完了。
         next_frame_at += 1.0 / fps
         delay = next_frame_at - time.perf_counter()
@@ -865,7 +940,7 @@ def play_episode(level: str, fps: float, mode: str, edition: int, sync: bool = F
                "requested_action": applied_mentor.get("action"),
                "action": actual_action, "source": actual_source,
                "rewritten": actual_action != applied_mentor.get("action"),
-               "x": int(x_now), "frame": int(frame),
+               "x": int(x_now), "frame": emulator_frames,
                "scene_key": applied_mentor.get("scene_key")}
         mentor_trace.append(row)
         if plan_id is None:
@@ -917,44 +992,56 @@ def play_episode(level: str, fps: float, mode: str, edition: int, sync: bool = F
             latency = 0.0
             if sync:
                 # 同步等决策：决策期间画面推流显示"思考中"，而不是完全冻死。
-                publish(obs, {"edition": edition, "level": level, "mode": mode, "frame": frame, "fps": fps,
+                publish(obs, {"edition": edition, "level": level, "mode": mode, "frame": emulator_frames, "fps": fps,
+                              "replay_only": replay_only, "model_only": model_only,
                               "x": int(info["x_pos"]), "best_x": best, "flag": bool(info["flag_get"]),
                               "calls": calls, "elapsed": round(time.perf_counter() - started, 1),
-                              "thinking": True, "thinking_ms": 0,
-                              "status": "思考中...", "decision": last_decision,
+                              "thinking": not replay_only, "thinking_ms": 0,
+                              "status": "离线验证路线回放" if replay_only else "思考中...", "decision": last_decision,
                               "verified_route_used": route_used,
                               "route_step": max(0, route_index - 1) if route_used else None,
                               "route_prefix_frames": route_prefix_frames if route_used else 0}, channel)
                 mentor_hit = _matching_mentor(mentor, level, state_now, int(info["x_pos"]))
+                calls += int(not replay_only)
                 try:
-                    if model == "jev":
+                    if replay_only:
+                        name, probs, latency, source = "stand", None, 0.0, "offline_replay"
+                    elif model == "jev":
                         name, probs, _tokens, latency = P.ask_jev(client, state_now, recent[-6:], lessons, experience, mentor_hit)
                         source = "jev"
                     else:
-                        name, probs, _tokens, latency, source = P.ask_local(client, state_now, recent[-6:], lessons, experience, mentor_hit)
+                        name, probs, _tokens, latency, source = P.ask_local(client, state_now, recent[-6:], lessons, experience, mentor_hit, strict=model_only)
+                    if model_only and (source not in ("model", "jev") or name not in P.ACTIONS):
+                        raise ValueError("model-only rejected non-model or invalid action")
                 except Exception as exc:
+                    if model_only:
+                        # Keep credentials and provider response bodies out of the public viewer.
+                        model_error = type(exc).__name__
+                        model_decision_sources["error"] += 1
+                        last_decision = {"frame": emulator_frames, "x": int(info["x_pos"]),
+                                         "choice": None, "model_choice": None, "source": "error"}
+                        break
                     # 官方/本地模型单次调用失败不能崩掉整局：退回确定性规则兜底，继续跑
                     name = P.policy(state_now) or "run right"
                     probs, latency, source = None, 0.0, "fallback"
                     print(f"[{channel}] 决策失败，规则兜底: {exc}", flush=True)
-                model_choice = name
+                model_choice = name if source in ("model", "jev") else None
                 model_source = source
-                if not route_used:
+                if not route_used and not model_only:
                     name, source, applied_mentor = choose_action(
                         name, source, state_now, int(info["x_pos"]), mentor_hit)
                     record_mentor_application(applied_mentor, name, source, int(info["x_pos"]))
                 mentor_micro_wait = applied_mentor if applied_mentor and applied_mentor.get("micro_wait") else None
-                calls += 1
                 recent.append((name, int(info["x_pos"])))
                 last_applied_state = state_now
                 last_applied_action = name
-                last_applied_frame = frame
+                last_applied_frame = emulator_frames
                 action = P.ACTIONS[name]
                 hold_cap = P.HOP_FRAMES if name == "hop right" else P.FULL_JUMP_FRAMES
                 last_decision = {
-                    "frame": frame, "x": int(info["x_pos"]), "choice": name,
+                    "frame": emulator_frames, "x": int(info["x_pos"]), "choice": name,
                     "model_choice": model_choice,
-                    "source": source, "latency_ms": round(latency * 1000),
+                    "source": source, "model_source": model_source, "latency_ms": round(latency * 1000),
                     "probs": {k: round(v, 4) for k, v in sorted(probs.items(), key=lambda kv: -kv[1])}
                              if probs else None,
                     "mentor_action": applied_mentor.get("action") if applied_mentor else None,
@@ -983,7 +1070,7 @@ def play_episode(level: str, fps: float, mode: str, edition: int, sync: bool = F
                     else:
                         name, source = ready["name"], ready.get("source", "model")
                         probs, latency = ready.get("probs"), ready.get("latency_ms", 0)
-                    model_choice = name
+                    model_choice = name if source in ("model", "jev") else None
                     model_source = source
                     if not route_used:
                         name, source, applied_mentor = choose_action(
@@ -994,11 +1081,11 @@ def play_episode(level: str, fps: float, mode: str, edition: int, sync: bool = F
                     recent.append((name, current_x))
                     last_applied_state = state_now
                     last_applied_action = name
-                    last_applied_frame = frame
+                    last_applied_frame = emulator_frames
                     action = P.ACTIONS[name]
                     hold_cap = P.HOP_FRAMES if name == "hop right" else P.FULL_JUMP_FRAMES
                     last_decision = {
-                        "frame": frame, "x": current_x, "choice": name,
+                        "frame": emulator_frames, "x": current_x, "choice": name,
                         "model_choice": model_choice,
                         "source": source, "latency_ms": latency,
                         "probs": {k: round(v, 4) for k, v in sorted(probs.items(), key=lambda kv: -kv[1])}
@@ -1012,7 +1099,7 @@ def play_episode(level: str, fps: float, mode: str, edition: int, sync: bool = F
                     # Pipeline 的错误不能只更新 UI，否则 action 会保持上一动作，
                     # 在坑/敌人前继续盲走。按当前 state 走同一规则链。
                     name, source = P.policy(state_now) or "run right", "fallback_error"
-                    model_choice = name
+                    model_choice = name if source in ("model", "jev") else None
                     model_source = source
                     if not route_used:
                         name, source, applied_mentor = choose_action(
@@ -1023,10 +1110,10 @@ def play_episode(level: str, fps: float, mode: str, edition: int, sync: bool = F
                     recent.append((name, current_x))
                     last_applied_state = state_now
                     last_applied_action = name
-                    last_applied_frame = frame
+                    last_applied_frame = emulator_frames
                     action = P.ACTIONS[name]
                     hold_cap = P.HOP_FRAMES if name == "hop right" else P.FULL_JUMP_FRAMES
-                    last_decision = {"frame": frame, "x": current_x, "choice": name,
+                    last_decision = {"frame": emulator_frames, "x": current_x, "choice": name,
                                      "model_choice": model_choice,
                                      "source": source, "latency_ms": 0, "probs": None,
                                      "mentor_action": applied_mentor.get("action") if applied_mentor else None,
@@ -1036,6 +1123,9 @@ def play_episode(level: str, fps: float, mode: str, edition: int, sync: bool = F
                     print(f"[{channel}] 异步决策失败，当前状态规则兜底: {ready['error']}", flush=True)
                 # 立刻为下一步发请求（如果上一步还在飞就跳过，避免排队越等越旧）
                 pipeline.request(state_now, recent[-6:], frame, current_x, mentor_hit)
+
+            if model_source != "none":
+                model_decision_sources[model_source] += 1
 
             # Once the episode has explicitly entered the verified recovery
             # route, the model is still queried and its raw answer is kept in
@@ -1062,7 +1152,7 @@ def play_episode(level: str, fps: float, mode: str, edition: int, sync: bool = F
                 route_actions = [route_name] + ([route_ride] if route_ride else [])
                 for ride_index, route_action in enumerate(route_actions):
                     last_decision = {
-                        "frame": frame,
+                        "frame": emulator_frames,
                         "x": int(info["x_pos"]),
                         "choice": route_action,
                         "model_choice": model_choice,
@@ -1078,13 +1168,13 @@ def play_episode(level: str, fps: float, mode: str, edition: int, sync: bool = F
                     x_action_before = int(info["x_pos"])
                     last_applied_state = describe()
                     last_applied_action = route_action
-                    last_applied_frame = frame
+                    last_applied_frame = emulator_frames
                     died_or_flagged = execute_route_move(route_action)
                     route_entry["actions"].append({
                         "action": route_action,
                         "x_before": x_action_before,
                         "x_after": int(info["x_pos"]),
-                        "frame_after": int(frame),
+                        "frame_after": emulator_frames,
                         "done": bool(died_or_flagged),
                     })
                     if died_or_flagged:
@@ -1095,7 +1185,7 @@ def play_episode(level: str, fps: float, mode: str, edition: int, sync: bool = F
                 # Keep the next decision boundary aligned with the normal
                 # six-frame loop without adding emulator frames.
                 frame += (-frame) % P.HOLD
-                if info.get("flag_get") or term or trunc:
+                if info.get("flag_get") or term or trunc or route_index >= len(route_plan):
                     break
                 continue
 
@@ -1159,11 +1249,11 @@ def play_episode(level: str, fps: float, mode: str, edition: int, sync: bool = F
                 last_state = follow_state
                 last_applied_state = follow_state
                 last_applied_action = follow_action
-                last_applied_frame = frame
+                last_applied_frame = emulator_frames
                 action = P.ACTIONS[follow_action]
                 hold_cap = P.HOP_FRAMES if follow_action == "hop right" else P.FULL_JUMP_FRAMES
                 last_decision = {
-                    "frame": frame, "x": follow_x, "choice": follow_action,
+                    "frame": emulator_frames, "x": follow_x, "choice": follow_action,
                     "model_choice": None,
                     "source": follow_source, "latency_ms": 0, "probs": None,
                     "mentor_action": requested_follow_action,
@@ -1241,7 +1331,7 @@ def play_episode(level: str, fps: float, mode: str, edition: int, sync: bool = F
 
     lesson = None
     death_info = None
-    if not info.get("flag_get"):
+    if not info.get("flag_get") and not model_only:
         try:
             # 诊断必须尽量使用真正执行动作时的 state；异步结果可能来自更早的帧。
             death_state = last_applied_state or last_state or describe()
@@ -1273,16 +1363,22 @@ def play_episode(level: str, fps: float, mode: str, edition: int, sync: bool = F
     env.close()
     client.close()
     thinking, thinking_ms = pipeline.status()
-    publish(obs, {"edition": edition, "level": level, "mode": mode, "frame": frame, "fps": fps,
+    publish(obs, {"edition": edition, "level": level, "mode": mode, "frame": emulator_frames, "fps": fps,
+                  "replay_only": replay_only, "model_only": model_only,
                   "x": int(info["x_pos"]), "best_x": best, "flag": bool(info["flag_get"]),
                   "calls": calls, "elapsed": round(time.perf_counter() - started, 1),
                   "thinking": thinking, "thinking_ms": thinking_ms or 0,
-                  "status": "本局结束 · 3 秒后重开", "decision": last_decision,
+                  "status": f"模型错误，已停止：{model_error}" if model_error else ("离线回放结束" if replay_only else "本局结束"),
+                  "error": model_error, "decision": last_decision,
+                  "model_decision_sources": dict(model_decision_sources),
                   "verified_route_used": route_used,
                   "route_step": max(0, route_index - 1) if route_used else None,
                   "route_prefix_frames": route_prefix_frames if route_used else 0}, channel)
     result = {"level": level, "best_x": best, "flag": bool(info["flag_get"]),
-              "frames": frame, "calls": calls, "mode": mode, "lesson": lesson,
+              "frames": emulator_frames, "decision_clock": frame,
+              "calls": calls, "mode": mode, "replay_only": replay_only, "lesson": lesson,
+              "model_only": model_only, "error": model_error,
+              "model_decision_sources": dict(model_decision_sources),
               "death_info": death_info, "mentor_trace": list(mentor_trace),
               "verified_route_used": route_used,
               "route_prefix_frames": route_prefix_frames if route_used else 0,
@@ -1295,7 +1391,7 @@ def play_episode(level: str, fps: float, mode: str, edition: int, sync: bool = F
 def main():
     P.load_env()
     ap = argparse.ArgumentParser(description=__doc__)
-    ap.add_argument("--level", default="1-1")
+    ap.add_argument("--level", default="1-1", choices=LEVELS)
     ap.add_argument("--port", type=int, default=8123)
     ap.add_argument("--fps", type=float, default=45.0, help="画面播放帧率（模拟器不限速会看不清）")
     ap.add_argument("--mode", default=os.environ.get("LOCAL_POLICY_MODE", "chat"))
@@ -1307,7 +1403,22 @@ def main():
                      help="直接启用已由模拟器分支搜索验证的恢复路线（用于验收；页面会明确标记）")
     ap.add_argument("--stay-on-level", action="store_true",
                      help="通关 --level 后停留在成功画面，不自动进入下一关（验收/观战用）")
+    ap.add_argument("--replay-only", action="store_true",
+                    help="离线回放已验证路线；双画面不调用模型、教练或搜索，结束后停留")
+    ap.add_argument("--model-only", action="store_true",
+                    help="仅同步模型决策；禁用路线、守卫、脱困、教练和规则兜底；模型错误时停止")
     a = ap.parse_args()
+    if a.fps <= 0:
+        ap.error("--fps must be positive")
+    if a.model_only and (a.async_mode or a.verified_route or a.replay_only):
+        ap.error("--model-only cannot be combined with --async, --verified-route or --replay-only")
+    if (a.verified_route or a.replay_only) and a.level not in VERIFIED_ROUTES:
+        ap.error("no verified route for " + a.level + "; available: " + ", ".join(VERIFIED_ROUTES))
+    if a.replay_only:
+        if a.async_mode:
+            ap.error("--replay-only cannot be combined with --async")
+        a.verified_route = True
+        a.stay_on_level = True
     os.environ["LOCAL_POLICY_MODE"] = a.mode
     sync = not a.async_mode  # 默认同步：稳定通关优先，观看尽量流畅
 
@@ -1318,18 +1429,20 @@ def main():
     server = ThreadingHTTPServer(("127.0.0.1", a.port), Handler)
     server.daemon_threads = True
 
+    channels = CHANNELS if a.model == "dual" else (a.model,)
+
     def serve():
         with LOCK:
             for c in CHANNELS:
                 LATEST[c]["meta"] = {"fps": a.fps, "mode": a.mode, "level": a.level, "sync": sync,
-                                     "channel": c, "status": "起来了，等第一局", "thinking": False}
+                                     "channel": c, "enabled": c in channels, "model_only": a.model_only,
+                                     "model_name": "Jev (jev-latest)" if c == "jev" else P.LOCAL_POLICY_MODEL,
+                                     "status": "起来了，等第一局", "thinking": False}
         server.serve_forever()
 
     threading.Thread(target=serve, daemon=True).start()
     print(json.dumps({"url": f"http://127.0.0.1:{a.port}/", "level": a.level, "mode": a.mode,
                       "fps": a.fps, "sync": sync, "stream": "/stream.mjpg"}, ensure_ascii=False), flush=True)
-
-    channels = CHANNELS if a.model == "dual" else (a.model,)
 
     def episode_loop(channel, model):
         edition = 0
@@ -1345,14 +1458,21 @@ def main():
             with LOCK:
                 route_failures = VERIFIED_ROUTE_FAILURES[channel].get(level, 0)
             route_enabled = bool(
-                VERIFIED_ROUTES.get(level)
+                not a.model_only and VERIFIED_ROUTES.get(level)
                 and (a.verified_route or route_failures >= 3)
             )
             r = play_episode(level, a.fps, a.mode, edition, sync=sync,
-                             lessons=inject_lessons(lessons), model=model, channel=channel,
+                             lessons=inject_lessons(lessons), model="replay" if a.replay_only else model, channel=channel,
                              experience=EXPERIENCE[channel], mentor=MENTOR_GUIDANCE[channel],
-                             verified_route=route_enabled)
+                             verified_route=route_enabled, model_only=a.model_only)
             best_x = max(best_x, r.get("best_x", 0))
+            if a.model_only and not r.get("flag"):
+                with LOCK:
+                    STATS[channel] = {"clears": clears, "level": level, "best_x": best_x}
+                if r.get("error"):
+                    return
+                time.sleep(3)
+                continue
             if r.get("flag"):
                 # 通关：进下一关（封顶），旧关教训清空，重新学新关
                 clears += 1
@@ -1376,6 +1496,9 @@ def main():
                     LESSONS[channel] = []
                 print(f"[{channel}] 通关 {level}！累计 {clears} 次 → 进入 {LEVELS[level_idx]}", flush=True)
             else:
+                if a.replay_only:
+                    print(f"[{channel}] 离线回放未通关 {level}，停留以供检查", flush=True)
+                    return
                 if level in VERIFIED_ROUTES:
                     with LOCK:
                         VERIFIED_ROUTE_FAILURES[channel][level] = (

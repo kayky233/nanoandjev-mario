@@ -81,3 +81,75 @@ Original prompt: 让 Mario 双页面保持同步决策，修复同一场景反�
 - Rebuilt `artifacts/current/*.gif` on a real-time 60 fps emulator timeline
   sampled to 10 display fps. The dual replay is 83.3 seconds instead of the
   previous 18.3-second accelerated preview.
+
+## 2026-09-20 local continuation
+
+- Confirmed the existing clean local checkout matches GitHub HEAD `f79ce3b`;
+  installed the frozen dependency set with `uv sync --frozen` on macOS and
+  Python 3.12.10. No remote write or model API invocation was performed.
+- Added `IMPLEMENTATION.md` with the module map, execution boundaries, local
+  commands, and verification instructions.
+- Added `--replay-only` to the viewer and supervisor. It uses the verified
+  route without model/coach/search calls, labels both lanes as offline replays,
+  disables tunnels, and stops after success or failure. Unsupported levels and
+  non-positive frame rates are rejected. Exhausted routes do not silently fall
+  through into another controller.
+- Corrected viewer `frames` and `/state.frame` to count real emulator steps;
+  retained `decision_clock` for the six-frame scheduler. The historical 1-2
+  value 2352 contains 52 alignment slots: the actual run is 2300 frames.
+- Added `verify_routes.py`: repeat every supported route, fail on incomplete or
+  inconsistent outcomes, and optionally write GIFs labeled `NO MODEL` at 10
+  display fps on the actual 60 fps emulator timeline.
+- Two fresh offline 1-2 runs reached `flag=true`, `best_x=3161`,
+  `frames=2300`, `calls=0`, `route_complete=true`. The new GIF is 38.33 seconds
+  of gameplay plus a 1.5 second terminal hold. These are route acceptance
+  results, not new evidence of model autonomy.
+- Real browser verification on localhost confirmed both 256x240 streams,
+  offline labels, identical successful `/state` results, and one clear per
+  lane. SIGTERM closed the viewer port, reaped its process, and removed the
+  supervisor lock.
+- Fixed supervisor POSIX process checks, precise Windows PID matching,
+  stale-lock ownership, child termination/reaping, and failure exit behavior.
+  Windows behavior has mock-test coverage; native Windows execution was not
+  repeated on this Mac.
+- Added `model_decision_sources` to distinguish successful answers from rules
+  fallback. Failed/unparseable model decisions have `model_choice=null`;
+  `calls` remains an attempt count, not a success count.
+- Located the upstream repository at `https://github.com/4esv/jev-mario` and
+  cloned it beside this checkout as `jev-mario-upstream` (HEAD `eaabe51`). Its
+  README/GIF references match the original three examples: 1-1, 2-1, 3-1.
+  The local `play.py`, `branch.py`, and `live.py` retain the upstream controller
+  logic; their source differences are environment compatibility initialization.
+- The original `branch.py --bot search --level 1-3` completed the level with
+  `flag=true`, `best_x=2425`, `frames=2430`, and zero model requests. Converted
+  the two three-move escape sequences into separate route steps (26 total),
+  preserving all ride actions and emulator timing.
+- Independently replayed that 1-3 route twice through the branch executor and
+  twice through the viewer; every run reached the same flag/x/frame count.
+  Registered the route for normal recovery and explicit offline replay.
+- All 23 automated tests pass, including both routes on the real emulator and
+  a failed model request that must not be reported as a model answer.
+- Fixed MJPEG viewers opened after completion: repeating the terminal JPEG
+  supplies the next multipart boundary, so a late browser displays the frame
+  even though the emulator has stopped. Added a localhost streaming regression
+  test. The real browser also verified the 1-3 dual-lane terminal state.
+- Completion boundary: local startup and the 1-3 search/recovery route are
+  complete. Pure model autonomy on 1-3 and subsequent sequential levels remain
+  unverified. No model API, remote push, PR, or public deployment was used.
+
+## 2026-09-23 real model evaluation and dual live viewer
+
+- Completed nine model-only Jev runs and three real local Qwen2.5-1.5B-Instruct
+  runs across 1-1/1-2/1-3; none cleared. All 184 Jev and 54 Qwen valid answers
+  were executed without guard, unstick, coach, rules fallback, or route takeover.
+- Re-ran branch-Jev on 1-1: x=2370, no clear, 22 API requests, 11 ride continuations,
+  1,574,417 simulated candidate frames, and 27.38 minutes of wall time.
+- Published the fixed-sample evidence and corrected homepage. Earlier route replay
+  success and historical recordings remain separately labeled.
+- Restored real two-column live viewing: cached Qwen on the left, Jev on the right.
+  The public browser showed both live streams and actual model decisions; continuous
+  viewer retries are not added to the fixed-sample benchmark above.
+- Added a standalone cached-weight Qwen inference adapter and documented startup.
+  The viewer and supervisor both support model-only execution; errors stop the
+  affected lane instead of switching to a rule or route.
+- Runtime credentials, tunnel addresses, PID files and temporary output remain local.

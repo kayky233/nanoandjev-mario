@@ -18,6 +18,7 @@
 import argparse
 import atexit
 import contextlib
+import csv
 import os
 import re
 import shutil
@@ -91,6 +92,7 @@ def port_busy(port: int) -> bool:
 
 
 LOCK_FILE = HERE / "supervise.lock"
+_lock_identity = None
 
 
 def take_singleton_lock(port: int) -> bool:
@@ -100,22 +102,40 @@ def take_singleton_lock(port: int) -> bool:
     Windows 上两个 http.server 能同时 bind 同一端口，连接被分摊 → 页面时好时坏，极难排查。
     用文件锁把窗口期堵掉。
     """
-    import os
+    global _lock_identity
     for attempt in range(2):
         try:
             handle = os.open(LOCK_FILE, os.O_CREAT | os.O_EXCL | os.O_WRONLY)
-            os.write(handle, str(os.getpid()).encode())
-            os.close(handle)
+            info = os.fstat(handle)
+            _lock_identity = (info.st_dev, info.st_ino)
+            try:
+                with os.fdopen(handle, "w", encoding="ascii") as output:
+                    output.write(str(os.getpid()))
+            except BaseException:
+                release_lock()
+                raise
             return True
         except FileExistsError:
             try:
+                info = LOCK_FILE.stat()
                 stale = int(LOCK_FILE.read_text().strip() or "0")
-            except (ValueError, OSError):
+            except FileNotFoundError:
+                continue
+            except ValueError:
                 stale = 0
-            if stale and not port_busy(port) and not _alive(stale):
+            # A creator may still be writing its PID. Only reclaim malformed
+            # files after a grace period, and never over an active viewer.
+            expired = (stale > 0 and not _alive(stale)) or (
+                stale <= 0 and time.time() - info.st_mtime > 5 and not port_busy(port)
+            )
+            if expired:
                 log(f"发现残留锁（PID {stale} 已不在），清掉重试")
-                with contextlib.suppress(OSError):
-                    LOCK_FILE.unlink()
+                try:
+                    current = LOCK_FILE.stat()
+                    if (current.st_dev, current.st_ino) == (info.st_dev, info.st_ino):
+                        LOCK_FILE.unlink()
+                except FileNotFoundError:
+                    pass
                 continue
             log(f"已经有 supervisor 在跑（PID {stale}）。要重启就先把它关掉。")
             return False
@@ -123,14 +143,53 @@ def take_singleton_lock(port: int) -> bool:
 
 
 def _alive(pid: int) -> bool:
-    result = subprocess.run(["tasklist", "/FI", f"PID eq {pid}", "/NH"],
-                            capture_output=True, text=True, errors="replace")
-    return str(pid) in (result.stdout or "")
+    if pid <= 0:
+        return False
+    if sys.platform != "win32":
+        try:
+            os.kill(pid, 0)
+        except ProcessLookupError:
+            return False
+        except PermissionError:
+            return True
+        return True
+    try:
+        result = subprocess.run(
+            ["tasklist", "/FI", f"PID eq {pid}", "/FO", "CSV", "/NH"],
+            capture_output=True, text=True, errors="replace", timeout=5,
+        )
+    except (OSError, subprocess.TimeoutExpired):
+        # An unavailable process query is not evidence that the owner died.
+        return True
+    if result.returncode:
+        return True
+    return any(len(row) > 1 and row[1] == str(pid)
+               for row in csv.reader((result.stdout or "").splitlines()))
 
 
 def release_lock():
+    global _lock_identity
+    if _lock_identity is None:
+        return
     with contextlib.suppress(OSError):
-        LOCK_FILE.unlink()
+        info = LOCK_FILE.stat()
+        if (info.st_dev, info.st_ino) == _lock_identity:
+            LOCK_FILE.unlink()
+    _lock_identity = None
+
+
+def terminate_child(child):
+    """Reap the child before releasing the supervisor's singleton lock."""
+    if child.poll() is not None:
+        return
+    with contextlib.suppress(ProcessLookupError):
+        child.terminate()
+    try:
+        child.wait(timeout=5)
+    except subprocess.TimeoutExpired:
+        with contextlib.suppress(ProcessLookupError):
+            child.kill()
+        child.wait(timeout=5)
 
 
 def supervise(name, argv, on_line=None, child_env=None):
@@ -143,26 +202,32 @@ def supervise(name, argv, on_line=None, child_env=None):
                 argv, cwd=str(HERE), stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
                 text=True, encoding="utf-8", errors="replace", bufsize=1, env=child_env,
             )
-        except FileNotFoundError as exc:
+        except OSError as exc:
             log(f"{name} 起不来：{exc}")
             return
-        threading.Thread(target=pump, args=(child.stdout, f"[{name}]", on_line), daemon=True).start()
-        while not stop.is_set() and child.poll() is None:
-            time.sleep(0.5)
-        if stop.is_set():
-            with contextlib.suppress(Exception):
-                child.terminate()
-            return
+        output = threading.Thread(target=pump, args=(child.stdout, f"[{name}]", on_line), daemon=True)
+        output.start()
+        try:
+            while not stop.is_set() and child.poll() is None:
+                stop.wait(0.5)
+            if stop.is_set():
+                return
+        finally:
+            terminate_child(child)
+            output.join(timeout=1)
+            if not output.is_alive():
+                child.stdout.close()
         lived = time.perf_counter() - launched_at
         fast_exits = fast_exits + 1 if lived < 2.5 else 0
         if fast_exits >= 3:
             log(f"{name} 连续 {fast_exits} 次秒退，八成是端口被占或依赖缺失 —— 不再重启，先修问题")
             return
         log(f"{name} 退出了（code={child.returncode}，活了 {lived:.1f}s），{RESTART_DELAY:.0f} 秒后重启")
-        time.sleep(RESTART_DELAY)
+        stop.wait(RESTART_DELAY)
 
 
 def main():
+    stop.clear()
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--level", default="1-1")
     ap.add_argument("--port", type=int, default=8123)
@@ -170,7 +235,7 @@ def main():
     ap.add_argument("--mode", default="chat")
     ap.add_argument("--model", default="dual", choices=["local", "jev", "dual"],
                     help="模型来源：dual(双画面，默认) / local(本地) / jev(官方TypeSafe)")
-    ap.add_argument("--tunnel", default="ngrok", choices=["ngrok", "cloudflared", "none"],
+    ap.add_argument("--tunnel", default=None, choices=["ngrok", "cloudflared", "none"],
                     help="公网隧道方式：ngrok(固定域名，默认) / cloudflared(临时隧道) / none(不起隧道)")
     ap.add_argument(
         "--domain", default=NGROK_DOMAIN,
@@ -179,10 +244,19 @@ def main():
     ap.add_argument("--web-search", action="store_true",
                     help="重复场景触发教练时启用联网攻略搜索（需要 BAIDU_AI_SEARCH_API_KEY）")
     ap.add_argument("--verified-route", action="store_true",
-                     help="直接启用 1-2 已验证恢复路线（用于验收；页面会明确标记）")
+                     help="直接启用已验证恢复路线（用于验收；页面会明确标记）")
+    ap.add_argument("--replay-only", action="store_true",
+                    help="离线双画面验收，不调用模型（自动禁用公网隧道）")
+    ap.add_argument("--model-only", action="store_true",
+                    help="仅同步模型决策；禁用路线、守卫、脱困、教练和规则兜底")
     ap.add_argument("--stay-on-level", action="store_true",
                     help="通关 --level 后停留在成功画面，不自动进入下一关（验收/观战用）")
     a = ap.parse_args()
+    if a.model_only and (a.replay_only or a.verified_route or a.web_search):
+        ap.error("--model-only cannot be combined with --replay-only, --verified-route or --web-search")
+    if a.replay_only and a.tunnel not in (None, "none"):
+        ap.error("--replay-only 只支持 --tunnel none")
+    a.tunnel = a.tunnel or ("none" if a.replay_only else "ngrok")
 
     if a.web_search:
         os.environ["MENTOR_WEB_SEARCH_ENABLED"] = "true"
@@ -192,6 +266,10 @@ def main():
               "--port", str(a.port), "--fps", str(a.fps), "--mode", a.mode, "--model", a.model]
     if a.verified_route:
         viewer.append("--verified-route")
+    if a.replay_only:
+        viewer.append("--replay-only")
+    if a.model_only:
+        viewer.append("--model-only")
     if a.stay_on_level:
         viewer.append("--stay-on-level")
 
@@ -244,13 +322,27 @@ def main():
     else:
         tunnel = ["cloudflared", "tunnel", "--url", f"http://127.0.0.1:{a.port}", "--no-autoupdate"]
         threads.append(threading.Thread(target=supervise, args=("tunnel", tunnel, on_tunnel_line), daemon=True))
-    for thread in threads:
-        thread.start()
+    failed = False
     try:
+        for thread in threads:
+            thread.start()
         while not stop.is_set():
-            time.sleep(0.5)
+            if not any(thread.is_alive() for thread in threads):
+                log("没有运行中的看护任务，退出")
+                failed = bool(threads)
+                break
+            stop.wait(0.5)
     except KeyboardInterrupt:
         shutdown()
+    finally:
+        stop.set()
+        for thread in threads:
+            if thread.ident is not None:
+                thread.join()
+        release_lock()
+        atexit.unregister(release_lock)
+    if failed:
+        raise SystemExit(1)
 
 
 if __name__ == "__main__":
