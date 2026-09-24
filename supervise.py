@@ -232,7 +232,8 @@ def main():
     ap.add_argument("--level", default="1-1")
     ap.add_argument("--port", type=int, default=8123)
     ap.add_argument("--fps", type=float, default=45.0)
-    ap.add_argument("--mode", default="chat")
+    ap.add_argument("--mode", choices=["laya", "chat", "score"],
+                    help="本地模型协议；未指定时由观战进程读取 LOCAL_POLICY_MODE / .env")
     ap.add_argument("--model", default="dual", choices=["local", "jev", "dual"],
                     help="模型来源：dual(双画面，默认) / local(本地) / jev(官方TypeSafe)")
     ap.add_argument("--tunnel", default=None, choices=["ngrok", "cloudflared", "none"],
@@ -263,7 +264,9 @@ def main():
 
     python = sys.executable
     viewer = [python, str(HERE / "watch_local.py"), "--level", a.level,
-              "--port", str(a.port), "--fps", str(a.fps), "--mode", a.mode, "--model", a.model]
+              "--port", str(a.port), "--fps", str(a.fps), "--model", a.model]
+    if a.mode is not None:
+        viewer.extend(["--mode", a.mode])
     if a.verified_route:
         viewer.append("--verified-route")
     if a.replay_only:

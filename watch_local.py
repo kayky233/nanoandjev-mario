@@ -492,11 +492,11 @@ PAGE = """<!doctype html>
   <div class="cfg local">
     <div class="cfg-title">本地模型 · 策略配置</div>
     <table>
-      <tr><td class="k">决策引擎</td><td>本地模型，结构化状态 → 9 选 1 字母</td></tr>
-      <tr><td class="k">提示词</td><td>CHAT_SYSTEM 系统提示 + 状态摘要 + 动作选项</td></tr>
+      <tr><td class="k">决策引擎</td><td id="engine-local">等待模型配置</td></tr>
+      <tr><td class="k">提示词</td><td id="prompt-local">等待模型配置</td></tr>
       <tr><td class="k">安全守卫</td><td class="have">hazard_guard：坑 / 墙 / 敌人贴脸时强制改动作</td></tr>
       <tr><td class="k">脱困机制</td><td class="have">unstick：卡住时自动升级跳跃</td></tr>
-      <tr><td class="k">记忆</td><td class="have">最近 6 步决策 + STUCK 标记</td></tr>
+      <tr><td class="k">记忆</td><td class="have" id="memory-local">等待模型配置</td></tr>
       <tr><td class="k">失败教训</td><td class="have"><span id="lesson-count-local">0 条</span><button class="lessons-btn" onclick="toggleLessons('local')">展开▾</button></td></tr>
     </table>
     <div class="lessons" id="lessons-local" style="display:none"></div>
@@ -540,6 +540,18 @@ async function tick() {
     document.querySelector('.cfg.' + c).hidden = meta.enabled === false || meta.model_only;
     const label = $('label-' + c);
     label.textContent = (c === 'local' ? '本地模型 · ' : '官方模型 · ') + (meta.model_name || c);
+    if (c === 'local') {
+      $('engine-local').textContent = meta.mode === 'laya'
+        ? 'Laya typed choice，结构化状态 → 9 个动作的概率分布'
+        : meta.mode === 'score' ? '候选打分，结构化状态 → 9 个动作的概率分布'
+        : 'Chat Completions，结构化状态 → 9 选 1 字母';
+      $('prompt-local').textContent = meta.mode === 'laya'
+        ? '短指令 + 状态与历史 + 动作 criteria'
+        : 'CHAT_SYSTEM 系统提示 + 状态摘要 + 动作选项';
+      $('memory-local').textContent = meta.mode === 'laya'
+        ? '最近 3 步动作与位置'
+        : '最近 6 步决策 + STUCK 标记';
+    }
     const mode = document.createElement('span');
     mode.className = 'tag';
     mode.textContent = meta.model_only
@@ -1399,6 +1411,7 @@ def play_episode(level: str, fps: float, mode: str, edition: int, sync: bool = F
     result = {"level": level, "best_x": best, "flag": bool(info["flag_get"]),
               "frames": emulator_frames, "decision_clock": frame,
               "calls": calls, "mode": mode, "replay_only": replay_only, "lesson": lesson,
+              "model_name": display_model_name(model, mode) if not replay_only else None,
               "model_only": model_only, "error": model_error,
               "model_decision_sources": dict(model_decision_sources),
               "death_info": death_info, "mentor_trace": list(mentor_trace),
@@ -1410,13 +1423,21 @@ def play_episode(level: str, fps: float, mode: str, edition: int, sync: bool = F
     return result
 
 
+def display_model_name(model: str, mode: str) -> str:
+    if model == "jev":
+        return "Jev (jev-latest)"
+    checkpoint = os.environ.get("LOCAL_POLICY_MODEL", P.LOCAL_POLICY_MODEL)
+    return f"Laya ({checkpoint})" if mode == "laya" else checkpoint
+
+
 def main():
     P.load_env()
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--level", default="1-1", choices=LEVELS)
     ap.add_argument("--port", type=int, default=8123)
     ap.add_argument("--fps", type=float, default=45.0, help="画面播放帧率（模拟器不限速会看不清）")
-    ap.add_argument("--mode", default=os.environ.get("LOCAL_POLICY_MODE", "chat"))
+    ap.add_argument("--mode", default=os.environ.get("LOCAL_POLICY_MODE", P.LOCAL_POLICY_MODE),
+                    choices=["laya", "chat", "score"])
     ap.add_argument("--model", default="dual", choices=["local", "jev", "dual"],
                     help="模型来源：dual(本地+官方双画面，默认) / local(本地) / jev(官方)")
     ap.add_argument("--async", action="store_true", dest="async_mode",
@@ -1458,7 +1479,7 @@ def main():
             for c in CHANNELS:
                 LATEST[c]["meta"] = {"fps": a.fps, "mode": a.mode, "level": a.level, "sync": sync,
                                      "channel": c, "enabled": c in channels, "model_only": a.model_only,
-                                     "model_name": "Jev (jev-latest)" if c == "jev" else P.LOCAL_POLICY_MODEL,
+                                     "model_name": display_model_name(c, a.mode),
                                      "status": "起来了，等第一局", "thinking": False}
         server.serve_forever()
 

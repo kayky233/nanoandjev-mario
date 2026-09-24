@@ -676,10 +676,10 @@ def ask_jev(client: httpx.Client, state: dict, history=(), lessons=(), experienc
 
 
 # ----------------------------------------------------------------------------- 本地模型
-LOCAL_POLICY_BASE_URL = os.environ.get("LOCAL_POLICY_BASE_URL", "http://127.0.0.1:11500/v1")
+LOCAL_POLICY_BASE_URL = os.environ.get("LOCAL_POLICY_BASE_URL", "http://127.0.0.1:11505/v1")
 LOCAL_POLICY_API_KEY = os.environ.get("LOCAL_POLICY_API_KEY", "local")
-LOCAL_POLICY_MODEL = os.environ.get("LOCAL_POLICY_MODEL", "local")
-LOCAL_POLICY_MODE = os.environ.get("LOCAL_POLICY_MODE", "chat")
+LOCAL_POLICY_MODEL = os.environ.get("LOCAL_POLICY_MODEL", "english")
+LOCAL_POLICY_MODE = os.environ.get("LOCAL_POLICY_MODE", "laya")
 LOCAL_POLICY_TIMEOUT = float(os.environ.get("LOCAL_POLICY_TIMEOUT", "30"))
 LOCAL_TEMPERATURE = float(os.environ.get("LOCAL_POLICY_TEMPERATURE", "0.5"))
 LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
@@ -1128,14 +1128,92 @@ def _experience_hint(state: dict, experience) -> str:
             f"the correct action was '{act}'.\n\n")
 
 
+LAYA_INSTRUCTIONS = (
+    "Move Mario right without dying. Choose for the terrain, enemies and momentum. "
+    "Distances and heights are tiles; positive is right/up. Landing estimates are uncertain. "
+    "Change actions that made no progress."
+)
+LAYA_CRITERIA = {
+    "stand": "wait in place",
+    "walk right": "slow ground movement",
+    "jump right": "full walking jump; height 4, reach 3-5",
+    "run right": "fast ground movement; build speed",
+    "run and jump right": "full running jump; height 5, reach up to 9",
+    "jump in place": "full vertical jump",
+    "walk left": "move left",
+    "hop right": "low jump; height 2, reach 1-4",
+    "back off for a run-up": "retreat to build a runway",
+}
+
+
+def laya_request(state, history=(), lessons=(), experience=None, mentor=""):
+    """Explicit compact observation for Laya; no hidden truncation or action filter."""
+    observation = _state_block(state)
+    if "terrain" in state:
+        observation = json.loads(observation)
+        # The visible boundary already determines unknown_from; velocity and
+        # named action history replace the redundant numeric joypad index.
+        observation.pop("unknown_from", None)
+        observation.pop("previous_buttons", None)
+        observation["terrain_format"] = "dx0,dx1,up ranges (inclusive)"
+    body = {"observation": observation, "history_action_x": list(history[-3:])}
+    if lessons:
+        body["lessons"] = _rank_lessons(state, lessons)
+    if experience:
+        body["experience"] = _experience_hint(state, experience)
+    if mentor:
+        body["coach"] = mentor_text(mentor)
+    return {
+        "model": os.environ.get("LOCAL_POLICY_MODEL", LOCAL_POLICY_MODEL),
+        "state": json.dumps(body, ensure_ascii=False, separators=(",", ":")),
+        "questions": {"action": {"type": "choice", "instructions": LAYA_INSTRUCTIONS,
+                                  "criteria": LAYA_CRITERIA}},
+    }
+
+
+def ask_laya(client, state, history=(), lessons=(), experience=None, mentor=""):
+    root = os.environ.get("LOCAL_POLICY_BASE_URL", LOCAL_POLICY_BASE_URL).rstrip("/")
+    timeout = float(os.environ.get("LOCAL_POLICY_TIMEOUT", str(LOCAL_POLICY_TIMEOUT)))
+    key = os.environ.get("LOCAL_POLICY_API_KEY", LOCAL_POLICY_API_KEY)
+    body = laya_request(state, history, lessons, experience, mentor)
+    started = time.perf_counter()
+    response = client.post(root + "/systemone", json=body,
+                           headers={"Authorization": f"Bearer {key}"}, timeout=timeout)
+    latency = time.perf_counter() - started
+    response.raise_for_status()
+    data = response.json()
+    checkpoint = data.get("runtime", {}).get("checkpoint") or data.get("routing", {}).get("model")
+    if checkpoint is not None and checkpoint != body["model"]:
+        raise ValueError("Laya served a different checkpoint from the requested model")
+    answer = data["answers"]["action"]
+    choice, probabilities = answer["choice"], answer["probabilities"]
+    if not isinstance(choice, str) or choice not in ACTIONS or not isinstance(probabilities, dict) or set(probabilities) != set(ACTIONS):
+        raise ValueError("Laya must return one offered action and its full probability distribution")
+    if any(isinstance(p, bool) or not isinstance(p, (int, float)) or not math.isfinite(p) or not 0 <= p <= 1
+           for p in probabilities.values()) or not math.isclose(sum(probabilities.values()), 1, abs_tol=0.001):
+        raise ValueError("Laya returned invalid action probabilities")
+    tokens = data["usage"]["input_tokens"]
+    if isinstance(tokens, bool) or not isinstance(tokens, int) or tokens < 0:
+        raise ValueError("Laya returned invalid input token usage")
+    if any(item.get("truncated") for item in data.get("runtime", {}).get("token_budget", {}).values()):
+        raise ValueError("Laya rejected: model input was truncated")
+    return choice, probabilities, tokens, latency, "model"
+
+
 def ask_local(client: httpx.Client, state: dict, history=(), lessons=(), experience=None, mentor="", *, strict: bool = False) -> tuple[str, dict | None, int, float, str]:
     """Same state, same question as ask_jev, but answered by the local model.
 
     Returns (action, probabilities_or_None, tokens, latency, source).
     source is "model" when the local model answered, "rules_fallback" when its reply
     could not be parsed as an offered option and the deterministic rules policy stood in.
-    strict requires exactly one candidate letter and raises instead of using rules.
+    Chat strict mode requires one candidate letter. Laya returns typed actions and
+    fails closed on malformed answers in both strict and assisted modes.
     """
+    mode = os.environ.get("LOCAL_POLICY_MODE", LOCAL_POLICY_MODE)
+    if mode == "laya":
+        return ask_laya(client, state, history, lessons, experience, mentor)
+    if mode not in ("chat", "score"):
+        raise ValueError(f"Unknown local policy mode: {mode}")
     keys = list(ACTION_HELP)
     labels = LETTERS[: len(keys)]
     options = "\n".join(f"  {label}) {key} = {OPTION_HINTS.get(key, ACTION_HELP[key])}"
@@ -1331,6 +1409,7 @@ def run(bot: str, level: str = "1-1", dump: bool = False, model_only: bool = Fal
                         unstick_rewrites += 1
                         print("  [unstick] " + name + " -> " + forced + " (x=" + str(int(info["x_pos"])) + ")")
                         name, source = forced, "unstick"
+                    tokens += tok
                     lats.append(lat)
                     log.append({"frame": actual_frames, "decision_clock": frame,
                                 "x": int(info["x_pos"]), "choice": name, "executed_choice": name,
@@ -1409,7 +1488,10 @@ def run(bot: str, level: str = "1-1", dump: bool = False, model_only: bool = Fal
         "frames": actual_frames, "decision_clock": frame, "api_calls": len(lats), "input_tokens": tokens,
         "model_only": model_only, "valid_model_answers": valid_model_answers,
         "guard_rewrites": guard_rewrites, "unstick_rewrites": unstick_rewrites,
-        "cost_usd": round(tokens * USD_PER_TOKEN, 5),
+        "cost_usd": round(tokens * USD_PER_TOKEN, 5) if bot == "jev" else None,
+        "cost_basis": "Jev input-token API estimate" if bot == "jev" else "local compute cost not measured",
+        "model": os.environ.get("LOCAL_POLICY_MODEL", LOCAL_POLICY_MODEL) if bot == "local" else bot,
+        "local_mode": os.environ.get("LOCAL_POLICY_MODE", LOCAL_POLICY_MODE) if bot == "local" else None,
         "latency_p50": round(sorted(lats)[len(lats) // 2], 3) if lats else None,
         "gif": f"{tag}-{stamp}.gif" if not dump and actual_frames else None,
     }

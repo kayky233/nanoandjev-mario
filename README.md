@@ -2,13 +2,27 @@
 
 验证 **Jev 与本地模型能否根据当前状态自主选择动作、完成 Mario 关卡**。模型读取 NES RAM 生成的结构化状态；每次选择都保留原始回答与实际执行记录。源自 [4esv/jev-mario](https://github.com/4esv/jev-mario)。
 
-## 最新模型优化：2026-09-23
+## 当前默认：Laya 本地模型 + Jev 云端对照
+
+2026-09-24 已将原本地 Qwen/NanoJev 接入替换为真实 **Laya 0.3.11 / English checkpoint**，左栏 Laya、右栏 Jev。使用官方权重和 `/v1/systemone` typed choice，模型名、概率、实际动作及来源均可观察。Qwen 历史结果与适配器保留用于对照。
+
+| Laya 纯模型实测 | 三轮最远 x | 每轮请求数 | 通关 |
+| --- | --- | ---: | ---: |
+| 1-1 | 1802 / 1802 / 1802 | 14 | 0/3 |
+| 1-2 | 893 / 893 / 893 | 15 | 0/3 |
+| 1-3 | 305 / 305 / 305 | 2 | 0/3 |
+
+完整游戏请求总体 p50 **257 ms**、p95 **790 ms**；93 次请求都没有截断，原始模型选择全部原样执行。**93 次也全部选择“跑跳”，仍未通关，不能把走得更远解释为已具备更好的状态判断能力。** 视频中的 45 ms 与本机完整游戏请求不是同一实验。
+
+[Laya 接入、部署与实测报告](LAYA_REPORT.md) · [原始结果](artifacts/laya-eval-20260924/summary.json)
+
+## 历史模型优化：2026-09-23
 
 本轮新增 **33 局、475 次真实模型决策**，仍然全部由模型选动作。相同输入下，本地推理热请求 p50 从 **1.344 秒降到 0.953 秒**（约 29%），p95 从 1.853 秒降到 1.142 秒；采用 MLX FP16、精确前缀缓存和进程内存管理，未更换权重。缓存开关的 23 个新输入输出一致。
 
 当前候选的 Qwen 三轮均为 **1-1 x=1411、1-2 x=658、1-3 x=410**；Jev 三轮为 **1-1 x=1794、1-2 x=902/906/903、1-3 x=303**。Qwen 不再只选低跳，1-1 比原来的 x=722 更远，但 1-3 比原来的 x=618 更差。**两种模型仍未通关，不能称为整体能力提升。**
 
-观测修复、全部候选的正负结果、复现命令与原始证据见[模型优化报告](MODEL_OPTIMIZATION.md)。当前代码使用该报告的 guided 候选；下面保留未优化版本的原始基线，避免混合不同配置成绩。
+观测修复、全部候选的正负结果、复现命令与原始证据见[模型优化报告](MODEL_OPTIMIZATION.md)。Jev 和显式 chat 模式继续使用该报告的 guided 候选；当前默认本地 Laya 使用单独的输入格式。下面保留未优化版本的原始基线，避免混合不同配置成绩。
 
 ## 原始模型基线：2026-09-23
 
@@ -93,7 +107,7 @@ uv run python play_local.py --bot jev --model-only --level 1-2
 uv run python play_local.py --bot jev --model-only --level 1-3
 ```
 
-本地模型需要单独部署 OpenAI 兼容推理服务。以 Ollama 地址为例，设置服务中实际存在的模型名；仓库不包含权重：
+当前默认本地 Laya 按下方“双栏实时观战”启动。若复现历史 chat 模型，可另外部署 OpenAI 兼容推理服务；以 Ollama 地址为例，设置服务中实际存在的模型名，仓库不包含权重：
 
 ```dotenv
 LOCAL_POLICY_BASE_URL=http://127.0.0.1:11434/v1
@@ -115,22 +129,22 @@ uv run python -m unittest discover -s tests -p 'test_model_only.py' -v
 
 ## 双栏实时观战
 
-左栏运行本地 Qwen，右栏运行官方 Jev。两边使用独立模拟器，各自等待模型回答，展示真实画面、模型选择、实际动作、延迟、请求次数和最远距离。失败后自动重试；`--stay-on-level` 让通关的一栏停留在成功画面。观战重试不计入上方固定样本的基准结果。
+左栏运行本地 Laya，右栏运行官方 Jev。两边使用独立模拟器，各自等待模型回答，展示真实画面、模型选择、实际动作、延迟、请求次数和最远距离。失败后自动重试；`--stay-on-level` 让通关的一栏停留在成功画面。观战重试不计入上方固定样本的基准结果。
 
-先启动本地推理服务。以下命令复用已缓存的 Qwen2.5-1.5B-Instruct 权重（revision 见上文），不会下载权重；MLX 依赖在独立环境中加载：
+先启动本地推理服务。以下命令首次下载固定 revision 的 Laya 英文权重，依赖在独立环境中加载：
 
 ```bash
-uv run --script serve_qwen_mlx.py --port 11504
+uv run --script serve_laya.py --port 11505 --checkpoint english --device mps
 ```
 
-可用 `--model-path /path/to/model` 指定相同模型的完整本地权重目录。该实验适配器绑定 localhost，在 Apple Silicon 上使用 MLX FP16 与前缀缓存。原 PyTorch 适配器 `serve_qwen.py --port 11503` 仍可用于对照；行内部署方案见[分析报告](JEV_REPORT.md)。
+可用 `--model-path /path/to/model` 指定完整 Laya 本地权重目录，避免下载。服务绑定 localhost；本机 MPS 路径已验证，其他环境可显式选择 `--device cpu` 后另行验收。原 Qwen 的 `serve_qwen.py` 与 `serve_qwen_mlx.py` 仍可用于历史对照；Laya 行内部署说明见[接入报告](LAYA_REPORT.md)。
 
 在另一个终端配置本地接口，并通过环境变量提供自己的 Jev 凭据，然后启动两栏：
 
 ```bash
-export LOCAL_POLICY_BASE_URL=http://127.0.0.1:11504/v1
-export LOCAL_POLICY_MODEL=Qwen2.5-1.5B-Instruct
-export LOCAL_POLICY_MODE=chat
+export LOCAL_POLICY_BASE_URL=http://127.0.0.1:11505/v1
+export LOCAL_POLICY_MODEL=english
+export LOCAL_POLICY_MODE=laya
 export NO_PROXY=127.0.0.1,localhost
 # TYPESAFE_API_KEY 由自己的凭据管理方式注入进程环境。
 uv run python watch_local.py --model dual --model-only --stay-on-level --level 1-1
@@ -161,6 +175,7 @@ ngrok 报 `ERR_NGROK_725` 表示账号带宽额度耗尽，重启同一账号隧
 | [watch_local.py](watch_local.py) `--model-only` | 双通道真实模型观战 | 无规则改写、教练或路线接管；默认模式保留混合策略 |
 | [serve_qwen.py](serve_qwen.py) | 加载本地缓存 Qwen 权重并真实生成 | localhost OpenAI 兼容接口，独立启动 |
 | [serve_qwen_mlx.py](serve_qwen_mlx.py) | 同一权重的 MLX FP16 推理 | Apple Silicon、精确前缀缓存；不缓存模型答案 |
+| [serve_laya.py](serve_laya.py) | 官方 Laya 权重的非自回归 typed choice | 固定 checkpoint、Jev 兼容接口、拒绝静默截断 |
 | [evaluate_models.py](evaluate_models.py) | 连续运行纯模型实验 | 保存每局来源、HTTP 请求响应与控制器源码哈希 |
 | [supervise.py](supervise.py) | 看护观战进程与可选隧道 | 透传纯模型模式；退出时回收子进程与锁 |
 
@@ -176,6 +191,6 @@ uv run python branch.py --bot jev --level 1-1
 
 - [历史运行摘要](runs/results.jsonl)：跨版本留存结果，不能汇总为同配置成功率。
 - [上游实现](https://github.com/4esv/jev-mario)：直接控制、分支试演和实时控制三种设计。
-- [Laya](https://github.com/NandhaKishorM/laya)：本地 `choice / score / noul` 决策接口参考；本仓库尚未接入或实测其推理能力。
+- [Laya](https://github.com/NandhaKishorM/laya)：已接入本地 `choice`，2026-09-24 完成九局真实推理实测；见[Laya 报告](LAYA_REPORT.md)。
 - [分析报告](JEV_REPORT.md)：当前证据、Laya 参考、agent 业务收益与行内部署方案。
 - [实现与验证说明](IMPLEMENTATION.md)：模块划分、运行命令与执行器回归边界。

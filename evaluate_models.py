@@ -46,6 +46,14 @@ def main():
         "model_only": True, "route": False, "guard": False, "rules_fallback": False,
         "trials": [],
     }
+    if args.bot == "local" and report["local_mode"] == "laya":
+        root = os.environ.get("LOCAL_POLICY_BASE_URL", player.LOCAL_POLICY_BASE_URL).rstrip("/")
+        with player.httpx.Client(timeout=10) as metadata_client:
+            response = metadata_client.get(root + "/models")
+            response.raise_for_status()
+            report["runtime"] = response.json()["data"]
+        if not any(item.get("id") == report["model"] for item in report["runtime"]):
+            raise ValueError("Configured Laya checkpoint does not match the running service")
 
     def save():
         report["wall_seconds"] = round(time.perf_counter() - started, 3)
